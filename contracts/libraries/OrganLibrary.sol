@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 /*
     Organigr.am Contracts Framework - Organ library.
@@ -233,59 +234,62 @@ library OrganLibrary {
         Entries management.
     */
 
-    function removeEntry(OrganData storage self, uint index)
+    function removeEntries(OrganData storage self, uint256[] memory indexes)
         public
+        onlyPerm(self, PERMISSION_REMOVE_ENTRIES)
     {
-        // Check sender is allowed:
-        // - Sender is admin.
-        // - Entry number is trying to delete itself.
-        address addr = self.entries[index].addr;
-        // @TODO : Should an entry be able to delete itself?
-        require(
-            self.permissions[msg.sender] & PERMISSION_REMOVE_ENTRIES > 0 ||
-            addr == msg.sender,
-            "Not authorized."
-        );
-        // Removing entry from entries.
-        delete self.entries[index];
-        self.entriesCount--;
-        // Deleting entry index.
-        self.addressIndexInEntries[addr] = 0;
-        // Logging event.
-        emit entryRemoved(msg.sender, index);
+        for (uint256 i = 0 ; i < indexes.length ; i++) {
+            address addr = self.entries[indexes[i]].addr;
+            delete self.entries[indexes[i]];
+            self.entriesCount--;
+            // Deleting entry index.
+            if (addr != address(0))
+                self.addressIndexInEntries[addr] = 0;
+            // Logging event.
+            emit entryRemoved(msg.sender, indexes[i]);
+        }
     }
 
-    function addEntry(
-        OrganData storage self, address addr,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
+    function addEntries(
+        OrganData storage self, Entry[] memory entries
     )
         public
         onlyPerm(self, PERMISSION_ADD_ENTRIES)
-        returns (uint index)
+        returns (uint256[] memory indexes)
     {
-        // If the entry has an address, we check that the address has not been used before.
-        if (addr != address(0)) {
-            require(self.addressIndexInEntries[addr] == 0, "Duplicate record.");
+        require(entries.length > 0, "No entries specified.");
+        // uint256 memory initialGas = gasleft();
+        indexes = new uint256[](entries.length);
+
+        for (uint256 i = 0 ; i < entries.length ; i++) {
+            // If the entry has an address, we check that the address has not been used before.
+            if (entries[i].addr != address(0)) {
+                require(self.addressIndexInEntries[entries[i].addr] == 0, "Duplicate record.");
+            }
+            // Adding the entry.
+            self.entries.push(entries[i]);
+            // Registering entry position relative to its address.
+            indexes[i] = self.entries.length - 1;
+            self.addressIndexInEntries[entries[i].addr] = indexes[i];
+            // Incrementing entries counter.
+            self.entriesCount++;
+
+            emit entryAdded(
+                msg.sender,
+                indexes[i],
+                entries[i].addr,
+                entries[i].ipfsHash,
+                entries[i].hashFunction,
+                entries[i].hashSize
+            );
         }
-        // Adding the entry.
-        self.entries.push(Entry({
-            addr: addr,
-            ipfsHash: ipfsHash,
-            hashFunction: hashFunction,
-            hashSize: hashSize
-        }));
-        // Registering entry position relative to its address.
-        index = self.entries.length - 1;
-        self.addressIndexInEntries[addr] = index;
-        // Incrementing entries counter.
-        self.entriesCount++;
-        emit entryAdded(msg.sender, index, addr,  ipfsHash,  hashFunction,  hashSize);
+
         // Registering the address as active
-        return index;
+        return indexes;
     }
 
     function replaceEntry(
-        OrganData storage self, uint index, address addr,
+        OrganData storage self, uint256 index, address addr,
         bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
     )
         public

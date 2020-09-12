@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "./Kelsen.sol";
 import "./libraries/ProcedureLibrary.sol";
@@ -13,6 +14,7 @@ import "./libraries/ProcedureLibrary.sol";
 
 contract Procedure is Kelsen(false, true) {
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
+    using OrganLibrary for OrganLibrary.Entry;
     ProcedureLibrary.ProcedureData private procedureData;
 
     /**
@@ -71,21 +73,20 @@ contract Procedure is Kelsen(false, true) {
         return procedureData.createMove(ipfsHash, hashFunction, hashSize);
     }
 
-    function moveAddEntry(
-        uint256 moveKey, address payable organ, address payable addr,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize, bool lock
+    function moveAddEntries(
+        uint256 moveKey, address payable organ, OrganLibrary.Entry[] memory entries, bool lock
     )
         public
     {
-        procedureData.moveAddEntry(moveKey, organ, addr, ipfsHash, hashFunction, hashSize, lock);
+        procedureData.moveAddEntries(moveKey, organ, entries, lock);
     }
 
     function moveRemoveEntry(
-        uint256 moveKey, address payable organ, uint index, bool lock
+        uint256 moveKey, address payable organ, uint256 indexes, bool lock
     )
         public
     {
-        procedureData.moveRemoveEntry(moveKey, organ, index, lock);
+        procedureData.moveRemoveEntry(moveKey, organ, indexes, lock);
     }
 
     function moveReplaceEntry(

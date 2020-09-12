@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "../Organ.sol";
 
@@ -175,17 +176,17 @@ library ProcedureLibrary {
         Move API.
     */
 
-    function moveAddEntry(
+    function moveAddEntries(
         ProcedureData storage self, uint256 moveKey,
-        address payable organ, address payable addr,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize,
+        address payable organ, OrganLibrary.Entry[] memory entries,
         bool lock
     )
         internal onlyMoveCreator(self, moveKey) onlyNewMove(self, moveKey)
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0x1715f4de, organ, addr, ipfsHash, hashFunction, hashSize),
+            // @fixme Update function signature for _addEntries.
+            call: abi.encodeWithSelector(0x1715f4de, organ, entries),
             operationType: 1,
             processed: false
         }));
@@ -433,19 +434,18 @@ library ProcedureLibrary {
         Private API.
     */
 
-    function _addEntry(
-        address payable organ, address payable addr,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
+    function _addEntries(
+        address payable organ, OrganLibrary.Entry[] memory entries
     )
-        private returns (uint index)
+        private returns (uint256[] memory indexes)
     {
-        return Organ(organ).addEntry(addr, ipfsHash, hashFunction, hashSize);
+        return Organ(organ).addEntries(entries);
     }
 
-    function _removeEntry(address payable organ, uint index)
+    function _removeEntries(address payable organ, uint256[] memory indexes)
         private
     {
-        Organ(organ).removeEntry(index);
+        Organ(organ).removeEntries(indexes);
     }
 
     function _replaceEntry(

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "./Kelsen.sol";
 import "./libraries/OrganLibrary.sol";
@@ -20,6 +21,7 @@ contract Organ is
     IERC721Receiver
 {
     using OrganLibrary for OrganLibrary.OrganData;
+    using OrganLibrary for OrganLibrary.Entry;
 
     OrganLibrary.OrganData internal organData;
 
@@ -99,17 +101,17 @@ contract Organ is
         API for Procedure contract.
     */
 
-    function addEntry(address payable addr, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
-        public // onlyRole(OrganLibrary.ENTRY_ADDER)
-        returns (uint index)
+    function addEntries(OrganLibrary.Entry[] memory entries)
+        public
+        returns (uint256[] memory indexes)
     {
-        return organData.addEntry(addr, ipfsHash, hashFunction, hashSize);
+        return organData.addEntries(entries);
     }
 
-    function removeEntry(uint index)
-        public // onlyRole(OrganLibrary.ENTRY_REMOVER)
+    function removeEntries(uint256[] memory indexes)
+        public
     {
-       organData.removeEntry(index);
+       organData.removeEntries(indexes);
     }
 
     function replaceEntry(uint index, address payable addr, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)

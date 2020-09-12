@@ -48,8 +48,19 @@ module.exports = async (deployer, network, accounts) => {
   // 0x0C = 00001100 = can add and remove entries.
   await admins.replaceProcedure(from, from, "0xffff")
   .then(data => console.log(`admins.replaceProcedure(from, from, "0xffff")`))
-  await admins.addEntry(from, EMPTY_BYTES_32, 0, 0)
-  .then(data => console.log(`admins.addEntry(from, EMPTY_BYTES_32, 0, 0)`))
+  await admins.addEntries([
+    { addr: from, ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[1], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[2], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[3], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[4], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[5], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[6], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[7], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[8], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
+    { addr: accounts[9], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 }
+  ])
+  .then(data => console.log(`admins.addEntries([ OrganLibrary.Entry(from, EMPTY_BYTES_32, 0, 0) ])`))
   await admins.addProcedure(nominateAdmins.address, "0xffff")
   .then(data => console.log(`admins.addProcedure(nominateAdmins.address, "0xffff")`))
   await admins.replaceProcedure(from, updateSystem.address, "0xffff")
@@ -136,12 +147,9 @@ const getEntries = async organ => {
   }
   console.log(`getEntries(${organ.address})`)
   return Promise.all(promises)
-  .then(entries => {
-    entries.forEach((entry, i) => {
-      console.log(`- ${i} -> ${entry.addr}\n${entry.ipfsHash}`)
-    })
-    return entries
-  })
+  .then(entries =>
+    entries.map((entry, i) => `- ${i} -> ${entry.addr}${entry.ipfsHash !== "0x0000000000000000000000000000000000000000000000000000000000000000" && ("\n"+entry.ipfsHash)}`)
+  )
 }
 
 function multihashToCid(result) {

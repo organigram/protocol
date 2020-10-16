@@ -26,15 +26,6 @@ contract Organ is
     OrganLibrary.OrganData internal organData;
 
     /**
-        Modifiers.
-    */
-
-    // modifier onlyRole(bytes32 role) {
-    //     require(hasRole(role, msg.sender), "Not authorized.");
-    //     _;
-    // }
-
-    /**
         Organ API.
     */
 
@@ -52,7 +43,7 @@ contract Organ is
 
     // @TODO : Protect ether transfers against re-entrancy attacks.
     function transfer(address payable to, uint256 value)
-        public // onlyRole(OrganLibrary.PROCEDURE_ADDER)
+        public
     {
         organData.transferEther(to, value);
     }
@@ -62,7 +53,7 @@ contract Organ is
         address operator, address from, address to, uint256 amount,
         bytes calldata /*data*/, bytes calldata /*operatorData*/
     )
-        external override // onlyRole(OrganLibrary.ERC777_RECEIVER)
+        external override
     {
         organData.receiveCoins(operator, from, to, amount);
     }
@@ -70,12 +61,12 @@ contract Organ is
         address operator, address from, address to, uint256 amount,
         bytes calldata /*userData*/, bytes calldata /*operatorData*/
     )
-        external override // onlyRole(OrganLibrary.ERC777_TRANSFERRER)
+        external override
     {
         organData.transferCoins(operator, from, to, amount);
     }
     function transferCoins(address operator, address from, address to, uint256 amount)
-        external // onlyRole(OrganLibrary.ERC721_TRANSFERRER)
+        external
     {
         organData.transferCoins(operator, from, to, amount);
     }
@@ -92,7 +83,7 @@ contract Organ is
     }
 
     function updateMetadata(bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
-        public // onlyRole(OrganLibrary.METADATA_UPDATER)
+        public
     {
         organData.updateMetadata(ipfsHash, hashFunction, hashSize);
     }
@@ -121,20 +112,19 @@ contract Organ is
     }
 
     function addProcedure(address procedure, bytes2 permissions)
-        public // onlyRole(OrganLibrary.PROCEDURE_ADDER)
+        public
     {
         organData.addProcedure(procedure, permissions);
     }
 
     function removeProcedure(address procedure)
-        public // onlyRole(OrganLibrary.PROCEDURE_REMOVER)
+        public
     {
         organData.removeProcedure(procedure);
     }
 
     function replaceProcedure(address oldProcedure, address newProcedure, bytes2 permissions)
         public
-        // onlyRole(OrganLibrary.PROCEDURE_REMOVER)
     {
         organData.replaceProcedure(oldProcedure, newProcedure, permissions);
     }
@@ -142,30 +132,6 @@ contract Organ is
     /*
         Accessors.
     */
-
-    // function getPermissions(address addr)
-    //     public view returns (
-    //         bytes2 permissions,
-    //         bool canRemoveProcedures,
-    //         bool canAddProcedures,
-    //         bool canRemoveEntries,
-    //         bool canAddEntries,
-    //         bool canTransferCollectibles,
-    //         bool canReceiveCollectibles,
-    //         bool canTransferCoins,
-    //         bool canReceiveCoins,
-    //         bool canTransferEther,
-    //         bool canReceiveEther
-    //     )
-    // {
-    //     const Roles
-    //     // ;
-    //     // permissions = organData.permissions[addr];
-    //     (canRemoveProcedures,,,,,,,,) = organData.getRoles()
-    //     return (
-    //         permissions,
-    //     );
-    // }
 
     function getEntriesLength()
         public view returns (uint length)

@@ -4,7 +4,7 @@ module.exports = {
       host: "127.0.0.1",
       port: 8545,
       network_id: "*",
-      gasPrice: 11000000000
+      gasPrice: 89000000000
     },
     ganache: {
       host: "127.0.0.1",
@@ -22,7 +22,7 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: "0.6.8"
+      version: "0.6.12"
     }
   }
 }

@@ -10,14 +10,14 @@
     "cleanup": "yarn truffle networks --clean"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.1.0"
+    "@openzeppelin/contracts": "^3.2.0"
   },
   "devDependencies": {
     "bs58": "^4.0.1",
-    "cids": "^1.0.0",
-    "ipfs": "^0.50.1",
-    "ipfs-http-client": "^46.1.1",
-    "truffle": "^5.1.43",
+    "cids": "^1.0.2",
+    "ipfs": "^0.50.2",
+    "ipfs-http-client": "^47.0.1",
+    "truffle": "^5.1.49",
     "truffle-hdwallet-provider": "^1.0.17"
   },
   "directories": {

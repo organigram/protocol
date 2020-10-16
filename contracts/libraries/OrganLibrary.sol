@@ -14,8 +14,8 @@ import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 library OrganLibrary {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    bytes2 public constant PERMISSION_ADD_PROCEDURE = 0x0001;
-    bytes2 public constant PERMISSION_REMOVE_PROCEDURE = 0x0002;
+    bytes2 public constant PERMISSION_ADD_PROCEDURES = 0x0001;
+    bytes2 public constant PERMISSION_REMOVE_PROCEDURES = 0x0002;
     bytes2 public constant PERMISSION_ADD_ENTRIES = 0x0004;
     bytes2 public constant PERMISSION_REMOVE_ENTRIES = 0x0008;
     bytes2 public constant PERMISSION_UPDATE_METADATA = 0x0010;
@@ -30,8 +30,8 @@ library OrganLibrary {
         Entries are sets of addresses, contracts or documents.
     */
     struct Entry {
-        address addr;           // Address if entry is account or a contract.
-        bytes32 ipfsHash;               // ID of proposal on IPFS.
+        address addr;           // Address of account or contract.
+        bytes32 ipfsHash;       // ID of document on IPFS.
         uint8 hashFunction;
         uint8 hashSize;
     }
@@ -98,10 +98,6 @@ library OrganLibrary {
         self.metadataIpfsHash = ipfsHash;
         self.metadataHashFunction = hashFunction;
         self.metadataHashSize = hashSize;
-
-        // @TODO : Check if necessary.
-        Entry memory initEntry;
-        self.entries.push(initEntry);
     }
 
     function updateMetadata(
@@ -177,7 +173,7 @@ library OrganLibrary {
     */
 
     function removeProcedure(OrganData storage self, address procedure)
-        public onlyPerm(self, PERMISSION_REMOVE_PROCEDURE)
+        public onlyPerm(self, PERMISSION_REMOVE_PROCEDURES)
     {
         // Check procedure is already there.
         require(self.procedures.contains(procedure), "Record not found.");
@@ -188,7 +184,7 @@ library OrganLibrary {
     }
 
     function addProcedure(OrganData storage self, address procedure, bytes2 permissions)
-        public onlyPerm(self, PERMISSION_ADD_PROCEDURE)
+        public onlyPerm(self, PERMISSION_ADD_PROCEDURES)
         returns (uint256 index)
     {
         // Check new procedure is not already there.
@@ -208,8 +204,8 @@ library OrganLibrary {
         bytes2 permissions
     )
         public
-        onlyPerm(self, PERMISSION_REMOVE_PROCEDURE)
-        onlyPerm(self, PERMISSION_ADD_PROCEDURE)
+        onlyPerm(self, PERMISSION_REMOVE_PROCEDURES)
+        onlyPerm(self, PERMISSION_ADD_PROCEDURES)
     {
         // Check old procedure will be removable before adding.
         require(self.procedures.contains(oldProcedure), "Record not found.");
@@ -233,22 +229,6 @@ library OrganLibrary {
     /**
         Entries management.
     */
-
-    function removeEntries(OrganData storage self, uint256[] memory indexes)
-        public
-        onlyPerm(self, PERMISSION_REMOVE_ENTRIES)
-    {
-        for (uint256 i = 0 ; i < indexes.length ; i++) {
-            address addr = self.entries[indexes[i]].addr;
-            delete self.entries[indexes[i]];
-            self.entriesCount--;
-            // Deleting entry index.
-            if (addr != address(0))
-                self.addressIndexInEntries[addr] = 0;
-            // Logging event.
-            emit entryRemoved(msg.sender, indexes[i]);
-        }
-    }
 
     function addEntries(
         OrganData storage self, Entry[] memory entries
@@ -286,6 +266,22 @@ library OrganLibrary {
 
         // Registering the address as active
         return indexes;
+    }
+
+    function removeEntries(OrganData storage self, uint256[] memory indexes)
+        public
+        onlyPerm(self, PERMISSION_REMOVE_ENTRIES)
+    {
+        for (uint256 i = 0 ; i < indexes.length ; i++) {
+            address addr = self.entries[indexes[i]].addr;
+            delete self.entries[indexes[i]];
+            self.entriesCount--;
+            // Deleting entry index.
+            if (addr != address(0))
+                self.addressIndexInEntries[addr] = 0;
+            // Logging event.
+            emit entryRemoved(msg.sender, indexes[i]);
+        }
     }
 
     function replaceEntry(

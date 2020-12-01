@@ -14,6 +14,7 @@ import "./libraries/ProcedureLibrary.sol";
 
 contract Procedure is Kelsen(false, true) {
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
+    using ProcedureLibrary for ProcedureLibrary.Move;
     using OrganLibrary for OrganLibrary.Entry;
     ProcedureLibrary.ProcedureData private procedureData;
 
@@ -183,5 +184,29 @@ contract Procedure is Kelsen(false, true) {
         public
     {
         procedureData.lockMove(moveKey);
+    }
+
+    /*
+        Accessors.
+    */
+
+    function getMovesLength() public view returns (uint256 length) {
+        return procedureData.movesLength;
+    }
+
+    function getMove(uint256 moveKey) public view returns (ProcedureLibrary.Move memory move) {
+        return procedureData.moves[moveKey];
+    }
+
+    function getMetadata()
+        public
+        view
+        returns (
+            bytes32 ipfsHash,
+            uint8 hashFunction,
+            uint8 hashSize
+        )
+    {
+        return procedureData.getMetadata();
     }
 }

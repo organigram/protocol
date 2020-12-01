@@ -481,4 +481,14 @@ library ProcedureLibrary {
     {
         Organ(organ).replaceProcedure(oldProcedure, newProcedure, permissions);
     }
+
+    function getMetadata(ProcedureData storage self)
+        public view returns (bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
+    {
+        return (
+            self.metadata.ipfsHash,
+            self.metadata.hashFunction,
+            self.metadata.hashSize
+        );
+    }
 }

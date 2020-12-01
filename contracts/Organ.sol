@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 */
 
 contract Organ is
-    Kelsen(true,false),
+    Kelsen(true, false),
     IERC777Recipient,
     IERC777Sender,
     IERC721Receiver
@@ -29,10 +29,18 @@ contract Organ is
         Organ API.
     */
 
-    constructor(address payable admin, bytes32 metadataIpfsHash, uint8 metadataHashFunction, uint8 metadataHashSize)
-        public
-    {
-        organData.init(admin, metadataIpfsHash, metadataHashFunction, metadataHashSize);
+    constructor(
+        address payable admin,
+        bytes32 metadataIpfsHash,
+        uint8 metadataHashFunction,
+        uint8 metadataHashSize
+    ) public {
+        organData.init(
+            admin,
+            metadataIpfsHash,
+            metadataHashFunction,
+            metadataHashSize
+        );
     }
 
     // Assets.
@@ -42,49 +50,58 @@ contract Organ is
     }
 
     // @TODO : Protect ether transfers against re-entrancy attacks.
-    function transfer(address payable to, uint256 value)
-        public
-    {
+    function transfer(address payable to, uint256 value) public {
         organData.transferEther(to, value);
     }
 
     // Implementing ERC-777 receiver interface.
     function tokensReceived(
-        address operator, address from, address to, uint256 amount,
-        bytes calldata /*data*/, bytes calldata /*operatorData*/
-    )
-        external override
-    {
+        address operator,
+        address from,
+        address to,
+        uint256 amount,
+        bytes calldata, /*data*/
+        bytes calldata /*operatorData*/
+    ) external override {
         organData.receiveCoins(operator, from, to, amount);
     }
+
     function tokensToSend(
-        address operator, address from, address to, uint256 amount,
-        bytes calldata /*userData*/, bytes calldata /*operatorData*/
-    )
-        external override
-    {
+        address operator,
+        address from,
+        address to,
+        uint256 amount,
+        bytes calldata, /*userData*/
+        bytes calldata /*operatorData*/
+    ) external override {
         organData.transferCoins(operator, from, to, amount);
     }
-    function transferCoins(address operator, address from, address to, uint256 amount)
-        external
-    {
+
+    function transferCoins(
+        address operator,
+        address from,
+        address to,
+        uint256 amount
+    ) external {
         organData.transferCoins(operator, from, to, amount);
     }
 
     // Implementing ERC-721 receiver interface.
     function onERC721Received(
-        address operator, address from, uint256 tokenId, bytes memory /*data*/
-    )
-        public override
-        returns(bytes4)
-    {
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes memory /*data*/
+    ) public override returns (bytes4) {
         organData.receiveCollectible(operator, from, tokenId);
         return this.onERC721Received.selector;
     }
 
-    function updateMetadata(bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
-        public
-    {
+    function updateMetadata(
+        bytes32 ipfsHash,
+        uint8 hashFunction,
+        uint8 hashSize
+    ) public {
         organData.updateMetadata(ipfsHash, hashFunction, hashSize);
     }
 
@@ -99,33 +116,35 @@ contract Organ is
         return organData.addEntries(entries);
     }
 
-    function removeEntries(uint256[] memory indexes)
-        public
-    {
-       organData.removeEntries(indexes);
+    function removeEntries(uint256[] memory indexes) public {
+        organData.removeEntries(indexes);
     }
 
-    function replaceEntry(uint index, address payable addr, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
-        public
-    {
-       organData.replaceEntry(index, addr, ipfsHash, hashFunction, hashSize);
+    function replaceEntry(
+        uint256 index,
+        address payable addr,
+        bytes32 ipfsHash,
+        uint8 hashFunction,
+        uint8 hashSize
+    ) public {
+        organData.replaceEntry(index, addr, ipfsHash, hashFunction, hashSize);
     }
 
-    function addProcedure(address procedure, bytes2 permissions)
-        public
-    {
+    // @TODO : Should be plural.
+    function addProcedure(address procedure, bytes2 permissions) public {
         organData.addProcedure(procedure, permissions);
     }
 
-    function removeProcedure(address procedure)
-        public
-    {
+    // @TODO : Should be plural.
+    function removeProcedure(address procedure) public {
         organData.removeProcedure(procedure);
     }
 
-    function replaceProcedure(address oldProcedure, address newProcedure, bytes2 permissions)
-        public
-    {
+    function replaceProcedure(
+        address oldProcedure,
+        address newProcedure,
+        bytes2 permissions
+    ) public {
         organData.replaceProcedure(oldProcedure, newProcedure, permissions);
     }
 
@@ -133,22 +152,26 @@ contract Organ is
         Accessors.
     */
 
-    function getEntriesLength()
-        public view returns (uint length)
-    {
+    function getEntriesLength() public view returns (uint256 length) {
         return organData.entries.length;
     }
 
     function getEntryIndexForAddress(address addr)
-        public view returns (uint index)
+        public
+        view
+        returns (uint256 index)
     {
         return organData.addressIndexInEntries[addr];
     }
 
-    function getEntry(uint index)
-        public view returns (
+    function getEntry(uint256 index)
+        public
+        view
+        returns (
             address addr,
-            bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
+            bytes32 ipfsHash,
+            uint8 hashFunction,
+            uint8 hashSize
         )
     {
         return (
@@ -159,26 +182,34 @@ contract Organ is
         );
     }
 
-    function getProceduresLength()
-        public view returns (uint256 length)
-    {
+    function getProceduresLength() public view returns (uint256 length) {
         return organData.getProceduresLength();
     }
 
     function getProcedure(uint256 index)
-        public view returns (address procedure, bytes2 permissions)
+        public
+        view
+        returns (address procedure, bytes2 permissions)
     {
         return organData.getProcedure(index);
     }
 
     function getPermissions(address procedure)
-        public view returns (bytes2 permissions)
+        public
+        view
+        returns (bytes2 permissions)
     {
         return organData.getPermissions(procedure);
     }
 
     function getMetadata()
-        public view returns (bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
+        public
+        view
+        returns (
+            bytes32 ipfsHash,
+            uint8 hashFunction,
+            uint8 hashSize
+        )
     {
         return organData.getMetadata();
     }

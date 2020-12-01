@@ -7,7 +7,9 @@ var Organ = artifacts.require("Organ")
 var SimpleNominationProcedure = artifacts.require("SimpleNominationProcedure")
 var VoteProcedure = artifacts.require("VoteProcedure")
 
-const EMPTY_BYTES_32 = "0x00000000000000000000000000000000"
+const EMPTY_FILE_HASH = "0xbfccda787baba32b59c78450ac3d20b633360b43992c77289f9ed46d843561e6"
+const HASH_FUNCTION = "0x12"
+const HASH_SIZE = "0x20"
 
 module.exports = async (deployer, network, accounts) => {
   if (network !== "development" && network !== "develop")
@@ -27,20 +29,20 @@ module.exports = async (deployer, network, accounts) => {
   await VoteProcedure.link(VotePropositionLibrary)
 
   // Deploying organs and procedures.
-  const admins = await Organ.new(from, EMPTY_BYTES_32, 0, 0, { from })
+  const admins = await Organ.new(from, EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, { from })
   console.log(`* admins: ${admins.address}`)
-  const norms = await Organ.new(from, EMPTY_BYTES_32, 0, 0, { from })
+  const norms = await Organ.new(from, EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, { from })
   console.log(`* norms: ${norms.address}`)
-  const nominateAdmins = await SimpleNominationProcedure.new(EMPTY_BYTES_32, 0, 0, admins.address)
+  const nominateAdmins = await SimpleNominationProcedure.new(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, admins.address)
   console.log(`- nominateAdmins: ${nominateAdmins.address}`)
   const voteNorms = await VoteProcedure.new(
-    EMPTY_BYTES_32, 0, 0,   // Metadata.
+    EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE,   // Metadata.
     admins.address,         // Voters.
     admins.address,         // Vetoers.
     admins.address          // Enactors.
   )
   console.log(`- voteNorms: ${voteNorms.address}`)
-  const updateSystem = await SimpleNominationProcedure.new(EMPTY_BYTES_32, 0, 0, admins.address)
+  const updateSystem = await SimpleNominationProcedure.new(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, admins.address)
   console.log(`- updateSystem: ${updateSystem.address}`)
 
   // Configuring procedures on organs.
@@ -49,18 +51,18 @@ module.exports = async (deployer, network, accounts) => {
   await admins.replaceProcedure(from, from, "0xffff")
   .then(data => console.log(`admins.replaceProcedure(from, from, "0xffff")`))
   await admins.addEntries([
-    { addr: from, ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[1], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[2], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[3], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[4], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[5], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[6], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[7], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[8], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 },
-    { addr: accounts[9], ipfsHash: EMPTY_BYTES_32, hashFunction: 0, hashSize: 0 }
+    { addr: from, ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[1], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[2], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[3], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[4], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[5], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[6], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[7], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[8], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
+    { addr: accounts[9], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE }
   ])
-  .then(data => console.log(`admins.addEntries([ OrganLibrary.Entry(from, EMPTY_BYTES_32, 0, 0) ])`))
+  .then(data => console.log(`admins.addEntries([ OrganLibrary.Entry(from, EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE) ])`))
   await admins.addProcedure(nominateAdmins.address, "0xffff")
   .then(data => console.log(`admins.addProcedure(nominateAdmins.address, "0xffff")`))
   await admins.replaceProcedure(from, updateSystem.address, "0xffff")
@@ -148,7 +150,7 @@ const getEntries = async organ => {
   console.log(`getEntries(${organ.address})`)
   return Promise.all(promises)
   .then(entries =>
-    entries.map((entry, i) => `- ${i} -> ${entry.addr}${entry.ipfsHash !== "0x0000000000000000000000000000000000000000000000000000000000000000" && ("\n"+entry.ipfsHash)}`)
+    entries.map((entry, i) => `- ${i} -> ${entry.addr}${entry.ipfsHash !== "0x0000000000000000000000000000000000000000000000000000000000000000" ? "\n" + entry.ipfsHash : ""}`)
   )
 }
 

@@ -2,128 +2,8 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_metadataIpfsHash",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_metadataHashFunction",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_metadataHashSize",
-        "type": "uint8"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "fallback"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "factory",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getKelsenData",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "_isOrgan",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_isProcedure",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_version",
-        "type": "uint8"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "isOrgan",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "isProcedure",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "kelsenVersion",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "organData",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
+        "internalType": "address payable",
+        "name": "admin",
         "type": "address"
       },
       {
@@ -140,420 +20,320 @@
         "internalType": "uint8",
         "name": "metadataHashSize",
         "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "normsCount",
-        "type": "uint256"
       }
     ],
-    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "getKelsenData",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
+    "inputs": [],
+    "name": "isOrgan",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isProcedure",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "kelsenVersion",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "transfer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "tokensReceived",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "tokensToSend",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferCoins",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "onERC721Received",
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "_ipfsHash",
+        "name": "ipfsHash",
         "type": "bytes32"
       },
       {
         "internalType": "uint8",
-        "name": "_hashFunction",
+        "name": "hashFunction",
         "type": "uint8"
       },
       {
         "internalType": "uint8",
-        "name": "_hashSize",
+        "name": "hashSize",
         "type": "uint8"
       }
     ],
     "name": "updateMetadata",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
-        "internalType": "address payable",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_value",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "addr",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "ipfsHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "hashFunction",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "hashSize",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct OrganLibrary.Entry[]",
+        "name": "entries",
+        "type": "tuple[]"
       }
     ],
-    "name": "withdraw",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newMasterAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canAdd",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canRemove",
-        "type": "bool"
-      }
-    ],
-    "name": "addMaster",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_masterToRemove",
-        "type": "address"
-      }
-    ],
-    "name": "removeMaster",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_masterToRemove",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_masterToAdd",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canAdd",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canRemove",
-        "type": "bool"
-      }
-    ],
-    "name": "replaceMaster",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newAdminAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canAdd",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canRemove",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canDeposit",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canWithdraw",
-        "type": "bool"
-      }
-    ],
-    "name": "addAdmin",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_adminToRemove",
-        "type": "address"
-      }
-    ],
-    "name": "removeAdmin",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_adminToRemove",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_adminToAdd",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canAdd",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canRemove",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canDeposit",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "_canWithdraw",
-        "type": "bool"
-      }
-    ],
-    "name": "replaceAdmin",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "_normAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_ipfsHash",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_hashFunction",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_hashSize",
-        "type": "uint8"
-      }
-    ],
-    "name": "addNorm",
+    "name": "addEntries",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "_normPosition",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "indexes",
+        "type": "uint256[]"
       }
     ],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_normIndex",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "indexes",
+        "type": "uint256[]"
       }
     ],
-    "name": "removeNorm",
+    "name": "removeEntries",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_normIndex",
+        "name": "index",
         "type": "uint256"
       },
       {
         "internalType": "address payable",
-        "name": "_normAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_ipfsHash",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_hashFunction",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_hashSize",
-        "type": "uint8"
-      }
-    ],
-    "name": "replaceNorm",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_adressToCheck",
-        "type": "address"
-      }
-    ],
-    "name": "isMaster",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "canAdd",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "canRemove",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_adressToCheck",
-        "type": "address"
-      }
-    ],
-    "name": "isAdmin",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "canAdd",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "canRemove",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "canDeposit",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "canWithdraw",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getNormListSize",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "normArraySize",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_addressToCheck",
-        "type": "address"
-      }
-    ],
-    "name": "getNormIndexForAddress",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "addressInNormPosition",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_index",
-        "type": "uint256"
-      }
-    ],
-    "name": "getNorm",
-    "outputs": [
-      {
-        "internalType": "address payable",
-        "name": "normAddress",
+        "name": "addr",
         "type": "address"
       },
       {
@@ -572,7 +352,207 @@
         "type": "uint8"
       }
     ],
-    "payable": false,
+    "name": "replaceEntry",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "procedure",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes2",
+        "name": "permissions",
+        "type": "bytes2"
+      }
+    ],
+    "name": "addProcedure",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "procedure",
+        "type": "address"
+      }
+    ],
+    "name": "removeProcedure",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "oldProcedure",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "newProcedure",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes2",
+        "name": "permissions",
+        "type": "bytes2"
+      }
+    ],
+    "name": "replaceProcedure",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getEntriesLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "addr",
+        "type": "address"
+      }
+    ],
+    "name": "getEntryIndexForAddress",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getEntry",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "addr",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "ipfsHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint8",
+        "name": "hashFunction",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "hashSize",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getProceduresLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getProcedure",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "procedure",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes2",
+        "name": "permissions",
+        "type": "bytes2"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "procedure",
+        "type": "address"
+      }
+    ],
+    "name": "getPermissions",
+    "outputs": [
+      {
+        "internalType": "bytes2",
+        "name": "permissions",
+        "type": "bytes2"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMetadata",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "ipfsHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint8",
+        "name": "hashFunction",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "hashSize",
+        "type": "uint8"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   }

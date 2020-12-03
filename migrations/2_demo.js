@@ -48,8 +48,6 @@ module.exports = async (deployer, network, accounts) => {
   // Configuring procedures on organs.
   // 0xC0 = 11000000 = can add and remove procedures.
   // 0x0C = 00001100 = can add and remove entries.
-  await admins.replaceProcedure(from, from, "0xffff")
-  .then(data => console.log(`admins.replaceProcedure(from, from, "0xffff")`))
   await admins.addEntries([
     { addr: from, ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
     { addr: accounts[1], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },

@@ -15,6 +15,7 @@ import "../libraries/VotePropositionLibrary.sol";
 
 contract VoteProcedure is Procedure {
     using VotePropositionLibrary for VotePropositionLibrary.Proposition;
+    bytes4 private constant _INTERFACE_VOTE = 0xc9d27afe; // vote().
     address payable public votersOrgan;
     address payable public vetoersOrgan;
     address payable public enactorsOrgan;
@@ -28,6 +29,8 @@ contract VoteProcedure is Procedure {
     ) Procedure (_metadataIpfsHash, _metadataHashFunction, _metadataHashSize)
         public
     {
+        // Register EIP165 interface for introspection.
+        _registerInterface(_INTERFACE_VOTE);
         votersOrgan = _votersOrgan;
         vetoersOrgan = _vetoersOrgan;
         enactorsOrgan = _enactorsOrgan;

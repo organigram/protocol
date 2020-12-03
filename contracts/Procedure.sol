@@ -2,8 +2,8 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./Kelsen.sol";
 import "./libraries/ProcedureLibrary.sol";
+import "@openzeppelin/contracts/introspection/ERC165.sol";
 
 /*
     A procedure defines a set of operations compiled in a move.
@@ -12,11 +12,12 @@ import "./libraries/ProcedureLibrary.sol";
     @TODO : Add moves getters.
 */
 
-contract Procedure is Kelsen(false, true) {
+contract Procedure is ERC165 {
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Move;
     using OrganLibrary for OrganLibrary.Entry;
     ProcedureLibrary.ProcedureData private procedureData;
+    bytes4 private constant _INTERFACE_ID_PROCEDURE = 0x71dbd330;
 
     /**
         Modifiers.
@@ -34,6 +35,8 @@ contract Procedure is Kelsen(false, true) {
     constructor (bytes32 metadataIpfsHash, uint8 metadataHashFunction, uint8 metadataHashSize)
         public
     {
+        // Register EIP165 interface for introspection.
+        _registerInterface(_INTERFACE_ID_PROCEDURE);
         procedureData.init(metadataIpfsHash, metadataHashFunction, metadataHashSize);
     }
 

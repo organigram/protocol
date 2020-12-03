@@ -2,7 +2,6 @@
   "name": "@organigram/contracts",
   "version": "0.1.2",
   "description": "Solidity smart-contracts framework for governance systems.",
-  "main": "index.js",
   "author": "Organigr.am <dev@organigr.am> (https://organigr.am)",
   "license": "LGPL-3.0-or-later",
   "scripts": {

@@ -2,8 +2,8 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "./Kelsen.sol";
 import "./libraries/OrganLibrary.sol";
+import "@openzeppelin/contracts/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Sender.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
@@ -15,15 +15,15 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 */
 
 contract Organ is
-    Kelsen(true, false),
+    ERC165,
     IERC777Recipient,
     IERC777Sender,
     IERC721Receiver
 {
     using OrganLibrary for OrganLibrary.OrganData;
     using OrganLibrary for OrganLibrary.Entry;
-
     OrganLibrary.OrganData internal organData;
+    bytes4 private constant _INTERFACE_ID_ORGAN = 0xbae78d7b;
 
     /**
         Organ API.
@@ -35,6 +35,8 @@ contract Organ is
         uint8 metadataHashFunction,
         uint8 metadataHashSize
     ) public {
+        // Register EIP165 interface for introspection.
+        _registerInterface(_INTERFACE_ID_ORGAN);
         organData.init(
             admin,
             metadataIpfsHash,

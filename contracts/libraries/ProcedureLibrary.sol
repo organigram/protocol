@@ -40,6 +40,8 @@ library ProcedureLibrary {
 
     struct Operation {
         uint256 index;          // index will stay after reordering.
+        address payable organ;  // target organ address.
+        uint256 value;          // value transferred with the call.
         uint8 operationType;   // avoid reading function signature.
         // Possible masks:
         // 0: operation on procedure.
@@ -47,7 +49,7 @@ library ProcedureLibrary {
         // 4/5/6: addProcedure/removeProcedure/replaceProcedure.
         // 7: withdraw funds.
         // 8: withdraw tokens.
-        bytes call;
+        bytes callData;
         bool processed;
     }
 
@@ -149,6 +151,9 @@ library ProcedureLibrary {
         // Process operations.
         for (uint256 i = 0; i < move.operations.length; ++i) {
             Operation storage operation = move.operations[i];
+            if (operation.organ != address(0)) {
+                operation.organ.call{value:operation.value}(operation.callData);
+            }
             operation.processed = true;
         }
         move.applied = true;
@@ -186,7 +191,9 @@ library ProcedureLibrary {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
             // @fixme Update function signature for _addEntries.
-            call: abi.encodeWithSelector(0x1715f4de, organ, entries),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x1715f4de, entries),
             operationType: 1,
             processed: false
         }));
@@ -205,7 +212,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0x76a6411c, organ, index),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x76a6411c, index),
             operationType: 2,
             processed: false
         }));
@@ -226,7 +235,9 @@ library ProcedureLibrary {
         Move storage move = self.moves[moveKey];
         move.operations.push(Operation({
             index: move.operations.length,
-            call: abi.encodeWithSelector(0x155a73ce, organ, index, addr, ipfsHash, hashFunction, hashSize),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x155a73ce, index, addr, ipfsHash, hashFunction, hashSize),
             operationType: 3,
             processed: false
         }));
@@ -244,7 +255,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: call,
+            organ: address(0),
+            value: 0,
+            callData: call,
             operationType: 0,
             processed: false
         }));
@@ -263,7 +276,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0x90b137e9, organ, procedure, permissions),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x90b137e9, procedure, permissions),
             operationType: 4,
             processed: false
         }));
@@ -282,7 +297,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0x19b9404c, organ, procedure),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x19b9404c, procedure),
             operationType: 5,
             processed: false
         }));
@@ -301,7 +318,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0x5676c77d, organ, oldProcedure, newProcedure, permissions),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x5676c77d, oldProcedure, newProcedure, permissions),
             operationType: 6,
             processed: false
         }));
@@ -320,7 +339,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0xc1075329, organ, operator, tokenId),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0xc1075329, operator, tokenId),
             operationType: 7,
             processed: false
         }));
@@ -339,7 +360,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0x5e35359e, organ, operator, target, tokenId),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x5e35359e, operator, target, tokenId),
             operationType: 8,
             processed: false
         }));
@@ -358,7 +381,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0xc1075329, organ, operator, target, value),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0xc1075329, operator, target, value),
             operationType: 7,
             processed: false
         }));
@@ -377,7 +402,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0x5e35359e, organ, operator, target, value),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x5e35359e, operator, target, value),
             operationType: 8,
             processed: false
         }));
@@ -395,7 +422,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0xc1075329, organ, target, value),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0xc1075329, target, value),
             operationType: 7,
             processed: false
         }));
@@ -413,7 +442,9 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            call: abi.encodeWithSelector(0x5e35359e, organ, target, value),
+            organ: organ,
+            value: 0,
+            callData: abi.encodeWithSelector(0x5e35359e, target, value),
             operationType: 8,
             processed: false
         }));
@@ -433,54 +464,6 @@ library ProcedureLibrary {
     /**
         Private API.
     */
-
-    function _addEntries(
-        address payable organ, OrganLibrary.Entry[] memory entries
-    )
-        private returns (uint256[] memory indexes)
-    {
-        return Organ(organ).addEntries(entries);
-    }
-
-    function _removeEntries(address payable organ, uint256[] memory indexes)
-        private
-    {
-        Organ(organ).removeEntries(indexes);
-    }
-
-    function _replaceEntry(
-        address payable organ, uint index,
-        address payable addr, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
-    )
-        private
-    {
-        Organ(organ).replaceEntry(index, addr, ipfsHash, hashFunction, hashSize);
-    }
-
-    function _addProcedure(
-        address payable targetOrgan, address procedure, bytes2 permissions
-    )
-        private
-    {
-        Organ(targetOrgan).addProcedure(procedure, permissions);
-    }
-
-    function _removeProcedure(
-        address payable organ, address procedure
-    )
-        private
-    {
-        Organ(organ).removeProcedure(procedure);
-    }
-
-    function _replaceProcedure(
-        address payable organ,
-        address oldProcedure, address newProcedure, bytes2 permissions
-    )
-        private
-    {
-        Organ(organ).replaceProcedure(oldProcedure, newProcedure, permissions);
-    }
 
     function getMetadata(ProcedureData storage self)
         public view returns (bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)

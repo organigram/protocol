@@ -10,7 +10,6 @@ pragma experimental ABIEncoderV2;
 library VotePropositionLibrary {
     struct Proposition {
         address payable creator;
-        uint256 moveKey;
         // Creation.
         // Metadata can describe a proposition.
         // Cannot be updated after creation.
@@ -49,11 +48,10 @@ library VotePropositionLibrary {
 
     function init(
         Proposition storage self,
-        uint256 moveKey, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
+        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
     )
         public
     {
-        self.moveKey = moveKey;
         self.metadata = Metadata({
             ipfsHash: ipfsHash,
             hashFunction: hashFunction,

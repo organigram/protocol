@@ -52,15 +52,15 @@
     "absolutePath": "@openzeppelin/contracts/token/ERC777/IERC777Sender.sol",
     "exportedSymbols": {
       "IERC777Sender": [
-        4324
+        4250
       ]
     },
-    "id": 4325,
+    "id": 4251,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4306,
+        "id": 4232,
         "literals": [
           "solidity",
           "^",
@@ -76,15 +76,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 4307,
+          "id": 4233,
           "nodeType": "StructuredDocumentation",
           "src": "58:420:14",
           "text": " @dev Interface of the ERC777TokensSender standard as defined in the EIP.\n {IERC777} Token holders can be notified of operations performed on their\n tokens by having a contract implement this interface (contract holders can be\n  their own implementer) and registering it on the\n https://eips.ethereum.org/EIPS/eip-1820[ERC1820 global registry].\n See {IERC1820Registry} and {ERC1820Implementer}."
         },
         "fullyImplemented": false,
-        "id": 4324,
+        "id": 4250,
         "linearizedBaseContracts": [
-          4324
+          4250
         ],
         "name": "IERC777Sender",
         "nodeType": "ContractDefinition",
@@ -92,13 +92,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 4308,
+              "id": 4234,
               "nodeType": "StructuredDocumentation",
               "src": "509:478:14",
               "text": " @dev Called by an {IERC777} token contract whenever a registered holder's\n (`from`) tokens are about to be moved or destroyed. The type of operation\n is conveyed by `to` being the zero address or not.\n This call occurs _before_ the token contract's state is updated, so\n {IERC777-balanceOf}, etc., can be used to query the pre-operation state.\n This function may revert to prevent the operation from being executed."
             },
             "functionSelector": "75ab9782",
-            "id": 4323,
+            "id": 4249,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -106,17 +106,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4321,
+              "id": 4247,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4310,
+                  "id": 4236,
                   "mutability": "mutable",
                   "name": "operator",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1023:16:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -125,7 +125,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4309,
+                    "id": 4235,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1023:7:14",
@@ -140,12 +140,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4312,
+                  "id": 4238,
                   "mutability": "mutable",
                   "name": "from",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1049:12:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -154,7 +154,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4311,
+                    "id": 4237,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1049:7:14",
@@ -169,12 +169,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4314,
+                  "id": 4240,
                   "mutability": "mutable",
                   "name": "to",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1071:10:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -183,7 +183,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4313,
+                    "id": 4239,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1071:7:14",
@@ -198,12 +198,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4316,
+                  "id": 4242,
                   "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1091:14:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -212,7 +212,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4315,
+                    "id": 4241,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1091:7:14",
@@ -226,12 +226,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4318,
+                  "id": 4244,
                   "mutability": "mutable",
                   "name": "userData",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1115:23:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -240,7 +240,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 4317,
+                    "id": 4243,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1115:5:14",
@@ -254,12 +254,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4320,
+                  "id": 4246,
                   "mutability": "mutable",
                   "name": "operatorData",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1148:27:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -268,7 +268,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 4319,
+                    "id": 4245,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1148:5:14",
@@ -284,19 +284,19 @@
               "src": "1013:168:14"
             },
             "returnParameters": {
-              "id": 4322,
+              "id": 4248,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1190:0:14"
             },
-            "scope": 4324,
+            "scope": 4250,
             "src": "992:199:14",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 4325,
+        "scope": 4251,
         "src": "479:714:14"
       }
     ],
@@ -306,15 +306,15 @@
     "absolutePath": "@openzeppelin/contracts/token/ERC777/IERC777Sender.sol",
     "exportedSymbols": {
       "IERC777Sender": [
-        4324
+        4250
       ]
     },
-    "id": 4325,
+    "id": 4251,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4306,
+        "id": 4232,
         "literals": [
           "solidity",
           "^",
@@ -330,15 +330,15 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 4307,
+          "id": 4233,
           "nodeType": "StructuredDocumentation",
           "src": "58:420:14",
           "text": " @dev Interface of the ERC777TokensSender standard as defined in the EIP.\n {IERC777} Token holders can be notified of operations performed on their\n tokens by having a contract implement this interface (contract holders can be\n  their own implementer) and registering it on the\n https://eips.ethereum.org/EIPS/eip-1820[ERC1820 global registry].\n See {IERC1820Registry} and {ERC1820Implementer}."
         },
         "fullyImplemented": false,
-        "id": 4324,
+        "id": 4250,
         "linearizedBaseContracts": [
-          4324
+          4250
         ],
         "name": "IERC777Sender",
         "nodeType": "ContractDefinition",
@@ -346,13 +346,13 @@
           {
             "body": null,
             "documentation": {
-              "id": 4308,
+              "id": 4234,
               "nodeType": "StructuredDocumentation",
               "src": "509:478:14",
               "text": " @dev Called by an {IERC777} token contract whenever a registered holder's\n (`from`) tokens are about to be moved or destroyed. The type of operation\n is conveyed by `to` being the zero address or not.\n This call occurs _before_ the token contract's state is updated, so\n {IERC777-balanceOf}, etc., can be used to query the pre-operation state.\n This function may revert to prevent the operation from being executed."
             },
             "functionSelector": "75ab9782",
-            "id": 4323,
+            "id": 4249,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -360,17 +360,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 4321,
+              "id": 4247,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4310,
+                  "id": 4236,
                   "mutability": "mutable",
                   "name": "operator",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1023:16:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -379,7 +379,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4309,
+                    "id": 4235,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1023:7:14",
@@ -394,12 +394,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4312,
+                  "id": 4238,
                   "mutability": "mutable",
                   "name": "from",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1049:12:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -408,7 +408,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4311,
+                    "id": 4237,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1049:7:14",
@@ -423,12 +423,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4314,
+                  "id": 4240,
                   "mutability": "mutable",
                   "name": "to",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1071:10:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -437,7 +437,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 4313,
+                    "id": 4239,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1071:7:14",
@@ -452,12 +452,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4316,
+                  "id": 4242,
                   "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1091:14:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -466,7 +466,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 4315,
+                    "id": 4241,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1091:7:14",
@@ -480,12 +480,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4318,
+                  "id": 4244,
                   "mutability": "mutable",
                   "name": "userData",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1115:23:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -494,7 +494,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 4317,
+                    "id": 4243,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1115:5:14",
@@ -508,12 +508,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 4320,
+                  "id": 4246,
                   "mutability": "mutable",
                   "name": "operatorData",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 4323,
+                  "scope": 4249,
                   "src": "1148:27:14",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -522,7 +522,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 4319,
+                    "id": 4245,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1148:5:14",
@@ -538,19 +538,19 @@
               "src": "1013:168:14"
             },
             "returnParameters": {
-              "id": 4322,
+              "id": 4248,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1190:0:14"
             },
-            "scope": 4324,
+            "scope": 4250,
             "src": "992:199:14",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 4325,
+        "scope": 4251,
         "src": "479:714:14"
       }
     ],
@@ -562,7 +562,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2020-12-03T01:01:44.899Z",
+  "updatedAt": "2020-12-04T18:54:45.820Z",
   "devdoc": {
     "details": "Interface of the ERC777TokensSender standard as defined in the EIP. {IERC777} Token holders can be notified of operations performed on their tokens by having a contract implement this interface (contract holders can be  their own implementer) and registering it on the https://eips.ethereum.org/EIPS/eip-1820[ERC1820 global registry]. See {IERC1820Registry} and {ERC1820Implementer}.",
     "kind": "dev",

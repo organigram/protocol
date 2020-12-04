@@ -85,12 +85,12 @@ contract Procedure is ERC165 {
         procedureData.moveAddEntries(moveKey, organ, entries, lock);
     }
 
-    function moveRemoveEntry(
-        uint256 moveKey, address payable organ, uint256 indexes, bool lock
+    function moveRemoveEntries(
+        uint256 moveKey, address payable organ, uint256[] memory indexes, bool lock
     )
         public
     {
-        procedureData.moveRemoveEntry(moveKey, organ, indexes, lock);
+        procedureData.moveRemoveEntries(moveKey, organ, indexes, lock);
     }
 
     function moveReplaceEntry(

@@ -190,10 +190,10 @@ library ProcedureLibrary {
     {
         self.moves[moveKey].operations.push(Operation({
             index: self.moves[moveKey].operations.length,
-            // @fixme Update function signature for _addEntries.
             organ: organ,
             value: 0,
-            callData: abi.encodeWithSelector(0x1715f4de, entries),
+            // 0x981d5e7b is Organ.addEntries function selector.
+            callData: abi.encodeWithSelector(0x981d5e7b, entries),
             operationType: 1,
             processed: false
         }));
@@ -203,9 +203,9 @@ library ProcedureLibrary {
         }
     }
 
-    function moveRemoveEntry(
+    function moveRemoveEntries(
         ProcedureData storage self, uint256 moveKey,
-        address payable organ, uint index,
+        address payable organ, uint256[] memory indexes,
         bool lock
     )
         internal onlyMoveCreator(self, moveKey) onlyNewMove(self, moveKey)
@@ -214,7 +214,8 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
-            callData: abi.encodeWithSelector(0x76a6411c, index),
+            // 0x7615eb81 is Organ.removeEntries function selector.
+            callData: abi.encodeWithSelector(0x7615eb81, indexes),
             operationType: 2,
             processed: false
         }));
@@ -237,7 +238,8 @@ library ProcedureLibrary {
             index: move.operations.length,
             organ: organ,
             value: 0,
-            callData: abi.encodeWithSelector(0x155a73ce, index, addr, ipfsHash, hashFunction, hashSize),
+            // 0x91bdfe63 is Organ.replaceEntry function signature.
+            callData: abi.encodeWithSelector(0x91bdfe63, index, addr, ipfsHash, hashFunction, hashSize),
             operationType: 3,
             processed: false
         }));
@@ -278,7 +280,8 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
-            callData: abi.encodeWithSelector(0x90b137e9, procedure, permissions),
+            // 0x7f0a4e27 is Organ.addProcedure function signature.
+            callData: abi.encodeWithSelector(0x7f0a4e27, procedure, permissions),
             operationType: 4,
             processed: false
         }));
@@ -299,6 +302,7 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
+            // 0x19b9404c is Organ.removeProcedure function signature.
             callData: abi.encodeWithSelector(0x19b9404c, procedure),
             operationType: 5,
             processed: false
@@ -320,7 +324,8 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
-            callData: abi.encodeWithSelector(0x5676c77d, oldProcedure, newProcedure, permissions),
+            // 0xd0922d4a is Organ.replaceProcedure function signature.
+            callData: abi.encodeWithSelector(0xd0922d4a, oldProcedure, newProcedure, permissions),
             operationType: 6,
             processed: false
         }));
@@ -341,6 +346,7 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
+            // @todo Call data for this operation.
             callData: abi.encodeWithSelector(0xc1075329, operator, tokenId),
             operationType: 7,
             processed: false
@@ -362,6 +368,7 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
+            // @todo Call data for this operation.
             callData: abi.encodeWithSelector(0x5e35359e, operator, target, tokenId),
             operationType: 8,
             processed: false
@@ -383,6 +390,7 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
+            // @todo Call data for this operation.
             callData: abi.encodeWithSelector(0xc1075329, operator, target, value),
             operationType: 7,
             processed: false
@@ -404,6 +412,7 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
+            // @todo Call data for this operation.
             callData: abi.encodeWithSelector(0x5e35359e, operator, target, value),
             operationType: 8,
             processed: false
@@ -424,6 +433,7 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
+            // @todo Call data for this operation.
             callData: abi.encodeWithSelector(0xc1075329, target, value),
             operationType: 7,
             processed: false
@@ -444,6 +454,7 @@ library ProcedureLibrary {
             index: self.moves[moveKey].operations.length,
             organ: organ,
             value: 0,
+            // @todo Call data for this operation.
             callData: abi.encodeWithSelector(0x5e35359e, target, value),
             operationType: 8,
             processed: false

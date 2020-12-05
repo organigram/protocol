@@ -1,4 +1,3 @@
-var ipfsClient = require("ipfs-http-client")
 var CID = require("cids")
 var OrganLibrary = artifacts.require("OrganLibrary")
 var ProcedureLibrary = artifacts.require("ProcedureLibrary")
@@ -12,16 +11,11 @@ const HASH_FUNCTION = "0x12"
 const HASH_SIZE = "0x20"
 
 module.exports = async (deployer, network, accounts) => {
-  if (network !== "development" && network !== "develop")
+  if (network !== "development" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork")
     return;
 
   const from = accounts[0]
   console.log("Current account", from)
-
-  // Connect to IPFS Daemon API Server running locally.
-  ipfs = await ipfsClient('http://localhost:5002')
-  if (!ipfs)
-    throw new Error("Run `yarn ipfs` to start an IPFS node locally.")
 
   await Organ.link(OrganLibrary)
   await SimpleNominationProcedure.link(ProcedureLibrary)

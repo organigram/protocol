@@ -70,6 +70,18 @@ module.exports = async (deployer, network, accounts) => {
   await norms.replaceProcedure(from, updateSystem.address, "0xffff")
   .then(data => console.log(`norms.replaceProcedure(from, updateSystem.address, "0xffff")`))
 
+  // DEBUG.
+  await nominateAdmins.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE)
+  .then(() => console.log(`nominateAdmins.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE)`))
+  await nominateAdmins.moveAddProcedure("0", admins.address, from, "0xffff", false)
+  .then(() => console.log(`nominateAdmins.moveAddProcedure(moveKey, admins.address, from, 0xffff, false)`))
+  await nominateAdmins.moveAddEntries("0", admins.address, [
+    { addr: from, ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE }
+  ], true)
+  .then(() => console.log(`nominateAdmins.moveAddEntries("0", admins.address, [{ addr: from, ... }], true)`))
+  await nominateAdmins.nominate("0", { from: accounts[1] })
+  .then(() => console.log(`nominateAdmins.nominate("0", { from: accounts[1] })`))
+
   // Logs.
   console.log("\n\nDemo deployed.\n\n")
   console.log({

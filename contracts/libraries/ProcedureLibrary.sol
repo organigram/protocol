@@ -146,17 +146,15 @@ library ProcedureLibrary {
         internal onlyLockedMove(self, moveKey)
     {
         // Start processing.
-        Move storage move = self.moves[moveKey];
-        move.processing = true;
+        self.moves[moveKey].processing = true;
         // Process operations.
-        for (uint256 i = 0; i < move.operations.length; ++i) {
-            Operation storage operation = move.operations[i];
-            if (operation.organ != address(0)) {
-                operation.organ.call{value:operation.value}(operation.callData);
+        for (uint256 i = 0; i < self.moves[moveKey].operations.length; ++i) {
+            if (self.moves[moveKey].operations[i].organ != address(0)) {
+                self.moves[moveKey].operations[i].organ.call(self.moves[moveKey].operations[i].callData);
             }
-            operation.processed = true;
+            self.moves[moveKey].operations[i].processed = true;
         }
-        move.applied = true;
+        self.moves[moveKey].applied = true;
         emit moveApplied(moveKey);
     }
 

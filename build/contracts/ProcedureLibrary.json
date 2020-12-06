@@ -39252,6 +39252,95 @@
     "version": "0.6.12+commit.27d51765.Emscripten.clang"
   },
   "networks": {
+    "4": {
+      "events": {
+        "0xf16615eb8ea765f7ba93c4bdaba49adf2ea2840d855ecebf189fac383f3ab156": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address payable",
+              "name": "admin",
+              "type": "address"
+            }
+          ],
+          "name": "adminUpdated",
+          "type": "event"
+        },
+        "0xe21d6df201a705d8f3b9ce71eb35b7cce8e39a82df540174189a473c52c7d44d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "ipfsHash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint8",
+              "name": "hashFunction",
+              "type": "uint8"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint8",
+              "name": "hashSize",
+              "type": "uint8"
+            }
+          ],
+          "name": "metadataUpdated",
+          "type": "event"
+        },
+        "0xd2c6e52f57352f08a7c9894b122d8440f1d87a7949ba8769fe444bf80b9e7a7e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "moveKey",
+              "type": "uint256"
+            }
+          ],
+          "name": "moveApplied",
+          "type": "event"
+        },
+        "0x7306ab933b6e1df1bd2fddce7143eeedd65d5996fada0e9168c4e8c3d1ece94d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address payable",
+              "name": "creator",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "moveKey",
+              "type": "uint256"
+            }
+          ],
+          "name": "moveCreated",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x3749f184af336dBBd819E5C4425E1BDB97DeD01a",
+      "transactionHash": "0xf1a97a6364c740ab5cb92e3041929511ee14ee27eda4975f1f351080168689c9"
+    },
     "1337": {
       "events": {
         "0xf16615eb8ea765f7ba93c4bdaba49adf2ea2840d855ecebf189fac383f3ab156": {
@@ -39432,7 +39521,7 @@
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2020-12-06T20:50:53.161Z",
+  "updatedAt": "2020-12-06T21:12:14.007Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

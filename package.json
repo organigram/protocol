@@ -22,10 +22,6 @@
   "directories": {
     "doc": "docs"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/organigram/contracts.git"
-  },
   "keywords": [
     "organigram",
     "solidity",

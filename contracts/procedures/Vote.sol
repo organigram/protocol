@@ -35,6 +35,20 @@ contract VoteProcedure is Procedure {
         enactorsOrgan = _enactorsOrgan;
     }
 
+    function propose(
+        uint256 moveKey,
+        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize,
+        uint256 quorumSize, uint256 voteDuration, uint256 enactmentDuration, uint256 majoritySize
+    )
+        public onlyInOrgan(votersOrgan)
+    {
+        require(propositions[moveKey].creator == address(0), "Cannot overwrite an existing proposition.");
+        propositions[moveKey].init(
+            ipfsHash, hashFunction, hashSize,
+            quorumSize, voteDuration, enactmentDuration, majoritySize
+        );
+    }
+
     function vote(uint256 moveKey, bool approval)
         public onlyInOrgan(votersOrgan)
     {
@@ -61,5 +75,44 @@ contract VoteProcedure is Procedure {
         require (propositions[moveKey].count(), "Not authorized");
         Procedure.applyMove(moveKey);
         propositions[moveKey].enact();
+    }
+
+
+    function getProposition(uint256 moveKey)
+        public
+        view
+        returns (
+            address payable,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            address payable,
+            address payable
+        )
+    {
+        return (
+            propositions[moveKey].creator,
+            propositions[moveKey].quorumSize,
+            propositions[moveKey].voteDuration,
+            propositions[moveKey].enactmentDuration,
+            propositions[moveKey].majoritySize,
+            propositions[moveKey].vetoer,
+            propositions[moveKey].enactor
+        );
+    }
+
+    function getPropositionMetadata(uint256 moveKey)
+        public view
+        returns (VotePropositionLibrary.Metadata memory)
+    {
+        return propositions[moveKey].metadata;
+    }
+
+    function getPropositionVetoMetadata(uint256 moveKey)
+        public view
+        returns (VotePropositionLibrary.Metadata memory)
+    {
+        return propositions[moveKey].vetoMetadata;
     }
 }

@@ -98,6 +98,9 @@ library OrganLibrary {
         self.metadataIpfsHash = ipfsHash;
         self.metadataHashFunction = hashFunction;
         self.metadataHashSize = hashSize;
+
+        // Reserve index O for empty Entry.
+        self.entries.push(Entry(address(0), 0, 0, 0));
     }
 
     function updateMetadata(

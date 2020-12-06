@@ -10,11 +10,9 @@ pragma experimental ABIEncoderV2;
 library VotePropositionLibrary {
     struct Proposition {
         address payable creator;
-        // Creation.
         // Metadata can describe a proposition.
         // Cannot be updated after creation.
         Metadata metadata;
-        bool created;
         uint256 quorumSize;
         uint256 voteDuration;
         uint256 enactmentDuration;
@@ -48,23 +46,28 @@ library VotePropositionLibrary {
 
     function init(
         Proposition storage self,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
+        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize,
+        uint256 quorumSize, uint256 voteDuration, uint256 enactmentDuration, uint256 majoritySize
     )
-        public
+        external
     {
+        self.creator = msg.sender;
         self.metadata = Metadata({
             ipfsHash: ipfsHash,
             hashFunction: hashFunction,
             hashSize: hashSize
         });
-        self.creator = msg.sender;
+        self.quorumSize = quorumSize;
+        self.voteDuration = voteDuration;
+        self.enactmentDuration = enactmentDuration;
+        self.majoritySize = majoritySize;
     }
 
     function vote(
         Proposition storage self,
         bool approval
     )
-        public
+        external
     {
         self.votes[msg.sender] = Vote({
             voted: true,
@@ -78,7 +81,7 @@ library VotePropositionLibrary {
         Proposition storage self,
         bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
     )
-        public
+        external
     {
         self.vetoer = msg.sender;
         self.vetoMetadata = Metadata({
@@ -89,7 +92,8 @@ library VotePropositionLibrary {
     }
 
     function count(Proposition storage self)
-        public view returns (bool)
+        external view
+        returns (bool)
     {
         // @TODO : returns boolean.
         uint256 approval;
@@ -102,7 +106,7 @@ library VotePropositionLibrary {
     }
 
     function enact(Proposition storage self)
-        public
+        external
     {
         self.enactor = msg.sender;
     }

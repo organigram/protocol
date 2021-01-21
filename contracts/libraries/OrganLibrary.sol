@@ -70,8 +70,8 @@ library OrganLibrary {
 
     modifier onlyPerm(OrganData storage self, bytes2 permission) {
         require(
-            self.permissions[msg.sender] & permission > 0 ||
-            self.permissions[address(0)] & permission > 0,
+            self.permissions[msg.sender] & permission == permission ||
+            self.permissions[address(0)] & permission == permission,
             "Not authorized"
         );
         _;

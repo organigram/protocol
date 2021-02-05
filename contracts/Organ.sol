@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import "./libraries/OrganLibrary.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Sender.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
@@ -16,6 +17,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 contract Organ is
     ERC165,
+    Initializable,
     IERC777Recipient,
     IERC777Sender,
     IERC721Receiver
@@ -29,12 +31,14 @@ contract Organ is
         Organ API.
     */
 
-    constructor(
+    constructor() public {}
+
+    function initialize(
         address payable admin,
         bytes32 metadataIpfsHash,
         uint8 metadataHashFunction,
         uint8 metadataHashSize
-    ) public {
+    ) external initializer {
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_ID_ORGAN);
         organData.init(

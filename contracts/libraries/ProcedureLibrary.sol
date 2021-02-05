@@ -19,7 +19,7 @@ library ProcedureLibrary {
     struct ProcedureData {
         Metadata metadata;
         address payable admin;
-        mapping (uint256 => Move) moves;
+        mapping (uint256 => Proposal) proposals;
         uint256 movesLength;
     }
 
@@ -29,7 +29,7 @@ library ProcedureLibrary {
         uint8 hashSize;
     }
 
-    struct Move {
+    struct Proposal {
         address payable creator;
         Metadata metadata;
         bool locked;

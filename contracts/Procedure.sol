@@ -71,6 +71,8 @@ contract Procedure is ERC165 {
         Public API : Moves creation and update.
     */
 
+    function propose()
+
     function createMove(bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
         public returns (uint256)
     {

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
+
+import "./MetadataLibrary.sol";
 
 /*
     Library for a vote.
@@ -8,11 +10,13 @@ pragma experimental ABIEncoderV2;
 */
 
 library VotePropositionLibrary {
-    struct Proposition {
+    using MetadataLibrary for MetadataLibrary.Metadata;
+
+    struct Ballot {
         address payable creator;
-        // Metadata can describe a proposition.
+        // MetadataLibrary.Metadata can describe a proposition.
         // Cannot be updated after creation.
-        Metadata metadata;
+        MetadataLibrary.Metadata metadata;
         uint256 quorumSize;
         uint256 voteDuration;
         uint256 enactmentDuration;
@@ -24,15 +28,9 @@ library VotePropositionLibrary {
         uint256 votesCount;
         // Veto.
         address payable vetoer;
-        Metadata vetoMetadata;
+        MetadataLibrary.Metadata vetoMetadata;
         // Enactment.
         address payable enactor;
-    }
-
-    struct Metadata {
-        bytes32 ipfsHash;
-        uint8 hashFunction;
-        uint8 hashSize;
     }
 
     struct Vote {
@@ -52,7 +50,7 @@ library VotePropositionLibrary {
         external
     {
         self.creator = msg.sender;
-        self.metadata = Metadata({
+        self.metadata = MetadataLibrary.Metadata({
             ipfsHash: ipfsHash,
             hashFunction: hashFunction,
             hashSize: hashSize
@@ -84,7 +82,7 @@ library VotePropositionLibrary {
         external
     {
         self.vetoer = msg.sender;
-        self.vetoMetadata = Metadata({
+        self.vetoMetadata = MetadataLibrary.Metadata({
             ipfsHash: ipfsHash,
             hashFunction: hashFunction,
             hashSize: hashSize

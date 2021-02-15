@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 /**
@@ -7,26 +7,38 @@ pragma experimental ABIEncoderV2;
     A nomination applies an effect if nominator is in the nominaters organ.
 */
 
+import "../libraries/MetadataLibrary.sol";
 import "../Procedure.sol";
 
 contract SimpleNominationProcedure is Procedure {
-    address payable public nominatersOrgan;
+    using MetadataLibrary for MetadataLibrary.Metadata;
     bytes4 private constant _INTERFACE_NOMINATION = 0xc5f28e49; // nominate().
 
-    constructor (
-        bytes32 _metadataIpfsHash, uint8 _metadataHashFunction, uint8 _metadataHashSize,
-        address payable _nominatersOrgan
-    ) Procedure (_metadataIpfsHash, _metadataHashFunction, _metadataHashSize)
+    constructor ()
         public
     {
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_NOMINATION);
-        nominatersOrgan = _nominatersOrgan;
     }
 
-    function nominate(uint256 moveKey)
-        public onlyInOrgan(nominatersOrgan)
+    function initialize(
+        MetadataLibrary.Metadata memory _metadata,
+        address payable _proposers,
+        address payable _moderators,
+        address payable _deciders,
+        bool _withModeration
+    )
+        public
+        override
     {
-        Procedure.applyMove(moveKey);
+        super.initialize(_metadata, _proposers, _moderators, _deciders, _withModeration);
+        // Register EIP165 interface for introspection.
+        _registerInterface(_INTERFACE_NOMINATION);
+    }
+
+    function nominate(uint256 proposalKey)
+        public onlyDeciders
+    {
+        super.applyProposal(proposalKey);
     }
 }

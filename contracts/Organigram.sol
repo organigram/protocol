@@ -1,44 +1,72 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0 <0.9.0;
+pragma experimental ABIEncoderV2;
 
 import "./Organ.sol";
+import "./libraries/MetadataLibrary.sol";
+import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
 
 contract Organigram {
-    address payable public _organ;
-    address payable public _proceduresRegistry; // Organ with procedures addresses.
+    using OrganLibrary for OrganLibrary.Entry;
+    using MetadataLibrary for MetadataLibrary.Metadata;
+    address payable public organ;
+    address payable public procedures; // Organ with procedures addresses.
 
     event organCreated(address payable organ);
     event procedureCreated(address payable procedureType, address payable deployedProcedure);
 
-    constructor(
-        bytes32 prIpfsHash, uint8 prHashFunction, uint8 prHashSize
-    ) public {
-        _organ = address(new Organ());
-        _proceduresRegistry = createOrgan(msg.sender, prIpfsHash, prHashFunction, prHashSize);
+    constructor(MetadataLibrary.Metadata memory metadata)
+        public
+    {
+        organ = payable(address(new Organ()));
+        // Lock organ contract against update.
+        Organ(organ).removeProcedure(msg.sender);
+        procedures = createOrgan(msg.sender, metadata);
     }
 
     function createOrgan(
         address payable admin,
-        bytes32 metadataIpfsHash,
-        uint8 metadataHashFunction,
-        uint8 metadataHashSize
-    ) public returns (address payable clone) {
+        MetadataLibrary.Metadata memory metadata
+    )
+        public
+        returns (address payable clone)
+    {
         // Clone organ and initialize it.
-        clone = _createClone(_organ);
-        Organ(clone).initialize(admin, metadataIpfsHash, metadataHashFunction, metadataHashSize);
+        clone = _createClone(organ);
+        Organ(clone).initialize(admin, metadata);
         organCreated(clone);
+        return clone;
     }
 
-    function createProcedure(address payable procedureId, bytes calldata args) public returns (address payable procedure) {
-        // Procedure 
-        require(Organ(_proceduresRegistry).getEntryIndexForAddress(procedureId) > 0, "Procedure not found.");
+    // @todo : Implement Diamond in Organigram.sol - https://eips.ethereum.org/EIPS/eip-2535
+    function createProcedure(address payable procedureId)
+        public
+        returns (address payable procedure)
+    {
+        // Check if procedure.
+        require(ERC165Checker.supportsInterface(procedureId, 0x71dbd330), "Not a procedure.");
+        // Check if procedure is in registry.
+        require(Organ(procedures).getEntryIndexForAddress(procedureId) > 0, "Procedure not found.");
         procedure = _createClone(procedureId);
-        procedure.call('') // 0xec is function signature of initialize(bytes calldata)
+        // The initialize method needs to be called directly.
         procedureCreated(procedureId, procedure);
+        return procedure;
+    }
+
+    function registerProcedures(OrganLibrary.Entry[] memory entries)
+        external
+    {
+        // Only valid procedures
+        for (uint256 i; i < entries.length; ++i)
+            require(ERC165Checker.supportsInterface(entries[i].addr, 0x71dbd330), "An entry in parameters is not a valid procedure.");
+        Organ(organ).addEntries(entries);
     }
 
     // From https://github.com/optionality/clone-factory.
-    function _createClone(address payable target) internal returns (address payable result) {
+    function _createClone(address payable target)
+        internal
+        returns (address payable result)
+    {
         bytes20 targetBytes = bytes20(target);
         assembly {
             let clone := mload(0x40)

@@ -1,7 +1,5 @@
 var CID = require("cids")
-var OrganLibrary = artifacts.require("OrganLibrary")
-var ProcedureLibrary = artifacts.require("ProcedureLibrary")
-var VotePropositionLibrary = artifacts.require("VotePropositionLibrary")
+var Organigram = artifacts.require("Organigram")
 var Organ = artifacts.require("Organ")
 var SimpleNominationProcedure = artifacts.require("SimpleNominationProcedure")
 var VoteProcedure = artifacts.require("VoteProcedure")
@@ -31,78 +29,154 @@ module.exports = async (deployer, network, accounts) => {
       "0xC93eE1256E568564007421a6A2f46eB0e8764843"
     ]
   }
-
-  await Organ.link(OrganLibrary)
-  await SimpleNominationProcedure.link(ProcedureLibrary)
-  await VoteProcedure.link(ProcedureLibrary)
-  await VoteProcedure.link(VotePropositionLibrary)
-
-  // Deploying organs and procedures.
-  const admins = await Organ.new(from, EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, { from })
-  console.log(`* admins: ${admins.address}`)
-  const norms = await Organ.new(from, EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, { from })
-  console.log(`* norms: ${norms.address}`)
-  const nominateAdmins = await SimpleNominationProcedure.new(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, admins.address, { from })
-  console.log(`- nominateAdmins: ${nominateAdmins.address}`)
-  const voteNorms = await VoteProcedure.new(
-    EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE,   // Metadata.
-    admins.address,         // Voters.
-    admins.address,         // Vetoers.
-    admins.address,          // Enactors.,
-    { from }
+  const organigram = await Organigram.deployed()
+  const masterOrgan = await organigram.organ()
+  const masterProcedures = await organigram.procedures()
+  console.log(
+    "Organigram", organigram.address,
+    "Master Organ", masterOrgan,
+    "Master Procedures", masterProcedures
   )
+  const procedures = await Organ.at(masterProcedures)
+  const vote = await VoteProcedure.deployed()
+  const nomination = await SimpleNominationProcedure.deployed()
+
+  console.log("Index of Vote", await procedures.getEntryIndexForAddress(vote.address))
+  console.log("Index of Nomination", await procedures.getEntryIndexForAddress(nomination.address))
+
+  const admins = await Organ.at((await organigram.createOrgan(
+    from,
+    {
+      ipfsHash: EMPTY_FILE_HASH,
+      hashFunction: HASH_FUNCTION,
+      hashSize: HASH_SIZE
+    },
+    { from }
+  )).logs[0].args.organ)
+  console.log(`* admins:`, admins.address)
+
+  const norms = await Organ.at((await organigram.createOrgan(
+    from,
+    {
+      ipfsHash: EMPTY_FILE_HASH,
+      hashFunction: HASH_FUNCTION,
+      hashSize: HASH_SIZE
+    },
+    { from }
+  )).logs[0].args.organ)
+  console.log(`* norms:`, norms.address)
+
+  const _nominateAdmins = (await organigram.createProcedure(
+    nomination.address,   // Procedure: Nomination
+    { // Metadata.
+      ipfsHash: EMPTY_FILE_HASH,
+      hashFunction: HASH_FUNCTION,
+      hashSize: HASH_SIZE
+    }
+    { from }
+  )).logs[0].args
+  const adminsNomination = await SimpleNominationProcedure.at(_nominateAdmins.procedure)
+  await adminsNomination.initialize(
+    { // Metadata.
+      ipfsHash: EMPTY_FILE_HASH,
+      hashFunction: HASH_FUNCTION,
+      hashSize: HASH_SIZE
+    }
+  )
+  console.log("_nominateAdmins", _nominateAdmins)
+  const nominateAdmins = await VoteProcedure.at()
+  console.log(`- nominateAdmins: ${nominateAdmins.address}`)
+
+  const voteNorms = (await organigram.createProcedure(
+    vote.address,
+    [
+      {
+        ipfsHash: EMPTY_FILE_HASH,
+        hashFunction: HASH_FUNCTION,
+        hashSize: HASH_SIZE
+      },
+      admins.address,         // Voters.
+      admins.address,         // Vetoers.
+      admins.address          // Enactors.
+    ],
+    { from }
+  )).logs[0].args.procedure
   console.log(`- voteNorms: ${voteNorms.address}`)
-  const updateSystem = await SimpleNominationProcedure.new(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, admins.address, { from })
+
+  const updateSystem = await SimpleNominationProcedure.at((await organigram.createProcedure(
+    nomination.address,
+    [
+      {
+        ipfsHash: EMPTY_FILE_HASH,
+        hashFunction: HASH_FUNCTION,
+        hashSize: HASH_SIZE
+      },
+      admins.address
+    ],
+    { from }
+  )).logs[0].args.procedure)
   console.log(`- updateSystem: ${updateSystem.address}`)
 
   // Configuring procedures on organs.
   // 0xC0 = 11000000 = can add and remove procedures.
   // 0x0C = 00001100 = can add and remove entries.
   await admins.addEntries([
-    { addr: from, ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[1], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[2], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[3], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[4], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[5], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[6], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[7], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[8], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE },
-    { addr: accounts[9], ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE }
+    {
+      addr: from,
+      doc: { ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE }
+    }
   ], { from })
-  .then(data => console.log(`admins.addEntries([ OrganLibrary.Entry(from, EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE) ])`))
+  console.log(`admins.addEntries([ OrganLibrary.Entry(from, EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE) ])`)
   await admins.addProcedure(nominateAdmins.address, "0xffff", { from })
-  .then(data => console.log(`admins.addProcedure(nominateAdmins.address, "0xffff")`))
+  console.log(`admins.addProcedure(nominateAdmins.address, "0xffff")`)
   await admins.replaceProcedure(from, updateSystem.address, "0xffff", { from })
-  .then(data => console.log(`admins.replaceProcedure(from, updateSystem.address, "0xffff")`))
+  console.log(`admins.replaceProcedure(from, updateSystem.address, "0xffff")`)
   await norms.addProcedure(voteNorms.address, "0xffff", { from })
-  .then(data => console.log(`norms.addProcedure(voteNorms.address, "0xffff")`))
+  console.log(`norms.addProcedure(voteNorms.address, "0xffff")`)
   await norms.replaceProcedure(from, updateSystem.address, "0xffff", { from })
-  .then(data => console.log(`norms.replaceProcedure(from, updateSystem.address, "0xffff")`))
+  console.log(`norms.replaceProcedure(from, updateSystem.address, "0xffff")`)
 
   console.log("\nProcedure Nomination")
-  await nominateAdmins.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, { from })
-  .then(() => console.log(`nominateAdmins.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE)`))
-  await nominateAdmins.moveAddProcedure("0", admins.address, from, "0xffff", true, { from })
-  .then(() => console.log(`nominateAdmins.moveAddProcedure("0", admins.address, from, "0xffff", true)`))
+  const procedureNominationOperations = [
+    // Operations 1 : addProcedure to organ.
+    {
+      "index": "0",
+      "organ": admins.address,
+      "funcSig": "0x7f0a4e27", // Organ.addProcedure.
+      "data":  await admins.addProcedure.request(from, "0xffff"),
+      "processed": false
+    }
+  ]
+
+  const procedureNominationProposal = await nominateAdmins.propose(
+    {
+      ipfsHash: EMPTY_FILE_HASH,
+      hashFunction: HASH_FUNCTION,
+      hashSize: HASH_SIZE
+    },
+    procedureNominationOperations,
+    { from }
+  )
+  console.log(`nominateAdmins.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE)`)
+  console.log(`nominateAdmins.moveAddProcedure("0", admins.address, from, "0xffff", true)`)
   await nominateAdmins.nominate("0", { from })
-  .then(() => console.log(`nominateAdmins.nominate("0")`))
+  console.log(`nominateAdmins.nominate("0")`)
 
   console.log("\nProcedure Vote")
   await voteNorms.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, { from })
-  .then(() => console.log(`voteNorms.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE)`))
+  console.log(`voteNorms.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE)`)
   await voteNorms.moveAddEntries("0", norms.address, [
     { addr: from, ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE }
   ], true, { from })
-  .then(() => console.log(`voteNorms.moveAddEntries("0", admins.address, [{ addr: from, ... }], true)`))
+  console.log(`voteNorms.moveAddEntries("0", admins.address, [{ addr: from, ... }], true)`)
   await voteNorms.propose("0", EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, 0, 0, 0, 0, { from })
-  .then(() => console.log(`voteNorms.propose("0", ...IPFSHASH, 0, 0, 0, 0)`))
+  console.log(`voteNorms.propose("0", ...IPFSHASH, 0, 0, 0, 0)`)
   await voteNorms.vote("0", true, { from })
-  .then(() => console.log(`voteNorms.vote("0", true)`))
+  console.log(`voteNorms.vote("0", true)`)
   await voteNorms.count("0", { from })
-  .then(data => console.log(`voteNorms.count("0")`, data))
+  console.log(`voteNorms.count("0")`, data)
   await voteNorms.enact("0", { from })
-  .then(() => console.log(`voteNorms.enact("0")`))
+  console.log(`voteNorms.enact("0")`)
 
   // Logs.
   console.log("\n\nDemo deployed.\n\n")

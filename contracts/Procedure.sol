@@ -1,20 +1,23 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
+import "./libraries/MetadataLibrary.sol";
 import "./libraries/ProcedureLibrary.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 
 /*
-    A procedure defines a set of operations compiled in a move.
-    The procedure dictates the way the move can be applied.
+    A procedure defines a set of operations compiled in a proposal.
+    The procedure dictates the way the proposal can be applied.
 
-    @TODO : Add moves getters.
+    @TODO : Add proposals getters.
 */
 
-contract Procedure is ERC165 {
+contract Procedure is ERC165, Initializable {
+    using MetadataLibrary for MetadataLibrary.Metadata;
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
-    using ProcedureLibrary for ProcedureLibrary.Move;
+    using ProcedureLibrary for ProcedureLibrary.Operation;
     using OrganLibrary for OrganLibrary.Entry;
     ProcedureLibrary.ProcedureData private procedureData;
     bytes4 private constant _INTERFACE_ID_PROCEDURE = 0x71dbd330;
@@ -28,37 +31,53 @@ contract Procedure is ERC165 {
         _;
     }
 
+    modifier onlyDeciders() {
+        require(ProcedureLibrary.isInOrgan(procedureData.deciders, msg.sender), "Not authorized");
+        _;
+    }
+
     /**
         Procedure constructor.
     */
 
-    constructor (bytes32 metadataIpfsHash, uint8 metadataHashFunction, uint8 metadataHashSize)
+    constructor ()
         public
     {
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_ID_PROCEDURE);
-        procedureData.init(metadataIpfsHash, metadataHashFunction, metadataHashSize);
+        procedureData.init(
+            MetadataLibrary.Metadata(0, 0, 0),
+            address(0), // Proposers.
+            address(0), // Moderators.
+            address(0), // Deciders.
+            false       // With Moderation.
+        );
     }
 
-    /**
-        Internal API.
-        A procedure must call this method itself.
-    */
-
-    function applyMove(uint256 moveKey)
-        internal
+    function initialize(
+        MetadataLibrary.Metadata memory _metadata,
+        address payable _proposers,
+        address payable _moderators,
+        address payable _deciders,
+        bool _withModeration
+    )
+        public
+        virtual
+        initializer
     {
-        procedureData.applyMove(moveKey);
+        // Register EIP165 interface for introspection.
+        _registerInterface(_INTERFACE_ID_PROCEDURE);
+        procedureData.init(_metadata, _proposers, _moderators, _deciders, _withModeration);
     }
 
     /**
         Public API : Procedure Metadata and Admin.
     */
 
-    function updateMetadata(bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
+    function updateMetadata(MetadataLibrary.Metadata memory metadata)
         public
     {
-        procedureData.updateMetadata(ipfsHash, hashFunction, hashSize);
+        procedureData.updateMetadata(metadata);
     }
 
     function updateAdmin(address payable admin)
@@ -68,142 +87,198 @@ contract Procedure is ERC165 {
     }
 
     /**
-        Public API : Moves creation and update.
+        Public API : Proposals creation and update.
     */
 
-    function propose()
-
-    function createMove(bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
-        public returns (uint256)
-    {
-        return procedureData.createMove(ipfsHash, hashFunction, hashSize);
-    }
-
-    function moveAddEntries(
-        uint256 moveKey, address payable organ, OrganLibrary.Entry[] memory entries, bool lock
+    function propose(
+        MetadataLibrary.Metadata memory metadata,
+        ProcedureLibrary.Operation[] memory operations
     )
         public
+        returns (uint256 proposalKey)
     {
-        procedureData.moveAddEntries(moveKey, organ, entries, lock);
+        return procedureData.propose(metadata, operations);
     }
 
-    function moveRemoveEntries(
-        uint256 moveKey, address payable organ, uint256[] memory indexes, bool lock
-    )
+    /// @notice The procedure calls this method directly to adopt and apply proposal.
+    function blockProposal(uint256 proposalKey, MetadataLibrary.Metadata calldata reason)
         public
     {
-        procedureData.moveRemoveEntries(moveKey, organ, indexes, lock);
+        procedureData.blockProposal(proposalKey, reason);
     }
 
-    function moveReplaceEntry(
-        uint256 moveKey, address payable organ, uint index, address payable addr,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize, bool lock
-    )
-        public
+    /// @notice The procedure calls this method directly to adopt and apply proposal.
+    function adoptProposal(uint256 proposalKey)
+        internal
     {
-        procedureData.moveReplaceEntry(moveKey, organ, index, addr, ipfsHash, hashFunction, hashSize, lock);
+        procedureData.adoptProposal(proposalKey);
     }
 
-    function moveAddProcedure(
-        uint256 moveKey, address payable organ, address procedure, bytes2 permissions, bool lock
-    )
+    /// @notice Apply proposal.
+    function applyProposal(uint256 proposalKey)
         public
     {
-        procedureData.moveAddProcedure(moveKey, organ, procedure, permissions, lock);
+        procedureData.applyProposal(proposalKey);
     }
 
-    function moveRemoveProcedure(
-        uint256 moveKey, address payable organ, address procedure, bool lock
-    )
-        public
-    {
-        procedureData.moveRemoveProcedure(moveKey, organ, procedure, lock);
-    }
+    // function createProposal(MetadataLibrary.Metadata calldata metadata)
+    //     public returns (uint256)
+    // {
+    //     return procedureData.createProposal(metadata);
+    // }
 
-    function moveReplaceProcedure(
-        uint256 moveKey, address payable organ,
-        address oldProcedure, address newProcedure, bytes2 permissions, bool lock
-    )
-        public
-    {
-        procedureData.moveReplaceProcedure(moveKey, organ, oldProcedure, newProcedure, permissions, lock);
-    }
+    // function proposalAddEntries(
+    //     uint256 proposalKey, address payable organ, OrganLibrary.Entry[] memory entries, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalAddEntries(proposalKey, organ, entries, lock);
+    // }
 
-    function moveCall(
-        uint256 moveKey, bytes memory call,  bool lock
-    )
-        public
-    {
-        procedureData.moveCall(moveKey, call, lock);
-    }
+    // function proposalRemoveEntries(
+    //     uint256 proposalKey, address payable organ, uint256[] memory indexes, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalRemoveEntries(proposalKey, organ, indexes, lock);
+    // }
 
-    function moveReceiveCollectible(
-        uint256 moveKey, address payable organ, address operator, address target, uint256 token_id, bool lock
-    )
-        public
-    {
-        procedureData.moveReceiveCollectible(moveKey, organ, operator, target, token_id, lock);
-    }
+    // function proposalReplaceEntry(
+    //     uint256 proposalKey, address payable organ, uint index, address payable addr,
+    //     bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalReplaceEntry(proposalKey, organ, index, addr, ipfsHash, hashFunction, hashSize, lock);
+    // }
 
-    function moveTransferCollectible(
-        uint256 moveKey, address payable organ, address operator, address target, uint256 token_id, bool lock
-    )
-        public
-    {
-        procedureData.moveTransferCollectible(moveKey, organ, operator, target, token_id, lock);
-    }
+    // function proposalAddProcedure(
+    //     uint256 proposalKey, address payable organ, address procedure, bytes2 permissions, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalAddProcedure(proposalKey, organ, procedure, permissions, lock);
+    // }
 
-    function moveReceiveCoins(
-        uint256 moveKey, address payable organ, address operator, address target, uint256 value, bool lock
-    )
-        public
-    {
-        procedureData.moveReceiveCoins(moveKey, organ, operator, target, value, lock);
-    }
+    // function proposalRemoveProcedure(
+    //     uint256 proposalKey, address payable organ, address procedure, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalRemoveProcedure(proposalKey, organ, procedure, lock);
+    // }
 
-    function moveTransferCoins(
-        uint256 moveKey, address payable organ, address operator, address target, uint256 value, bool lock
-    )
-        public
-    {
-        procedureData.moveTransferCoins(moveKey, organ, operator, target, value, lock);
-    }
+    // function proposalReplaceProcedure(
+    //     uint256 proposalKey, address payable organ,
+    //     address oldProcedure, address newProcedure, bytes2 permissions, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalReplaceProcedure(proposalKey, organ, oldProcedure, newProcedure, permissions, lock);
+    // }
 
-    function moveReceiveEther(
-        uint256 moveKey, address payable organ, address target, uint256 value, bool lock
-    )
-        public
-    {
-        procedureData.moveReceiveEther(moveKey, organ, target, value, lock);
-    }
+    // function proposalCall(
+    //     uint256 proposalKey, bytes memory call,  bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalCall(proposalKey, call, lock);
+    // }
 
-    function moveTransferEther(
-        uint256 moveKey, address payable organ, address target, uint256 value, bool lock
-    )
-        public
-    {
-        procedureData.moveTransferEther(moveKey, organ, target, value, lock);
-    }
+    // function proposalReceiveCollectible(
+    //     uint256 proposalKey, address payable organ, address operator, address target, uint256 token_id, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalReceiveCollectible(proposalKey, organ, operator, target, token_id, lock);
+    // }
 
-    function lockMove(uint256 moveKey)
-        public
-    {
-        procedureData.lockMove(moveKey);
-    }
+    // function proposalTransferCollectible(
+    //     uint256 proposalKey, address payable organ, address operator, address target, uint256 token_id, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalTransferCollectible(proposalKey, organ, operator, target, token_id, lock);
+    // }
+
+    // function proposalReceiveCoins(
+    //     uint256 proposalKey, address payable organ, address operator, address target, uint256 value, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalReceiveCoins(proposalKey, organ, operator, target, value, lock);
+    // }
+
+    // function proposalTransferCoins(
+    //     uint256 proposalKey, address payable organ, address operator, address target, uint256 value, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalTransferCoins(proposalKey, organ, operator, target, value, lock);
+    // }
+
+    // function proposalReceiveEther(
+    //     uint256 proposalKey, address payable organ, address target, uint256 value, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalReceiveEther(proposalKey, organ, target, value, lock);
+    // }
+
+    // function proposalTransferEther(
+    //     uint256 proposalKey, address payable organ, address target, uint256 value, bool lock
+    // )
+    //     public
+    // {
+    //     procedureData.proposalTransferEther(proposalKey, organ, target, value, lock);
+    // }
+
+    // function lockProposal(uint256 proposalKey)
+    //     public
+    // {
+    //     procedureData.lockProposal(proposalKey);
+    // }
 
     /*
         Accessors.
     */
 
-    function getMovesLength() public view returns (uint256 length) {
-        return procedureData.movesLength;
+    function proposers()
+        public view
+        returns (address payable)
+    {
+        return procedureData.proposers;
     }
 
-    function getMove(uint256 moveKey) public view returns (ProcedureLibrary.Move memory move) {
-        return procedureData.moves[moveKey];
+    function moderators()
+        public view
+        returns (address payable)
+    {
+        return procedureData.moderators;
     }
 
-    function getMetadata()
+    function deciders()
+        public view
+        returns (address payable)
+    {
+        return procedureData.moderators;
+    }
+
+    function proposalsLength()
+        public view
+        returns (uint256)
+    {
+        return procedureData.proposalsLength;
+    }
+
+    function proposal(uint256 proposalKey)
+        public view
+        returns (ProcedureLibrary.Proposal memory)
+    {
+        return procedureData.proposals[proposalKey];
+    }
+
+    function metadata()
         public
         view
         returns (
@@ -212,6 +287,10 @@ contract Procedure is ERC165 {
             uint8 hashSize
         )
     {
-        return procedureData.getMetadata();
+        return(
+            procedureData.metadata.ipfsHash,
+            procedureData.metadata.hashFunction,
+            procedureData.metadata.hashSize
+        );
     }
 }

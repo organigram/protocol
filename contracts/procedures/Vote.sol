@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
+import "../libraries/MetadataLibrary.sol";
 import "../Procedure.sol";
 import "../libraries/VotePropositionLibrary.sol";
+import "../libraries/MetadataLibrary.sol";
 
 /*
     Vote Procedure.
@@ -14,71 +16,77 @@ import "../libraries/VotePropositionLibrary.sol";
 */
 
 contract VoteProcedure is Procedure {
+    using MetadataLibrary for MetadataLibrary.Metadata;
     using VotePropositionLibrary for VotePropositionLibrary.Proposition;
+    using MetadataLibrary for MetadataLibrary.Metadata;
     bytes4 private constant _INTERFACE_VOTE = 0xc9d27afe; // vote().
-    // A Proposition is mapped to a locked moved.
+    // A Proposition is mapped to a locked proposal.
     mapping (uint256 => VotePropositionLibrary.Proposition) internal propositions;
-    address payable public votersOrgan;
-    address payable public vetoersOrgan;
-    address payable public enactorsOrgan;
+    uint32 public quorumSize;   // Minimum number of voters.
+    uint32 public voteDuration; // Duration of vote in blocks.
+    uint32 public majoritySize; // majoritySize.div((2^32)-1) is the minimum ratio for adoption.
 
-    constructor (
-        bytes32 _metadataIpfsHash, uint8 _metadataHashFunction, uint8 _metadataHashSize,
-        address payable _votersOrgan, address payable _vetoersOrgan, address payable _enactorsOrgan
-    ) Procedure (_metadataIpfsHash, _metadataHashFunction, _metadataHashSize)
+    constructor ()
         public
     {
+        quorumSize = 0;
+        voteDuration = 0;
+        enactors = address(0);
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_VOTE);
-        votersOrgan = _votersOrgan;
-        vetoersOrgan = _vetoersOrgan;
-        enactorsOrgan = _enactorsOrgan;
     }
 
-    function propose(
-        uint256 moveKey,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize,
-        uint256 quorumSize, uint256 voteDuration, uint256 enactmentDuration, uint256 majoritySize
-    )
-        public onlyInOrgan(votersOrgan)
+    function initialize(
+        MetadataLibrary.Metadata memory _metadata,
+        address payable _proposers,
+        address payable _moderators,
+        address payable _deciders,
+        bool _withModeration,
+        uint32 _quorumSize,
+        uint32 _voteDuration,
+        uint32 _majoritySize
+    ) 
+        external
     {
-        require(propositions[moveKey].creator == address(0), "Cannot overwrite an existing proposition.");
-        propositions[moveKey].init(
-            ipfsHash, hashFunction, hashSize,
-            quorumSize, voteDuration, enactmentDuration, majoritySize
-        );
+        super.initialize(_metadata, _proposers, _moderators, _deciders, _withModeration);
+        // Register EIP165 interface for introspection.
+        _registerInterface(_INTERFACE_VOTE);
+        quorumSize = _quorumSize;
+        voteDuration = _voteDuration;
+        enactmentDuration = _enactmentDuration;
+        majoritySize = _majoritySize;
     }
 
-    function vote(uint256 moveKey, bool approval)
-        public onlyInOrgan(votersOrgan)
+    function vote(uint256 proposalKey, bool approval)
+        public onlyInOrgan(deciders())
     {
-        propositions[moveKey].vote(approval);
+        propositions[proposalKey].vote(approval);
     }
 
     // A veto accepts arguments which defines a motivation as a IPFS multihash.
-    function veto(uint256 moveKey, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
-        public onlyInOrgan(vetoersOrgan)
+    function veto(uint256 proposalKey, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
+        public onlyInOrgan(moderators())
     {
-        propositions[moveKey].veto(ipfsHash, hashFunction, hashSize);
+        propositions[proposalKey].veto(ipfsHash, hashFunction, hashSize);
     }
 
-    function count(uint256 moveKey)
+    function count(uint256 proposalKey)
         public view returns (bool)
     {
-        return propositions[moveKey].count();
+        return propositions[proposalKey].count();
     }
 
-    function enact(uint256 moveKey)
-        public onlyInOrgan(enactorsOrgan)
+    function enact(uint256 proposalKey)
+        public onlyInOrgan(moderators())
     {
         // proposition.count() returns true if enactment is possible.
-        require (propositions[moveKey].count(), "Not authorized");
-        Procedure.applyMove(moveKey);
-        propositions[moveKey].enact();
+        require (propositions[proposalKey].count(), "Not authorized");
+        Procedure.adoptProposal(proposalKey);
+        propositions[proposalKey].enact();
     }
 
 
-    function getProposition(uint256 moveKey)
+    function getProposition(uint256 proposalKey)
         public
         view
         returns (
@@ -92,27 +100,27 @@ contract VoteProcedure is Procedure {
         )
     {
         return (
-            propositions[moveKey].creator,
-            propositions[moveKey].quorumSize,
-            propositions[moveKey].voteDuration,
-            propositions[moveKey].enactmentDuration,
-            propositions[moveKey].majoritySize,
-            propositions[moveKey].vetoer,
-            propositions[moveKey].enactor
+            propositions[proposalKey].creator,
+            propositions[proposalKey].quorumSize,
+            propositions[proposalKey].voteDuration,
+            propositions[proposalKey].enactmentDuration,
+            propositions[proposalKey].majoritySize,
+            propositions[proposalKey].vetoer,
+            propositions[proposalKey].enactor
         );
     }
 
-    function getPropositionMetadata(uint256 moveKey)
+    function getPropositionMetadata(uint256 proposalKey)
         public view
-        returns (VotePropositionLibrary.Metadata memory)
+        returns (MetadataLibrary.Metadata memory)
     {
-        return propositions[moveKey].metadata;
+        return propositions[proposalKey].metadata;
     }
 
-    function getPropositionVetoMetadata(uint256 moveKey)
+    function getPropositionVetoMetadata(uint256 proposalKey)
         public view
-        returns (VotePropositionLibrary.Metadata memory)
+        returns (MetadataLibrary.Metadata memory)
     {
-        return propositions[moveKey].vetoMetadata;
+        return propositions[proposalKey].vetoMetadata;
     }
 }

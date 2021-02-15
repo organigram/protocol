@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 /*
@@ -7,11 +7,13 @@ pragma experimental ABIEncoderV2;
     This library holds the logic to manage a simple organ.
 */
 
+import "./MetadataLibrary.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 
 library OrganLibrary {
+    using MetadataLibrary for MetadataLibrary.Metadata;
     using EnumerableSet for EnumerableSet.AddressSet;
 
     bytes2 public constant PERMISSION_ADD_PROCEDURES = 0x0001;
@@ -30,18 +32,14 @@ library OrganLibrary {
         Entries are sets of addresses, contracts or documents.
     */
     struct Entry {
-        address addr;           // Address of account or contract.
-        bytes32 ipfsHash;       // ID of document on IPFS.
-        uint8 hashFunction;
-        uint8 hashSize;
+        address addr;       // Address of account or contract.
+        MetadataLibrary.Metadata doc;   // Doc stored on IPFS.
     }
 
     struct OrganData {
-        bytes32 metadataIpfsHash;
-        uint8 metadataHashFunction;
-        uint8 metadataHashSize;
-        uint256 entriesCount;
+        MetadataLibrary.Metadata metadata;
         Entry[] entries;
+        uint256 entriesCount;
         EnumerableSet.AddressSet procedures;
         mapping(address => bytes2) permissions;
         mapping(address => uint256) addressIndexInEntries;
@@ -72,7 +70,7 @@ library OrganLibrary {
         require(
             self.permissions[msg.sender] & permission == permission ||
             self.permissions[address(0)] & permission == permission,
-            "Not authorized"
+            "Not authorized."
         );
         _;
     }
@@ -83,7 +81,7 @@ library OrganLibrary {
 
     function init(
         OrganData storage self, address defaultAdmin,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
+        MetadataLibrary.Metadata memory metadata
     )
         public
     {
@@ -95,23 +93,25 @@ library OrganLibrary {
         self.procedures.add(_admin);
 
         // Initializing metadata.
-        self.metadataIpfsHash = ipfsHash;
-        self.metadataHashFunction = hashFunction;
-        self.metadataHashSize = hashSize;
+        self.metadata = metadata;
 
         // Reserve index O for empty Entry.
-        self.entries.push(Entry(address(0), 0, 0, 0));
+        self.entries.push(
+            Entry(
+                address(0),
+                MetadataLibrary.Metadata(0, 0, 0)
+            )
+        );
     }
 
     function updateMetadata(
-        OrganData storage self, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
+        OrganData storage self, MetadataLibrary.Metadata memory metadata
     )
-        public onlyPerm(self, PERMISSION_UPDATE_METADATA)
+        public
+        onlyPerm(self, PERMISSION_UPDATE_METADATA)
     {
-        self.metadataIpfsHash = ipfsHash;
-        self.metadataHashFunction = hashFunction;
-        self.metadataHashSize = hashSize;
-        emit metadataUpdated(msg.sender, ipfsHash, hashFunction, hashSize);
+        self.metadata = metadata;
+        emit metadataUpdated(msg.sender, metadata.ipfsHash, metadata.hashSize, metadata.hashFunction);
     }
 
     /*
@@ -122,7 +122,8 @@ library OrganLibrary {
         OrganData storage self, address operator, address from,
         address to, uint256 tokenId
     )
-        public onlyPerm(self, PERMISSION_WITHDRAW_COLLECTIBLES)
+        public
+        onlyPerm(self, PERMISSION_WITHDRAW_COLLECTIBLES)
     {
         // @note Organ must be the owner, approved, or operator of ERC-721.
         IERC721(operator).safeTransferFrom(from, to, tokenId);
@@ -133,7 +134,8 @@ library OrganLibrary {
         OrganData storage self, address operator,
         address from, uint256 tokenId
     )
-        public onlyPerm(self, PERMISSION_DEPOSIT_COLLECTIBLES)
+        public
+        onlyPerm(self, PERMISSION_DEPOSIT_COLLECTIBLES)
     {
         emit collectibleReceived(operator, from, tokenId);
     }
@@ -142,7 +144,8 @@ library OrganLibrary {
         OrganData storage self, address operator,
         address from, address to, uint256 amount
     )
-        public onlyPerm(self, PERMISSION_WITHDRAW_COINS)
+        public
+        onlyPerm(self, PERMISSION_WITHDRAW_COINS)
     {
         bytes memory data;
         IERC777(operator).send(to, amount, data);
@@ -153,20 +156,23 @@ library OrganLibrary {
         OrganData storage self, address operator,
         address from, address to, uint256 amount
     )
-        public onlyPerm(self, PERMISSION_DEPOSIT_COINS)
+        public
+        onlyPerm(self, PERMISSION_DEPOSIT_COINS)
     {
         emit coinsReceived(operator, from, to, amount);
     }
 
     function transferEther(OrganData storage self, address payable to, uint256 value)
-        public onlyPerm(self, PERMISSION_WITHDRAW_ETHER)
+        public
+        onlyPerm(self, PERMISSION_WITHDRAW_ETHER)
     {
         to.transfer(value);
         emit etherTransferred(msg.sender, to, value);
     }
 
     function receiveEther(OrganData storage self, uint256 value)
-        public onlyPerm(self, PERMISSION_DEPOSIT_ETHER)
+        public
+        onlyPerm(self, PERMISSION_DEPOSIT_ETHER)
     {
         emit etherReceived(msg.sender, value);
     }
@@ -176,7 +182,8 @@ library OrganLibrary {
     */
 
     function removeProcedure(OrganData storage self, address procedure)
-        public onlyPerm(self, PERMISSION_REMOVE_PROCEDURES)
+        public
+        onlyPerm(self, PERMISSION_REMOVE_PROCEDURES)
     {
         // Check procedure is already there.
         require(self.procedures.contains(procedure), "Record not found.");
@@ -187,7 +194,8 @@ library OrganLibrary {
     }
 
     function addProcedure(OrganData storage self, address procedure, bytes2 permissions)
-        public onlyPerm(self, PERMISSION_ADD_PROCEDURES)
+        public
+        onlyPerm(self, PERMISSION_ADD_PROCEDURES)
         returns (uint256 index)
     {
         // Check new procedure is not already there.
@@ -256,14 +264,13 @@ library OrganLibrary {
             self.addressIndexInEntries[entries[i].addr] = indexes[i];
             // Incrementing entries counter.
             self.entriesCount++;
-
             emit entryAdded(
                 msg.sender,
                 indexes[i],
                 entries[i].addr,
-                entries[i].ipfsHash,
-                entries[i].hashFunction,
-                entries[i].hashSize
+                entries[i].doc.ipfsHash,
+                entries[i].doc.hashFunction,
+                entries[i].doc.hashSize
             );
         }
 
@@ -288,60 +295,64 @@ library OrganLibrary {
     }
 
     function replaceEntry(
-        OrganData storage self, uint256 index, address addr,
-        bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize
+        OrganData storage self, uint256 index, Entry memory entry
     )
         public
         onlyPerm(self, PERMISSION_REMOVE_ENTRIES)
         onlyPerm(self, PERMISSION_ADD_ENTRIES)
     {
         // Check that the replacing address is not registered.
-        if (addr != address(0)) {
-            require(self.addressIndexInEntries[addr] > 0, "Record not found.");
+        if (entry.addr != address(0)) {
+            require(self.addressIndexInEntries[entry.addr] > 0, "Record not found.");
         }
         self.addressIndexInEntries[self.entries[index].addr] = 0;
         emit entryRemoved(msg.sender, index);
 
-        self.entries[index] = Entry({
-            addr: addr,
-            ipfsHash: ipfsHash,
-            hashFunction: hashFunction,
-            hashSize: hashSize
-        });
+        self.entries[index] = entry;
 
-        self.addressIndexInEntries[addr] = index;
-        emit entryAdded(msg.sender, index,  addr, ipfsHash,  hashFunction,  hashSize);
+        self.addressIndexInEntries[entry.addr] = index;
+        emit entryAdded(msg.sender, index,  entry.addr, entry.doc.ipfsHash,  entry.doc.hashFunction,  entry.doc.hashSize);
     }
 
     function getProceduresLength(OrganData storage self)
-        public view returns (uint256 length)
+        public
+        view
+        returns (uint256 length)
     {
         return self.procedures.length();
     }
 
     function getProcedure(OrganData storage self, uint256 index)
-        public view returns (address procedure, bytes2 permissions)
+        public
+        view
+        returns (address procedure, bytes2 permissions)
     {
         procedure = self.procedures.at(index);
-        return (
-            procedure,
-            getPermissions(self, procedure)
-        );
+        permissions = self.permissions[procedure];
+        return (procedure, permissions);
+    }
+
+    function getEntry(OrganData storage self, uint256 index)
+        public
+        view
+        returns (Entry storage entry)
+    {
+        return self.entries[index];
     }
 
     function getPermissions(OrganData storage self, address procedure)
-        public view returns (bytes2 permissions)
+        public
+        view
+        returns (bytes2 permissions)
     {
         return self.permissions[procedure];
     }
 
     function getMetadata(OrganData storage self)
-        public view returns (bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
+        public
+        view
+        returns (MetadataLibrary.Metadata storage)
     {
-        return (
-            self.metadataIpfsHash,
-            self.metadataHashFunction,
-            self.metadataHashSize
-        );
+        return (self.metadata);
     }
 }

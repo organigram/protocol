@@ -2,7 +2,6 @@ var Migrations = artifacts.require("Migrations")
 var MetadataLibrary = artifacts.require("MetadataLibrary")
 var OrganLibrary = artifacts.require("OrganLibrary")
 var ProcedureLibrary = artifacts.require("ProcedureLibrary")
-var VotePropositionLibrary = artifacts.require("VotePropositionLibrary")
 
 module.exports = async (deployer) => {
   // Deploy the Migrations contract as our only task
@@ -10,5 +9,4 @@ module.exports = async (deployer) => {
   await deployer.deploy(MetadataLibrary)
   await deployer.deploy(OrganLibrary)
   await deployer.deploy(ProcedureLibrary)
-  await deployer.deploy(VotePropositionLibrary)
 }

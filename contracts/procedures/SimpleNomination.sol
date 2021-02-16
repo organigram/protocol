@@ -37,8 +37,8 @@ contract SimpleNominationProcedure is Procedure {
     }
 
     function nominate(uint256 proposalKey)
-        public onlyDeciders
+        public onlyInOrgan(procedureData.deciders)
     {
-        super.applyProposal(proposalKey);
+        super.adoptProposal(proposalKey);
     }
 }

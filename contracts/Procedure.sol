@@ -19,8 +19,8 @@ contract Procedure is ERC165, Initializable {
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Operation;
     using OrganLibrary for OrganLibrary.Entry;
-    ProcedureLibrary.ProcedureData private procedureData;
-    bytes4 private constant _INTERFACE_ID_PROCEDURE = 0x71dbd330;
+    ProcedureLibrary.ProcedureData internal procedureData;
+    bytes4 constant public _INTERFACE_ID_PROCEDURE = 0x71dbd330;
 
     /**
         Modifiers.
@@ -95,6 +95,7 @@ contract Procedure is ERC165, Initializable {
         ProcedureLibrary.Operation[] memory operations
     )
         public
+        virtual
         returns (uint256 proposalKey)
     {
         return procedureData.propose(metadata, operations);
@@ -103,13 +104,15 @@ contract Procedure is ERC165, Initializable {
     /// @notice The procedure calls this method directly to adopt and apply proposal.
     function blockProposal(uint256 proposalKey, MetadataLibrary.Metadata calldata reason)
         public
+        virtual
     {
         procedureData.blockProposal(proposalKey, reason);
     }
 
     /// @notice The procedure calls this method directly to adopt and apply proposal.
     function adoptProposal(uint256 proposalKey)
-        internal
+        public
+        virtual
     {
         procedureData.adoptProposal(proposalKey);
     }
@@ -117,6 +120,7 @@ contract Procedure is ERC165, Initializable {
     /// @notice Apply proposal.
     function applyProposal(uint256 proposalKey)
         public
+        virtual
     {
         procedureData.applyProposal(proposalKey);
     }
@@ -243,32 +247,28 @@ contract Procedure is ERC165, Initializable {
         Accessors.
     */
 
-    function proposers()
-        public view
-        returns (address payable)
+    function procedure()
+        public
+        view
+        returns (
+            bytes32 ipfsHash,   // Metadata
+            uint8 hashFunction,
+            uint8 hashSize,
+            address payable proposers,
+            address payable moderators,
+            address payable deciders,
+            uint256 proposalsLength
+        )
     {
-        return procedureData.proposers;
-    }
-
-    function moderators()
-        public view
-        returns (address payable)
-    {
-        return procedureData.moderators;
-    }
-
-    function deciders()
-        public view
-        returns (address payable)
-    {
-        return procedureData.moderators;
-    }
-
-    function proposalsLength()
-        public view
-        returns (uint256)
-    {
-        return procedureData.proposalsLength;
+        return (
+            procedureData.metadata.ipfsHash,
+            procedureData.metadata.hashFunction,
+            procedureData.metadata.hashSize,
+            procedureData.proposers,
+            procedureData.moderators,
+            procedureData.deciders,
+            procedureData.proposalsLength
+        );
     }
 
     function proposal(uint256 proposalKey)
@@ -276,21 +276,5 @@ contract Procedure is ERC165, Initializable {
         returns (ProcedureLibrary.Proposal memory)
     {
         return procedureData.proposals[proposalKey];
-    }
-
-    function metadata()
-        public
-        view
-        returns (
-            bytes32 ipfsHash,
-            uint8 hashFunction,
-            uint8 hashSize
-        )
-    {
-        return(
-            procedureData.metadata.ipfsHash,
-            procedureData.metadata.hashFunction,
-            procedureData.metadata.hashSize
-        );
     }
 }

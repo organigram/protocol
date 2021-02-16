@@ -13,14 +13,12 @@ contract Organigram {
     address payable public procedures; // Organ with procedures addresses.
 
     event organCreated(address payable organ);
-    event procedureCreated(address payable procedureType, address payable deployedProcedure);
+    event procedureCreated(address payable procedureType, address payable procedure);
 
     constructor(MetadataLibrary.Metadata memory metadata)
         public
     {
         organ = payable(address(new Organ()));
-        // Lock organ contract against update.
-        Organ(organ).removeProcedure(msg.sender);
         procedures = createOrgan(msg.sender, metadata);
     }
 
@@ -57,8 +55,9 @@ contract Organigram {
         external
     {
         // Only valid procedures
-        for (uint256 i; i < entries.length; ++i)
+        for (uint256 i; i < entries.length; ++i) {
             require(ERC165Checker.supportsInterface(entries[i].addr, 0x71dbd330), "An entry in parameters is not a valid procedure.");
+        }
         Organ(organ).addEntries(entries);
     }
 

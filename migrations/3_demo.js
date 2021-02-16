@@ -32,17 +32,15 @@ module.exports = async (deployer, network, accounts) => {
   const organigram = await Organigram.deployed()
   const masterOrgan = await organigram.organ()
   const masterProcedures = await organigram.procedures()
-  console.log(
-    "Organigram", organigram.address,
-    "Master Organ", masterOrgan,
-    "Master Procedures", masterProcedures
-  )
+  console.log("Organigram", organigram.address)
+  console.log("Master Organ", masterOrgan)
+  console.log("Master Procedures", masterProcedures)
   const procedures = await Organ.at(masterProcedures)
   const vote = await VoteProcedure.deployed()
   const nomination = await SimpleNominationProcedure.deployed()
 
-  console.log("Index of Vote", await procedures.getEntryIndexForAddress(vote.address))
-  console.log("Index of Nomination", await procedures.getEntryIndexForAddress(nomination.address))
+  console.log("Index of Nomination", (await procedures.getEntryIndexForAddress(nomination.address)).toString())
+  console.log("Index of Vote", (await procedures.getEntryIndexForAddress(vote.address)).toString())
 
   const admins = await Organ.at((await organigram.createOrgan(
     from,
@@ -66,55 +64,56 @@ module.exports = async (deployer, network, accounts) => {
   )).logs[0].args.organ)
   console.log(`* norms:`, norms.address)
 
-  const _nominateAdmins = (await organigram.createProcedure(
-    nomination.address,   // Procedure: Nomination
+  const _nominateAdmins = (await organigram.createProcedure(nomination.address, {from})).logs[0].args
+  const nominateAdmins = await SimpleNominationProcedure.at(_nominateAdmins.procedure)
+  await nominateAdmins.initialize(
     { // Metadata.
       ipfsHash: EMPTY_FILE_HASH,
       hashFunction: HASH_FUNCTION,
       hashSize: HASH_SIZE
-    }
+    },
+    admins.address, // Proposers
+    admins.address, // Moderators
+    admins.address, // Deciders
+    false,          // No moderation
     { from }
-  )).logs[0].args
-  const adminsNomination = await SimpleNominationProcedure.at(_nominateAdmins.procedure)
-  await adminsNomination.initialize(
-    { // Metadata.
-      ipfsHash: EMPTY_FILE_HASH,
-      hashFunction: HASH_FUNCTION,
-      hashSize: HASH_SIZE
-    }
   )
-  console.log("_nominateAdmins", _nominateAdmins)
-  const nominateAdmins = await VoteProcedure.at()
   console.log(`- nominateAdmins: ${nominateAdmins.address}`)
 
-  const voteNorms = (await organigram.createProcedure(
-    vote.address,
-    [
-      {
-        ipfsHash: EMPTY_FILE_HASH,
-        hashFunction: HASH_FUNCTION,
-        hashSize: HASH_SIZE
-      },
-      admins.address,         // Voters.
-      admins.address,         // Vetoers.
-      admins.address          // Enactors.
-    ],
+  const _voteNorms = (await organigram.createProcedure(vote.address, {from})).logs[0].args.procedure
+  const voteNorms = await VoteProcedure.at(_voteNorms)
+  // Initialize function is overloaded in VoteProcedure.
+  await voteNorms.methods['initialize((bytes32,uint8,uint8),address,address,address,bool,uint32,uint32,uint32)'](
+    {
+      ipfsHash: EMPTY_FILE_HASH,
+      hashFunction: HASH_FUNCTION,
+      hashSize: HASH_SIZE
+    },
+    admins.address, // Proposers
+    admins.address, // Moderators
+    admins.address, // Deciders
+    false,          // No moderation
+    "1",            // Quorum size
+    "8",            // Vote duration
+    "1",            // Majority size
     { from }
-  )).logs[0].args.procedure
+  )
   console.log(`- voteNorms: ${voteNorms.address}`)
 
-  const updateSystem = await SimpleNominationProcedure.at((await organigram.createProcedure(
-    nomination.address,
-    [
-      {
-        ipfsHash: EMPTY_FILE_HASH,
-        hashFunction: HASH_FUNCTION,
-        hashSize: HASH_SIZE
-      },
-      admins.address
-    ],
+  const _updateSystem = (await organigram.createProcedure(nomination.address, {from})).logs[0].args.procedure
+  const updateSystem = await SimpleNominationProcedure.at(_updateSystem)
+  await updateSystem.initialize(
+    { // Metadata.
+      ipfsHash: EMPTY_FILE_HASH,
+      hashFunction: HASH_FUNCTION,
+      hashSize: HASH_SIZE
+    },
+    admins.address, // Proposers
+    admins.address, // Moderators
+    admins.address, // Deciders
+    false,          // No moderation
     { from }
-  )).logs[0].args.procedure)
+  )
   console.log(`- updateSystem: ${updateSystem.address}`)
 
   // Configuring procedures on organs.
@@ -136,47 +135,110 @@ module.exports = async (deployer, network, accounts) => {
   await norms.replaceProcedure(from, updateSystem.address, "0xffff", { from })
   console.log(`norms.replaceProcedure(from, updateSystem.address, "0xffff")`)
 
-  console.log("\nProcedure Nomination")
-  const procedureNominationOperations = [
-    // Operations 1 : addProcedure to organ.
-    {
-      "index": "0",
-      "organ": admins.address,
-      "funcSig": "0x7f0a4e27", // Organ.addProcedure.
-      "data":  await admins.addProcedure.request(from, "0xffff"),
-      "processed": false
-    }
-  ]
+  console.log("\n-- Admins entries --")
+  for (var i = 1 ; String(i) !== (await admins.getEntriesLength()).toString() ; ++i) {
+    console.log(`Entry ${i}`, "->", (await admins.getEntry(String(i))).addr)
+  }
+  console.log("\n-- Admins procedures --")
+  for (var i = 0 ; String(i) !== (await admins.getProceduresLength()).toString() ; ++i) {
+    console.log(`Procedure ${i}`, "->", (await admins.getProcedure(String(i)).then(p => [p.procedure, p.permissions])))
+  }
 
-  const procedureNominationProposal = await nominateAdmins.propose(
-    {
+  console.log("\nProcedure Nomination")
+  const nominateAdminsProposal = (await nominateAdmins.propose(
+    { // Metadata proposal
       ipfsHash: EMPTY_FILE_HASH,
       hashFunction: HASH_FUNCTION,
       hashSize: HASH_SIZE
     },
-    procedureNominationOperations,
+    [ // Operations
+      { // Operation 1 : addProcedure to organ.
+        "index": "0",
+        "organ": admins.address,
+        "data":  (await admins.addProcedure.request(from, "0xffff", {value:0})).data,
+        "value": "0",
+        "processed": false
+      }
+    ],
     { from }
-  )
-  console.log(`nominateAdmins.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE)`)
-  console.log(`nominateAdmins.moveAddProcedure("0", admins.address, from, "0xffff", true)`)
-  await nominateAdmins.nominate("0", { from })
-  console.log(`nominateAdmins.nominate("0")`)
+  )).logs[0].args.proposalKey.toString()
+  console.log(`nominateAdmins.propose(metadata, operations)`, "->", nominateAdminsProposal)
+  console.log(await nominateAdmins.proposal(nominateAdminsProposal).then(({
+    creator, metadata, blockReason, presented, blocked, adopted, applied, operations
+  }) => ({
+    creator,
+    metadata: { ipfsHash: metadata.ipfsHash, hashFunction: metadata.hashFunction, hashSize: metadata.hashSize },
+    blockReason: { ipfsHash: blockReason.ipfsHash, hashFunction: blockReason.hashFunction, hashSize: blockReason.hashSize },
+    presented, blocked, adopted, applied,
+    operations: operations.map(({ organ, data, value }) => ({ organ, data, value }))
+  })))
+  await nominateAdmins.nominate(nominateAdminsProposal, { from })
+  console.log(`nominateAdmins.nominate(nominateAdminsProposal)`)
 
   console.log("\nProcedure Vote")
-  await voteNorms.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, { from })
-  console.log(`voteNorms.createMove(EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE)`)
-  await voteNorms.moveAddEntries("0", norms.address, [
-    { addr: from, ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE }
-  ], true, { from })
-  console.log(`voteNorms.moveAddEntries("0", admins.address, [{ addr: from, ... }], true)`)
-  await voteNorms.propose("0", EMPTY_FILE_HASH, HASH_FUNCTION, HASH_SIZE, 0, 0, 0, 0, { from })
-  console.log(`voteNorms.propose("0", ...IPFSHASH, 0, 0, 0, 0)`)
-  await voteNorms.vote("0", true, { from })
-  console.log(`voteNorms.vote("0", true)`)
-  await voteNorms.count("0", { from })
-  console.log(`voteNorms.count("0")`, data)
-  await voteNorms.enact("0", { from })
-  console.log(`voteNorms.enact("0")`)
+  const voteNormsProposal = (await voteNorms.propose(
+    { // Metadata proposal
+      ipfsHash: EMPTY_FILE_HASH,
+      hashFunction: HASH_FUNCTION,
+      hashSize: HASH_SIZE
+    },
+    [ // Operations
+      { // Operation 1 : addEntries.
+        "index": "0",
+        "organ": norms.address,
+        "data":  (await norms.addEntries.request([
+          { // Put my address in entries.
+            addr: from,
+            doc: { ipfsHash: EMPTY_FILE_HASH, hashFunction: HASH_FUNCTION, hashSize: HASH_SIZE }
+          }
+        ], {value:0})).data,
+        "value": "0",
+        "processed": false
+      }
+    ],
+    { from }
+  )).logs[0].args.proposalKey.toString()
+  console.log(`voteNorms.propose(metadata, operations)`, "->", voteNormsProposal)
+  console.log(await voteNorms.proposal(voteNormsProposal).then(({
+    creator, metadata, blockReason, presented, blocked, adopted, applied, operations
+  }) => ({
+    creator,
+    metadata: { ipfsHash: metadata.ipfsHash, hashFunction: metadata.hashFunction, hashSize: metadata.hashSize },
+    blockReason: { ipfsHash: blockReason.ipfsHash, hashFunction: blockReason.hashFunction, hashSize: blockReason.hashSize },
+    presented, blocked, adopted, applied,
+    operations: operations.map(({ organ, data, value }) => ({ organ, data, value }))
+  })))
+  await voteNorms.vote(voteNormsProposal, true, { from })
+  console.log(`voteNorms.vote(voteNormsProposal, true)`)
+  const ballot = await voteNorms.ballot(voteNormsProposal)
+  console.log("Ballot start", ballot.start.toString())
+  console.log("Vote duration", (await voteNorms.voteDuration()).toString())
+
+  const waitBlock = async (height) => {
+    console.log("Waiting for block", height.toString())
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("Timeout")), 30000)
+      const checkBlock = async (height) => {
+        const block = await web3.eth.getBlockNumber()
+        console.log("Current block number", block.toString())
+        if (height.toString() === block.toString()) {
+          clearTimeout(timeout)
+          return resolve(true)
+        } else {
+          await voteNorms.vote(voteNormsProposal, true, { from: accounts[i++] }).catch(() => {})
+          setTimeout(() => checkBlock(height), 2000)
+        }
+      }
+      checkBlock(height)
+    })
+  }
+  await waitBlock(ballot.start.add(await voteNorms.voteDuration()))
+
+  const voteNormsCount = await voteNorms.count(voteNormsProposal, { from })
+  .catch(error => console.log(error.message))
+  console.log(`voteNorms.count(voteNormsProposal)`, voteNormsCount)
+  await voteNorms.adoptProposal(voteNormsProposal, { from })
+  console.log(`voteNorms.adoptProposal(voteNormsProposal)`)
 
   // Logs.
   console.log("\n\nDemo deployed.\n\n")
@@ -195,17 +257,15 @@ module.exports = async (deployer, network, accounts) => {
     },
     "nominateAdmins": {
       "address": nominateAdmins.address,
-      "nominatersOrgan": await nominateAdmins.nominatersOrgan()
+      "procedure": await nominateAdmins.procedure().then(({ proposers, moderators, deciders }) => ({ proposers, moderators, deciders }))
     },
     "voteNorms": {
       "address": voteNorms.address,
-      "votersOrgan": await voteNorms.votersOrgan(),
-      "vetoersOrgan": await voteNorms.vetoersOrgan(),
-      "enactorsOrgan": await voteNorms.enactorsOrgan()
+      "procedure": await voteNorms.procedure().then(({ proposers, moderators, deciders }) => ({ proposers, moderators, deciders }))
     },
     "updateSystem": {
       "address": updateSystem.address,
-      "nominatersOrgan": await updateSystem.nominatersOrgan()
+      "procedure": await updateSystem.procedure().then(({ proposers, moderators, deciders }) => ({ proposers, moderators, deciders }))
     }
   })
 }

@@ -4,8 +4,6 @@ pragma experimental ABIEncoderV2;
 
 import "../libraries/MetadataLibrary.sol";
 import "../Procedure.sol";
-import "../libraries/VotePropositionLibrary.sol";
-import "../libraries/MetadataLibrary.sol";
 
 /*
     Vote Procedure.
@@ -15,25 +13,49 @@ import "../libraries/MetadataLibrary.sol";
     @TODO : Add propositions getter.
 */
 
+struct Vote {
+    bool voted;
+    bool approved;
+}
+
+struct Ballot {
+    // Vote.
+    // Map voters' addresses to votes.
+    uint256 start;
+    mapping(address => Vote) votes;
+    address[] voters;
+    uint256 votesCount;
+}
+
 contract VoteProcedure is Procedure {
     using MetadataLibrary for MetadataLibrary.Metadata;
-    using VotePropositionLibrary for VotePropositionLibrary.Proposition;
-    using MetadataLibrary for MetadataLibrary.Metadata;
     bytes4 private constant _INTERFACE_VOTE = 0xc9d27afe; // vote().
-    // A Proposition is mapped to a locked proposal.
-    mapping (uint256 => VotePropositionLibrary.Proposition) internal propositions;
-    uint32 public quorumSize;   // Minimum number of voters.
-    uint32 public voteDuration; // Duration of vote in blocks.
-    uint32 public majoritySize; // majoritySize.div((2^32)-1) is the minimum ratio for adoption.
+    mapping (uint256 => Ballot) internal ballots;
+    uint32 public quorumSize;       // Minimum number of voters.
+    uint32 public voteDuration;     // Duration of vote in blocks.
+    uint32 public majoritySize;     // majoritySize.div((2^32)-1) is the minimum ratio for adoption.
 
     constructor ()
         public
     {
         quorumSize = 0;
         voteDuration = 0;
-        enactors = address(0);
+        majoritySize = 0;
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_VOTE);
+    }
+
+    function initialize(
+        MetadataLibrary.Metadata memory,
+        address payable,
+        address payable,
+        address payable,
+        bool
+    )
+        public
+        override
+    {
+        revert("Missing parameters");
     }
 
     function initialize(
@@ -46,81 +68,107 @@ contract VoteProcedure is Procedure {
         uint32 _voteDuration,
         uint32 _majoritySize
     ) 
-        external
+        public
     {
         super.initialize(_metadata, _proposers, _moderators, _deciders, _withModeration);
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_VOTE);
         quorumSize = _quorumSize;
         voteDuration = _voteDuration;
-        enactmentDuration = _enactmentDuration;
         majoritySize = _majoritySize;
     }
 
     function vote(uint256 proposalKey, bool approval)
-        public onlyInOrgan(deciders())
+        public
+        onlyInOrgan(procedureData.deciders)
     {
-        propositions[proposalKey].vote(approval);
+        require(block.number > ballots[proposalKey].start, "Ballot not started.");
+        require(block.number < (ballots[proposalKey].start + voteDuration), "Ballot ended.");
+        require(!ballots[proposalKey].votes[msg.sender].voted, "Duplicate record.");
+        ballots[proposalKey].votes[msg.sender] = Vote({
+            voted: true,
+            approved: approval
+        });
+        ballots[proposalKey].voters.push(msg.sender);
+        ballots[proposalKey].votesCount++;
     }
 
-    // A veto accepts arguments which defines a motivation as a IPFS multihash.
-    function veto(uint256 proposalKey, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize)
-        public onlyInOrgan(moderators())
-    {
-        propositions[proposalKey].veto(ipfsHash, hashFunction, hashSize);
-    }
-
+    /// @notice Count votes when ballot is ended.
+    /// @dev @todo Handle delegation of Votes.
     function count(uint256 proposalKey)
-        public view returns (bool)
+        public
+        view
+        returns (bool approved)
     {
-        return propositions[proposalKey].count();
+        require(ballots[proposalKey].start > 0, "No ballot.");
+        require(block.number >= (ballots[proposalKey].start + voteDuration), "Ballot not ended.");
+        if (ballots[proposalKey].votesCount < quorumSize) {
+            return false;
+        }
+        uint256 approvals;
+        for (uint256 i = 0; i < ballots[proposalKey].voters.length; i++) {
+            if (
+                ballots[proposalKey].votes[ballots[proposalKey].voters[i]].voted
+                && ballots[proposalKey].votes[ballots[proposalKey].voters[i]].approved
+            ) {
+                approvals++;
+            }
+        }
+        return (approvals / ballots[proposalKey].votesCount) > (majoritySize / (uint32(-1)));
     }
 
-    function enact(uint256 proposalKey)
-        public onlyInOrgan(moderators())
+    /**
+        Procedure methods overrides.
+    */
+
+    function propose(
+        MetadataLibrary.Metadata memory _metadata,
+        ProcedureLibrary.Operation[] memory _operations
+    )
+        public
+        override
+        onlyInOrgan(procedureData.proposers)
+        returns (uint256 proposalKey)
     {
-        // proposition.count() returns true if enactment is possible.
-        require (propositions[proposalKey].count(), "Not authorized");
-        Procedure.adoptProposal(proposalKey);
-        propositions[proposalKey].enact();
+        proposalKey = super.propose(_metadata, _operations);
+        ballots[proposalKey].start = block.number;
+        return proposalKey;
     }
 
+    /// @notice A veto accepts arguments which defines a motivation as a IPFS multihash.
+    /// @dev Overrides Procedure.blockProposal.
+    function blockProposal(uint256 proposalKey, MetadataLibrary.Metadata calldata reason)
+        public
+        override
+        onlyInOrgan(procedureData.moderators)
+    {
+        require(ballots[proposalKey].start + voteDuration > block.number, "Ballot ended.");
+        super.blockProposal(proposalKey, reason);
+    }
 
-    function getProposition(uint256 proposalKey)
+    function adoptProposal(uint256 proposalKey)
+        public
+        override
+        onlyInOrgan(procedureData.moderators)
+    {
+        // count() returns true if enactment is possible.
+        require (count(proposalKey), "Not authorized");
+        super.adoptProposal(proposalKey);
+    }
+
+    function ballot(uint256 _proposalKey)
         public
         view
         returns (
-            address payable,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            address payable,
-            address payable
+            uint256 start,
+            bool    hasVoted,
+            uint256 votesCount
         )
     {
         return (
-            propositions[proposalKey].creator,
-            propositions[proposalKey].quorumSize,
-            propositions[proposalKey].voteDuration,
-            propositions[proposalKey].enactmentDuration,
-            propositions[proposalKey].majoritySize,
-            propositions[proposalKey].vetoer,
-            propositions[proposalKey].enactor
+            ballots[_proposalKey].start,
+            ballots[_proposalKey].votes[msg.sender].voted,
+            ballots[_proposalKey].votesCount
         );
-    }
-
-    function getPropositionMetadata(uint256 proposalKey)
-        public view
-        returns (MetadataLibrary.Metadata memory)
-    {
-        return propositions[proposalKey].metadata;
-    }
-
-    function getPropositionVetoMetadata(uint256 proposalKey)
-        public view
-        returns (MetadataLibrary.Metadata memory)
-    {
-        return propositions[proposalKey].vetoMetadata;
     }
 }

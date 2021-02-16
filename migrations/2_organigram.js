@@ -3,8 +3,8 @@ var MetadataLibrary = artifacts.require("MetadataLibrary")
 var Organigram = artifacts.require("Organigram")
 var OrganLibrary = artifacts.require("OrganLibrary")
 var ProcedureLibrary = artifacts.require("ProcedureLibrary")
-var VotePropositionLibrary = artifacts.require("VotePropositionLibrary")
 var Organigram = artifacts.require("Organigram")
+var Organ = artifacts.require("Organ")
 var SimpleNominationProcedure = artifacts.require("SimpleNominationProcedure")
 var VoteProcedure = artifacts.require("VoteProcedure")
 
@@ -28,14 +28,13 @@ module.exports = async (deployer, network, accounts) => {
   await Organigram.link(OrganLibrary)
   await SimpleNominationProcedure.link(ProcedureLibrary)
   await VoteProcedure.link(ProcedureLibrary)
-  await VoteProcedure.link(VotePropositionLibrary)
 
   /**
    *  Configure Organigram contract.
    */
   const organigram = await deployer.deploy(
     Organigram,
-    {
+    { // Metadata of procedures registry.
       ipfsHash: EMPTY_FILE_HASH,
       hashFunction: HASH_FUNCTION,
       hashSize: HASH_SIZE
@@ -49,34 +48,15 @@ module.exports = async (deployer, network, accounts) => {
   // procedures is an organ, the procedures registry.
   const procedures = await organigram.procedures()
   console.log("Procedures registry", procedures)
+  const proceduresRegistry = await Organ.at(procedures)
 
   /**
    *  Deploy procedures as empty, locked factory master contracts.
    */
-  const nomination = await deployer.deploy(
-    SimpleNominationProcedure,
-    {
-      ipfsHash: EMPTY_FILE_HASH,
-      hashFunction: HASH_FUNCTION,
-      hashSize: HASH_SIZE
-    },
-    from,
-    { from }
-  )
+  const nomination = await deployer.deploy(SimpleNominationProcedure, { from })
   console.log("Master Nomination", nomination.address)
 
-  const vote = await deployer.deploy(
-    VoteProcedure,
-    {
-      ipfsHash: EMPTY_FILE_HASH,
-      hashFunction: HASH_FUNCTION,
-      hashSize: HASH_SIZE
-    },
-    from,
-    from,
-    from,
-    { from }
-  )
+  const vote = await deployer.deploy(VoteProcedure, { from })
   console.log("Master Vote", vote.address)
 
   /**
@@ -102,14 +82,16 @@ module.exports = async (deployer, network, accounts) => {
   ]
   // Check if entries' addresses already exist.
   entries = (await Promise.all(
-    entries.map(entry => {
-      const index = registry.getEntryIndexForAddress(entry.addr)
-      return { ...entry, inRegistry: index > 0 }
-    })
-  )).filter(e => e.inRegistry)
+    entries.map(entry =>
+      proceduresRegistry.getEntryIndexForAddress(entry.addr)
+      .then(index => ({ ...entry, inRegistry: index > 0 }))
+    )
+  )).filter(e => !e.inRegistry)
   if (entries.length > 0) {
     console.log("Adding procedures in registry:", entries)
-    await organigram.registerProcedures(entries)
+    await proceduresRegistry.addEntries(entries)
+    .catch(error => console.error(error.message))
+    console.log("Entries in registry:", (await proceduresRegistry.getEntriesLength()).toString())
   }
   console.log("Added all procedures to registry.")
 }

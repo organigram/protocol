@@ -46,23 +46,8 @@ library ProcedureLibrary {
     struct Operation {
         uint256 index;
         address payable organ;
-        uint256 value;
-        bytes4 funcSig;
         bytes data;
-        bool processed;
-    }
-    struct Operation2 {
-        uint256 index;          // index will stay after reordering.
-        address payable organ;  // target organ address.
-        uint256 value;          // value transferred with the call.
-        uint8 operationType;   // avoid reading function signature.
-        // Possible masks:
-        // 0: operation on procedure.
-        // 1/2/3: addEntry/removeEntry/replaceEntry.
-        // 4/5/6: addProcedure/removeProcedure/replaceProcedure.
-        // 7: withdraw funds.
-        // 8: withdraw tokens.
-        bytes callData;
+        uint256 value;
         bool processed;
     }
 
@@ -217,7 +202,16 @@ library ProcedureLibrary {
         proposalKey = self.proposalsLength++;
         self.proposals[proposalKey].creator = msg.sender;
         self.proposals[proposalKey].metadata = metadata;
-        self.proposals[proposalKey].operations = operations;
+        for (uint256 i = 0 ; i < operations.length ; ++i) {
+            self.proposals[proposalKey].operations.push(Operation({
+                index: self.proposals[proposalKey].operations.length,
+                organ: operations[i].organ,
+                data: operations[i].data,
+                value: operations[i].value,
+                processed: false
+            }));
+        }
+
         if (!self.withModeration) {
             self.proposals[proposalKey].presented = true;
         }

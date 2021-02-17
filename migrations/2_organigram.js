@@ -5,7 +5,7 @@ var OrganLibrary = artifacts.require("OrganLibrary")
 var ProcedureLibrary = artifacts.require("ProcedureLibrary")
 var Organigram = artifacts.require("Organigram")
 var Organ = artifacts.require("Organ")
-var SimpleNominationProcedure = artifacts.require("SimpleNominationProcedure")
+var NominationProcedure = artifacts.require("NominationProcedure")
 var VoteProcedure = artifacts.require("VoteProcedure")
 
 // Multihash for CID QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH (empty file)
@@ -25,8 +25,8 @@ module.exports = async (deployer, network, accounts) => {
    */
   await Organigram.link(MetadataLibrary)
   await Organigram.link(OrganLibrary)
-  await Organigram.link(OrganLibrary)
-  await SimpleNominationProcedure.link(ProcedureLibrary)
+  await Organ.link(OrganLibrary)
+  await NominationProcedure.link(ProcedureLibrary)
   await VoteProcedure.link(ProcedureLibrary)
 
   /**
@@ -53,7 +53,7 @@ module.exports = async (deployer, network, accounts) => {
   /**
    *  Deploy procedures as empty, locked factory master contracts.
    */
-  const nomination = await deployer.deploy(SimpleNominationProcedure, { from })
+  const nomination = await deployer.deploy(NominationProcedure, { from })
   console.log("Master Nomination", nomination.address)
 
   const vote = await deployer.deploy(VoteProcedure, { from })
@@ -91,7 +91,7 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Adding procedures in registry:", entries)
     await proceduresRegistry.addEntries(entries)
     .catch(error => console.error(error.message))
-    console.log("Entries in registry:", (await proceduresRegistry.getEntriesLength()).toString())
+    console.log("Entries in registry:", (await proceduresRegistry.getOrgan()).entriesLength.toString())
   }
   console.log("Added all procedures to registry.")
 }

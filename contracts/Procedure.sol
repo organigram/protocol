@@ -125,135 +125,15 @@ contract Procedure is ERC165, Initializable {
         procedureData.applyProposal(proposalKey);
     }
 
-    // function createProposal(MetadataLibrary.Metadata calldata metadata)
-    //     public returns (uint256)
-    // {
-    //     return procedureData.createProposal(metadata);
-    // }
-
-    // function proposalAddEntries(
-    //     uint256 proposalKey, address payable organ, OrganLibrary.Entry[] memory entries, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalAddEntries(proposalKey, organ, entries, lock);
-    // }
-
-    // function proposalRemoveEntries(
-    //     uint256 proposalKey, address payable organ, uint256[] memory indexes, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalRemoveEntries(proposalKey, organ, indexes, lock);
-    // }
-
-    // function proposalReplaceEntry(
-    //     uint256 proposalKey, address payable organ, uint index, address payable addr,
-    //     bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalReplaceEntry(proposalKey, organ, index, addr, ipfsHash, hashFunction, hashSize, lock);
-    // }
-
-    // function proposalAddProcedure(
-    //     uint256 proposalKey, address payable organ, address procedure, bytes2 permissions, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalAddProcedure(proposalKey, organ, procedure, permissions, lock);
-    // }
-
-    // function proposalRemoveProcedure(
-    //     uint256 proposalKey, address payable organ, address procedure, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalRemoveProcedure(proposalKey, organ, procedure, lock);
-    // }
-
-    // function proposalReplaceProcedure(
-    //     uint256 proposalKey, address payable organ,
-    //     address oldProcedure, address newProcedure, bytes2 permissions, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalReplaceProcedure(proposalKey, organ, oldProcedure, newProcedure, permissions, lock);
-    // }
-
-    // function proposalCall(
-    //     uint256 proposalKey, bytes memory call,  bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalCall(proposalKey, call, lock);
-    // }
-
-    // function proposalReceiveCollectible(
-    //     uint256 proposalKey, address payable organ, address operator, address target, uint256 token_id, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalReceiveCollectible(proposalKey, organ, operator, target, token_id, lock);
-    // }
-
-    // function proposalTransferCollectible(
-    //     uint256 proposalKey, address payable organ, address operator, address target, uint256 token_id, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalTransferCollectible(proposalKey, organ, operator, target, token_id, lock);
-    // }
-
-    // function proposalReceiveCoins(
-    //     uint256 proposalKey, address payable organ, address operator, address target, uint256 value, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalReceiveCoins(proposalKey, organ, operator, target, value, lock);
-    // }
-
-    // function proposalTransferCoins(
-    //     uint256 proposalKey, address payable organ, address operator, address target, uint256 value, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalTransferCoins(proposalKey, organ, operator, target, value, lock);
-    // }
-
-    // function proposalReceiveEther(
-    //     uint256 proposalKey, address payable organ, address target, uint256 value, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalReceiveEther(proposalKey, organ, target, value, lock);
-    // }
-
-    // function proposalTransferEther(
-    //     uint256 proposalKey, address payable organ, address target, uint256 value, bool lock
-    // )
-    //     public
-    // {
-    //     procedureData.proposalTransferEther(proposalKey, organ, target, value, lock);
-    // }
-
-    // function lockProposal(uint256 proposalKey)
-    //     public
-    // {
-    //     procedureData.lockProposal(proposalKey);
-    // }
-
     /*
         Accessors.
     */
 
-    function procedure()
+    function getProcedure()
         public
         view
         returns (
-            bytes32 ipfsHash,   // Metadata
-            uint8 hashFunction,
-            uint8 hashSize,
+            MetadataLibrary.Metadata memory metadata,
             address payable proposers,
             address payable moderators,
             address payable deciders,
@@ -261,9 +141,7 @@ contract Procedure is ERC165, Initializable {
         )
     {
         return (
-            procedureData.metadata.ipfsHash,
-            procedureData.metadata.hashFunction,
-            procedureData.metadata.hashSize,
+            procedureData.metadata,
             procedureData.proposers,
             procedureData.moderators,
             procedureData.deciders,
@@ -271,7 +149,7 @@ contract Procedure is ERC165, Initializable {
         );
     }
 
-    function proposal(uint256 proposalKey)
+    function getProposal(uint256 proposalKey)
         public view
         returns (ProcedureLibrary.Proposal memory)
     {

@@ -1,7 +1,7 @@
 var CID = require("cids")
 var Organigram = artifacts.require("Organigram")
 var Organ = artifacts.require("Organ")
-var SimpleNominationProcedure = artifacts.require("SimpleNominationProcedure")
+var NominationProcedure = artifacts.require("NominationProcedure")
 var VoteProcedure = artifacts.require("VoteProcedure")
 
 // Multihash for CID QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH (empty file)
@@ -12,6 +12,12 @@ const HASH_SIZE = "0x20"
 module.exports = async (deployer, network, accounts) => {
   if (network !== "development" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork")
     return;
+
+  const EMPTY_CID = multihashToCid({
+    ipfsHash: EMPTY_FILE_HASH,
+    hashFunction: parseInt(HASH_FUNCTION, 16),
+    hashSize: parseInt(HASH_SIZE, 16)
+  })
 
   const from = accounts[0]
   console.log("Current account", from)
@@ -37,7 +43,7 @@ module.exports = async (deployer, network, accounts) => {
   console.log("Master Procedures", masterProcedures)
   const procedures = await Organ.at(masterProcedures)
   const vote = await VoteProcedure.deployed()
-  const nomination = await SimpleNominationProcedure.deployed()
+  const nomination = await NominationProcedure.deployed()
 
   console.log("Index of Nomination", (await procedures.getEntryIndexForAddress(nomination.address)).toString())
   console.log("Index of Vote", (await procedures.getEntryIndexForAddress(vote.address)).toString())
@@ -65,7 +71,7 @@ module.exports = async (deployer, network, accounts) => {
   console.log(`* norms:`, norms.address)
 
   const _nominateAdmins = (await organigram.createProcedure(nomination.address, {from})).logs[0].args
-  const nominateAdmins = await SimpleNominationProcedure.at(_nominateAdmins.procedure)
+  const nominateAdmins = await NominationProcedure.at(_nominateAdmins.procedure)
   await nominateAdmins.initialize(
     { // Metadata.
       ipfsHash: EMPTY_FILE_HASH,
@@ -101,7 +107,7 @@ module.exports = async (deployer, network, accounts) => {
   console.log(`- voteNorms: ${voteNorms.address}`)
 
   const _updateSystem = (await organigram.createProcedure(nomination.address, {from})).logs[0].args.procedure
-  const updateSystem = await SimpleNominationProcedure.at(_updateSystem)
+  const updateSystem = await NominationProcedure.at(_updateSystem)
   await updateSystem.initialize(
     { // Metadata.
       ipfsHash: EMPTY_FILE_HASH,
@@ -135,13 +141,14 @@ module.exports = async (deployer, network, accounts) => {
   await norms.replaceProcedure(from, updateSystem.address, "0xffff", { from })
   console.log(`norms.replaceProcedure(from, updateSystem.address, "0xffff")`)
 
+  const adminsData = await admins.getOrgan()
   console.log("\n-- Admins entries --")
-  for (var i = 1 ; String(i) !== (await admins.getEntriesLength()).toString() ; ++i) {
+  for (var i = 1 ; String(i) !== adminsData.entriesLength.toString() ; ++i) {
     console.log(`Entry ${i}`, "->", (await admins.getEntry(String(i))).addr)
   }
   console.log("\n-- Admins procedures --")
-  for (var i = 0 ; String(i) !== (await admins.getProceduresLength()).toString() ; ++i) {
-    console.log(`Procedure ${i}`, "->", (await admins.getProcedure(String(i)).then(p => [p.procedure, p.permissions])))
+  for (var i = 0 ; String(i) !== adminsData.proceduresLength.toString() ; ++i) {
+    console.log(`Procedure ${i}`, "->", (await admins.getProcedure(String(i)).then(p => [p.addr, p.perms])))
   }
 
   console.log("\nProcedure Nomination")
@@ -163,7 +170,7 @@ module.exports = async (deployer, network, accounts) => {
     { from }
   )).logs[0].args.proposalKey.toString()
   console.log(`nominateAdmins.propose(metadata, operations)`, "->", nominateAdminsProposal)
-  console.log(await nominateAdmins.proposal(nominateAdminsProposal).then(({
+  console.log(await nominateAdmins.getProposal(nominateAdminsProposal).then(({
     creator, metadata, blockReason, presented, blocked, adopted, applied, operations
   }) => ({
     creator,
@@ -199,7 +206,7 @@ module.exports = async (deployer, network, accounts) => {
     { from }
   )).logs[0].args.proposalKey.toString()
   console.log(`voteNorms.propose(metadata, operations)`, "->", voteNormsProposal)
-  console.log(await voteNorms.proposal(voteNormsProposal).then(({
+  console.log(await voteNorms.getProposal(voteNormsProposal).then(({
     creator, metadata, blockReason, presented, blocked, adopted, applied, operations
   }) => ({
     creator,
@@ -247,61 +254,89 @@ module.exports = async (deployer, network, accounts) => {
       "address": admins.address,
       "procedures": await getProcedures(admins),
       "entries": await getEntries(admins),
-      "metadata": await admins.getMetadata().then(result => multihashToCid(result).ipfsio),
+      "organ": await admins.getOrgan().then(data => ({
+        metadata: multihashToCid(data.metadata).uri,
+        proceduresLength: data.proceduresLength.toString(),
+        entriesLength: data.entriesLength.toString(),
+      })),
     },
     "norms": {
       "address": norms.address,
       "procedures": await getProcedures(norms),
       "entries": await getEntries(norms),
-      "organData": await norms.getMetadata().then(result => multihashToCid(result).ipfsio),
+      "organ": await norms.getOrgan().then(data => ({
+        metadata: multihashToCid(data.metadata).uri,
+        proceduresLength: data.proceduresLength.toString(),
+        entriesLength: data.entriesLength.toString(),
+      })),
     },
     "nominateAdmins": {
       "address": nominateAdmins.address,
-      "procedure": await nominateAdmins.procedure().then(({ proposers, moderators, deciders }) => ({ proposers, moderators, deciders }))
+      "procedure": await nominateAdmins.getProcedure().then(
+        ({ metadata, proposers, moderators, deciders, proposalsLength }) =>
+          ({
+            metadata: multihashToCid(metadata).uri,
+            proposers, moderators, deciders,
+            proposalsLength: proposalsLength.toString()
+          })
+      )
     },
     "voteNorms": {
       "address": voteNorms.address,
-      "procedure": await voteNorms.procedure().then(({ proposers, moderators, deciders }) => ({ proposers, moderators, deciders }))
+      "procedure": await voteNorms.getProcedure().then(
+        ({ metadata, proposers, moderators, deciders, proposalsLength }) =>
+        ({
+          metadata: multihashToCid(metadata).uri,
+          proposers, moderators, deciders,
+          proposalsLength: proposalsLength.toString()
+        })
+      )
     },
     "updateSystem": {
       "address": updateSystem.address,
-      "procedure": await updateSystem.procedure().then(({ proposers, moderators, deciders }) => ({ proposers, moderators, deciders }))
+      "procedure": await updateSystem.getProcedure().then(
+        ({ metadata, proposers, moderators, deciders, proposalsLength }) =>
+        ({
+          metadata: multihashToCid(metadata).uri,
+          proposers, moderators, deciders,
+          proposalsLength: proposalsLength.toString()
+        })
+      )
     }
   })
 }
 
 const getProcedures = async organ => {
-  const length = (await organ.getProceduresLength()).toString()
+  const length = (await organ.getOrgan()).proceduresLength.toString()
   if (length === "0")
     return {}
 
   var i = 0
   var proceduresPromises = []
   for (i ; String(i) != length ; i++) {
+    const index = `${i}`
     proceduresPromises.push(
-      organ.getProcedure(i)
+      organ.getProcedure(index)
       .catch(e => console.log("Error", e.message))
-      .then(async result => {
-        return {
-          procedure: result.procedure,
-          permissions: result.permissions.toString()
-        }
-      })
+      .then(async result => ({
+        addr: result.addr,
+        perms: result.perms.toString()
+      }))
       .catch(e => console.error("Error", e.message))
     )
   }
   const _procedures = await Promise.all(proceduresPromises)
   var procedures = {}
   console.log(`getProcedures(${organ.address}):`)
-  _procedures.filter(p => !!p).forEach(({ procedure, permissions }) => {
-    procedures[procedure] = permissions
-    console.log(`- ${procedure} -> ${permissions}`)
+  _procedures.filter(p => !!p).forEach(({ addr, perms }) => {
+    procedures[addr] = perms
+    console.log(`- ${addr} -> ${perms}`)
   })
   return procedures
 }
 
 const getEntries = async organ => {
-  const length = (await organ.getEntriesLength()).toString()
+  const length = (await organ.getOrgan()).entriesLength.toString()
   if (length === "0")
     return []
 
@@ -318,16 +353,23 @@ const getEntries = async organ => {
   console.log(`getEntries(${organ.address})`)
   return Promise.all(promises)
   .then(entries =>
-    entries.map((entry, i) => `- ${entry.index} -> ${entry.addr}${entry.ipfsHash !== "0x0000000000000000000000000000000000000000000000000000000000000000" ? "\n" + entry.ipfsHash : ""}`)
+    entries.map((entry, i) => {
+      const doc = multihashToCid(entry.doc)
+      return `- ${entry.index} -> ${entry.addr}${doc.cid ? `\n${doc.cid}` : ""}`
+    })
   )
 }
 
 function multihashToCid(result) {
   const { ipfsHash, hashFunction, hashSize } = result
-  const multihash = `${hashSize.toString('hex')}${hashFunction.toString('hex')}${ipfsHash}`
-  // console.log("multihash\n" + multihash)
-  const cid = ""// new CID(multihash.toString('hex'))
-  return {
-    cid, ipfsio: `https://ipfs.io/ipfs/${cid}`
+  const multihash = `${hashFunction.toString(16).padStart(2, "0")}${hashSize.toString(16).padStart(2, "0")}${ipfsHash.substring(2)}`
+  try {
+    const cid = new CID(1, hashFunction, Buffer.from(`${multihash}`))
+    return {
+      cid: cid.toV0(), ipfsio: `https://ipfs.io/ipfs/${cid}`, uri: `ipfs://${cid}`
+    }
+  }
+  catch (error) {
+    return { cid: "", ipfsio: "", uri: "" }
   }
 }

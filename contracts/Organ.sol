@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import "./libraries/MetadataLibrary.sol";
 import "./libraries/OrganLibrary.sol";
+import "./IOrgan.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
 import "@openzeppelin/contracts/proxy/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
@@ -17,6 +18,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 */
 
 contract Organ is
+    IOrgan,
     ERC165,
     Initializable,
     IERC777Recipient,
@@ -48,6 +50,7 @@ contract Organ is
     )
         external
         initializer
+        override
     {
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_ID_ORGAN);
@@ -63,7 +66,7 @@ contract Organ is
         organData.receiveEther(msg.value);
     }
 
-    // @TODO : Protect ether transfers against re-entrancy attacks.
+    // @todo : Protect ether transfers against re-entrancy attacks.
     function transfer(address payable to, uint256 value)
         public
     {
@@ -126,7 +129,8 @@ contract Organ is
     }
 
     function updateMetadata(MetadataLibrary.Metadata calldata metadata)
-        public
+        external
+        override
     {
         organData.updateMetadata(metadata);
     }
@@ -136,14 +140,16 @@ contract Organ is
     */
 
     function addEntries(OrganLibrary.Entry[] memory entries)
-        public
+        external
+        override
         returns (uint256[] memory indexes)
     {
         return organData.addEntries(entries);
     }
 
     function removeEntries(uint256[] memory indexes)
-        public
+        external
+        override
     {
         organData.removeEntries(indexes);
     }
@@ -152,21 +158,24 @@ contract Organ is
         uint256 index,
         OrganLibrary.Entry memory entry
     )
-        public
+        external
+        override
     {
         organData.replaceEntry(index, entry);
     }
 
     // @TODO : Should be plural.
     function addProcedure(address procedure, bytes2 permissions)
-        public
+        external
+        override
     {
         organData.addProcedure(procedure, permissions);
     }
 
     // @TODO : Should be plural.
     function removeProcedure(address procedure)
-        public
+        external
+        override
     {
         organData.removeProcedure(procedure);
     }
@@ -176,7 +185,8 @@ contract Organ is
         address newProcedure,
         bytes2 permissions
     )
-        public
+        external
+        override
     {
         organData.replaceProcedure(oldProcedure, newProcedure, permissions);
     }
@@ -185,59 +195,56 @@ contract Organ is
         Accessors.
     */
 
-    function getEntriesLength()
-        public
+    function getOrgan()
+        external
         view
-        returns (uint256 length)
+        override
+        returns (
+            MetadataLibrary.Metadata memory metadata,
+            uint256 proceduresLength,
+            uint256 entriesLength
+        )
     {
-        return organData.entries.length;
+        return (
+            organData.metadata,
+            organData.getProceduresLength(),
+            organData.entries.length
+        );
     }
 
     function getEntryIndexForAddress(address addr)
-        public
+        external
         view
+        override
         returns (uint256 index)
     {
         return organData.addressIndexInEntries[addr];
     }
 
     function getEntry(uint256 index)
-        public
+        external
         view
+        override
         returns (OrganLibrary.Entry memory entry)
     {
         return organData.getEntry(index);
     }
 
-    function getProceduresLength()
-        public
-        view
-        returns (uint256 length)
-    {
-        return organData.getProceduresLength();
-    }
-
     function getProcedure(uint256 index)
-        public
+        external
         view
-        returns (address procedure, bytes2 permissions)
+        override
+        returns (address addr, bytes2 perms)
     {
         return organData.getProcedure(index);
     }
 
-    function getPermissions(address procedure)
-        public
+    function getPermissions(address addr)
+        external
         view
-        returns (bytes2 permissions)
+        override
+        returns (bytes2 perms)
     {
-        return organData.getPermissions(procedure);
-    }
-
-    function getMetadata()
-        public
-        view
-        returns (MetadataLibrary.Metadata memory metadata)
-    {
-        return organData.getMetadata();
+        return organData.permissions[addr];
     }
 }

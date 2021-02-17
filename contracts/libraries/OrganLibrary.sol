@@ -325,34 +325,18 @@ library OrganLibrary {
     function getProcedure(OrganData storage self, uint256 index)
         public
         view
-        returns (address procedure, bytes2 permissions)
+        returns (address addr, bytes2 perms)
     {
-        procedure = self.procedures.at(index);
-        permissions = self.permissions[procedure];
-        return (procedure, permissions);
+        addr = self.procedures.at(index);
+        perms = self.permissions[addr];
+        return (addr, perms);
     }
 
     function getEntry(OrganData storage self, uint256 index)
         public
         view
-        returns (Entry storage entry)
+        returns (Entry storage)
     {
         return self.entries[index];
-    }
-
-    function getPermissions(OrganData storage self, address procedure)
-        public
-        view
-        returns (bytes2 permissions)
-    {
-        return self.permissions[procedure];
-    }
-
-    function getMetadata(OrganData storage self)
-        public
-        view
-        returns (MetadataLibrary.Metadata storage)
-    {
-        return (self.metadata);
     }
 }

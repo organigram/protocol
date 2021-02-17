@@ -10,7 +10,7 @@ pragma experimental ABIEncoderV2;
 import "../libraries/MetadataLibrary.sol";
 import "../Procedure.sol";
 
-contract SimpleNominationProcedure is Procedure {
+contract NominationProcedure is Procedure {
     using MetadataLibrary for MetadataLibrary.Metadata;
     bytes4 private constant _INTERFACE_NOMINATION = 0xc5f28e49; // nominate().
 

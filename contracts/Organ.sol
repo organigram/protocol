@@ -2,9 +2,12 @@
 pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
-import "./libraries/MetadataLibrary.sol";
+import "./libraries/CoreLibrary.sol";
 import "./libraries/OrganLibrary.sol";
 import "./IOrgan.sol";
+import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
 import "@openzeppelin/contracts/proxy/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
@@ -25,9 +28,10 @@ contract Organ is
     IERC777Sender,
     IERC721Receiver
 {
-    using MetadataLibrary for MetadataLibrary.Metadata;
+    using CoreLibrary for CoreLibrary.Metadata;
+    using CoreLibrary for CoreLibrary.Entry;
     using OrganLibrary for OrganLibrary.OrganData;
-    using OrganLibrary for OrganLibrary.Entry;
+    
     // Organ contract interface.
     bytes4 private constant _INTERFACE_ID_ORGAN = 0xbae78d7b;
     // Organ data storage.
@@ -40,19 +44,21 @@ contract Organ is
     constructor()
         public
     {
+        // Register EIP165 interfaces for introspection.
         _registerInterface(_INTERFACE_ID_ORGAN);
-        organData.init(msg.sender, MetadataLibrary.Metadata(0, 0, 0));
+        organData.init(msg.sender, CoreLibrary.Metadata(0, 0, 0));
     }
 
     function initialize(
         address payable admin,
-        MetadataLibrary.Metadata memory metadata
+        CoreLibrary.Metadata memory metadata
     )
         external
         initializer
         override
     {
-        // Register EIP165 interface for introspection.
+        // Register ERC165 interfaces for introspection.
+        _registerInterface(0x01ffc9a7); // ERC-165
         _registerInterface(_INTERFACE_ID_ORGAN);
         organData.init(admin, metadata);
     }
@@ -128,7 +134,7 @@ contract Organ is
         return this.onERC721Received.selector;
     }
 
-    function updateMetadata(MetadataLibrary.Metadata calldata metadata)
+    function updateMetadata(CoreLibrary.Metadata calldata metadata)
         external
         override
     {
@@ -139,7 +145,7 @@ contract Organ is
         API for Procedure contract.
     */
 
-    function addEntries(OrganLibrary.Entry[] memory entries)
+    function addEntries(CoreLibrary.Entry[] memory entries)
         external
         override
         returns (uint256[] memory indexes)
@@ -156,7 +162,7 @@ contract Organ is
 
     function replaceEntry(
         uint256 index,
-        OrganLibrary.Entry memory entry
+        CoreLibrary.Entry memory entry
     )
         external
         override
@@ -200,15 +206,17 @@ contract Organ is
         view
         override
         returns (
-            MetadataLibrary.Metadata memory metadata,
+            CoreLibrary.Metadata memory metadata,
             uint256 proceduresLength,
-            uint256 entriesLength
+            uint256 entriesLength,
+            uint256 entriesCount
         )
     {
         return (
             organData.metadata,
             organData.getProceduresLength(),
-            organData.entries.length
+            organData.entries.length,
+            organData.entriesCount
         );
     }
 
@@ -225,7 +233,7 @@ contract Organ is
         external
         view
         override
-        returns (OrganLibrary.Entry memory entry)
+        returns (CoreLibrary.Entry memory entry)
     {
         return organData.getEntry(index);
     }

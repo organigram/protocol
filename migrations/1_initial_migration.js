@@ -6,7 +6,7 @@ var ProcedureLibrary = artifacts.require("ProcedureLibrary")
 module.exports = async (deployer) => {
   // Deploy the Migrations contract as our only task
   await deployer.deploy(Migrations)
-  await deployer.deploy(MetadataLibrary)
+  await deployer.deploy(CoreLibrary)
   await deployer.deploy(OrganLibrary)
   await deployer.deploy(ProcedureLibrary)
 }

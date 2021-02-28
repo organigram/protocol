@@ -14,7 +14,7 @@ const HASH_FUNCTION = "0x12"
 const HASH_SIZE = "0x20"
 
 module.exports = async (deployer, network, accounts) => {
-  if (network !== "development" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork")
+  if (network !== "development" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork" && network !== "pichain")
     return;
 
   const from = accounts[0]
@@ -23,10 +23,13 @@ module.exports = async (deployer, network, accounts) => {
   /**
    *  Linking libraries.
    */
-  await Organigram.link(MetadataLibrary)
+  await Organigram.link(CoreLibrary)
   await Organigram.link(OrganLibrary)
+  await Organ.link(CoreLibrary)
   await Organ.link(OrganLibrary)
+  await NominationProcedure.link(CoreLibrary)
   await NominationProcedure.link(ProcedureLibrary)
+  await VoteProcedure.link(CoreLibrary)
   await VoteProcedure.link(ProcedureLibrary)
 
   /**
@@ -84,14 +87,14 @@ module.exports = async (deployer, network, accounts) => {
   entries = (await Promise.all(
     entries.map(entry =>
       proceduresRegistry.getEntryIndexForAddress(entry.addr)
-      .then(index => ({ ...entry, inRegistry: index > 0 }))
+      .then(index => ({ ...entry, inRegistry: parseInt(index.toString()) > 0 }))
     )
   )).filter(e => !e.inRegistry)
   if (entries.length > 0) {
     console.log("Adding procedures in registry:", entries)
-    await proceduresRegistry.addEntries(entries)
+    await proceduresRegistry.addEntries(entries, { from })
     .catch(error => console.error(error.message))
-    console.log("Entries in registry:", (await proceduresRegistry.getOrgan()).entriesLength.toString())
+    console.log("Entries in registry:", (await proceduresRegistry.getOrgan()).entriesCount.toString())
   }
   console.log("Added all procedures to registry.")
 }

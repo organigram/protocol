@@ -7,15 +7,15 @@ pragma experimental ABIEncoderV2;
     This library holds the logic to manage a simple organ.
 */
 
-import "./MetadataLibrary.sol";
+import "./CoreLibrary.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 
 library OrganLibrary {
-    using MetadataLibrary for MetadataLibrary.Metadata;
     using EnumerableSet for EnumerableSet.AddressSet;
-
+    using CoreLibrary for CoreLibrary.Metadata;
+    using CoreLibrary for CoreLibrary.Entry;
     bytes2 public constant PERMISSION_ADD_PROCEDURES = 0x0001;
     bytes2 public constant PERMISSION_REMOVE_PROCEDURES = 0x0002;
     bytes2 public constant PERMISSION_ADD_ENTRIES = 0x0004;
@@ -31,14 +31,10 @@ library OrganLibrary {
     /*
         Entries are sets of addresses, contracts or documents.
     */
-    struct Entry {
-        address addr;       // Address of account or contract.
-        MetadataLibrary.Metadata doc;   // Doc stored on IPFS.
-    }
 
     struct OrganData {
-        MetadataLibrary.Metadata metadata;
-        Entry[] entries;
+        CoreLibrary.Metadata metadata;
+        CoreLibrary.Entry[] entries;
         uint256 entriesCount;
         EnumerableSet.AddressSet procedures;
         mapping(address => bytes2) permissions;
@@ -81,7 +77,7 @@ library OrganLibrary {
 
     function init(
         OrganData storage self, address defaultAdmin,
-        MetadataLibrary.Metadata memory metadata
+        CoreLibrary.Metadata memory metadata
     )
         public
     {
@@ -97,15 +93,15 @@ library OrganLibrary {
 
         // Reserve index O for empty Entry.
         self.entries.push(
-            Entry(
+            CoreLibrary.Entry(
                 address(0),
-                MetadataLibrary.Metadata(0, 0, 0)
+                CoreLibrary.Metadata(0, 0, 0)
             )
         );
     }
 
     function updateMetadata(
-        OrganData storage self, MetadataLibrary.Metadata memory metadata
+        OrganData storage self, CoreLibrary.Metadata memory metadata
     )
         public
         onlyPerm(self, PERMISSION_UPDATE_METADATA)
@@ -242,7 +238,7 @@ library OrganLibrary {
     */
 
     function addEntries(
-        OrganData storage self, Entry[] memory entries
+        OrganData storage self, CoreLibrary.Entry[] memory entries
     )
         public
         onlyPerm(self, PERMISSION_ADD_ENTRIES)
@@ -295,7 +291,7 @@ library OrganLibrary {
     }
 
     function replaceEntry(
-        OrganData storage self, uint256 index, Entry memory entry
+        OrganData storage self, uint256 index, CoreLibrary.Entry memory entry
     )
         public
         onlyPerm(self, PERMISSION_REMOVE_ENTRIES)
@@ -335,7 +331,7 @@ library OrganLibrary {
     function getEntry(OrganData storage self, uint256 index)
         public
         view
-        returns (Entry storage)
+        returns (CoreLibrary.Entry storage)
     {
         return self.entries[index];
     }

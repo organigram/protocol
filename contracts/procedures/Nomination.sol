@@ -7,11 +7,11 @@ pragma experimental ABIEncoderV2;
     A nomination applies an effect if nominator is in the nominaters organ.
 */
 
-import "../libraries/MetadataLibrary.sol";
+import "../libraries/CoreLibrary.sol";
 import "../Procedure.sol";
 
 contract NominationProcedure is Procedure {
-    using MetadataLibrary for MetadataLibrary.Metadata;
+    using CoreLibrary for CoreLibrary.Metadata;
     bytes4 private constant _INTERFACE_NOMINATION = 0xc5f28e49; // nominate().
 
     constructor ()
@@ -22,7 +22,7 @@ contract NominationProcedure is Procedure {
     }
 
     function initialize(
-        MetadataLibrary.Metadata memory _metadata,
+        CoreLibrary.Metadata memory _metadata,
         address payable _proposers,
         address payable _moderators,
         address payable _deciders,

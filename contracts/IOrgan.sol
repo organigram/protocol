@@ -2,20 +2,19 @@
 pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
-import "./libraries/MetadataLibrary.sol";
-import "./libraries/OrganLibrary.sol";
+import "./libraries/CoreLibrary.sol";
 
 interface IOrgan {
     function initialize(
         address payable admin,
-        MetadataLibrary.Metadata memory metadata
+        CoreLibrary.Metadata memory metadata
     ) external;
-    function updateMetadata(MetadataLibrary.Metadata calldata metadata) external;
-    function addEntries(OrganLibrary.Entry[] memory entries) external returns (uint256[] memory indexes);
+    function updateMetadata(CoreLibrary.Metadata calldata metadata) external;
+    function addEntries(CoreLibrary.Entry[] memory entries) external returns (uint256[] memory indexes);
     function removeEntries(uint256[] memory indexes) external;
     function replaceEntry(
         uint256 index,
-        OrganLibrary.Entry memory entry
+        CoreLibrary.Entry memory entry
     ) external;
     function addProcedure(address procedure, bytes2 permissions) external;
     function removeProcedure(address procedure) external;
@@ -27,9 +26,10 @@ interface IOrgan {
     function getOrgan()
         external view
         returns (
-            MetadataLibrary.Metadata memory metadata,
+            CoreLibrary.Metadata memory metadata,
             uint256 proceduresLength,
-            uint256 entriesLength
+            uint256 entriesLength,
+            uint256 entriesCount
         );
     function getEntryIndexForAddress(address addr)
         external view
@@ -37,7 +37,7 @@ interface IOrgan {
     function getEntry(uint256 index)
         external
         view
-        returns (OrganLibrary.Entry memory entry);
+        returns (CoreLibrary.Entry memory entry);
     function getProcedure(uint256 index)
         external
         view

@@ -2,7 +2,7 @@
 pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
-import "../libraries/MetadataLibrary.sol";
+import "../libraries/CoreLibrary.sol";
 import "../Procedure.sol";
 
 /*
@@ -28,25 +28,23 @@ struct Ballot {
 }
 
 contract VoteProcedure is Procedure {
-    using MetadataLibrary for MetadataLibrary.Metadata;
+    using CoreLibrary for CoreLibrary.Metadata;
+    using ProcedureLibrary for ProcedureLibrary.Operation;
     bytes4 private constant _INTERFACE_VOTE = 0xc9d27afe; // vote().
     mapping (uint256 => Ballot) internal ballots;
-    uint32 public quorumSize;       // Minimum number of voters.
+    uint32 public quorumSize;       // Minimum number of votes.
     uint32 public voteDuration;     // Duration of vote in blocks.
     uint32 public majoritySize;     // majoritySize.div((2^32)-1) is the minimum ratio for adoption.
 
     constructor ()
         public
     {
-        quorumSize = 0;
-        voteDuration = 0;
-        majoritySize = 0;
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_VOTE);
     }
 
     function initialize(
-        MetadataLibrary.Metadata memory,
+        CoreLibrary.Metadata memory,
         address payable,
         address payable,
         address payable,
@@ -59,7 +57,7 @@ contract VoteProcedure is Procedure {
     }
 
     function initialize(
-        MetadataLibrary.Metadata memory _metadata,
+        CoreLibrary.Metadata memory _metadata,
         address payable _proposers,
         address payable _moderators,
         address payable _deciders,
@@ -67,7 +65,7 @@ contract VoteProcedure is Procedure {
         uint32 _quorumSize,
         uint32 _voteDuration,
         uint32 _majoritySize
-    ) 
+    )
         public
     {
         super.initialize(_metadata, _proposers, _moderators, _deciders, _withModeration);
@@ -121,8 +119,9 @@ contract VoteProcedure is Procedure {
         Procedure methods overrides.
     */
 
+    // @fixme : Start ballot only when presented.
     function propose(
-        MetadataLibrary.Metadata memory _metadata,
+        CoreLibrary.Metadata memory _metadata,
         ProcedureLibrary.Operation[] memory _operations
     )
         public
@@ -137,12 +136,12 @@ contract VoteProcedure is Procedure {
 
     /// @notice A veto accepts arguments which defines a motivation as a IPFS multihash.
     /// @dev Overrides Procedure.blockProposal.
-    function blockProposal(uint256 proposalKey, MetadataLibrary.Metadata calldata reason)
+    function blockProposal(uint256 proposalKey, CoreLibrary.Metadata calldata reason)
         public
         override
         onlyInOrgan(procedureData.moderators)
     {
-        require(ballots[proposalKey].start + voteDuration > block.number, "Ballot ended.");
+        require(ballots[proposalKey].start != 0, "Ballot started.");
         super.blockProposal(proposalKey, reason);
     }
 
@@ -156,7 +155,7 @@ contract VoteProcedure is Procedure {
         super.adoptProposal(proposalKey);
     }
 
-    function ballot(uint256 _proposalKey)
+    function getBallot(uint256 _proposalKey)
         public
         view
         returns (

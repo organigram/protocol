@@ -3,19 +3,19 @@ pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 import "./Organ.sol";
-import "./libraries/MetadataLibrary.sol";
+import "./libraries/CoreLibrary.sol";
 import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
 
 contract Organigram {
-    using OrganLibrary for OrganLibrary.Entry;
-    using MetadataLibrary for MetadataLibrary.Metadata;
+    using CoreLibrary for CoreLibrary.Entry;
+    using CoreLibrary for CoreLibrary.Metadata;
     address payable public organ;
     address payable public procedures; // Organ with procedures addresses.
 
     event organCreated(address payable organ);
     event procedureCreated(address payable procedureType, address payable procedure);
 
-    constructor(MetadataLibrary.Metadata memory metadata)
+    constructor(CoreLibrary.Metadata memory metadata)
         public
     {
         organ = payable(address(new Organ()));
@@ -24,7 +24,7 @@ contract Organigram {
 
     function createOrgan(
         address payable admin,
-        MetadataLibrary.Metadata memory metadata
+        CoreLibrary.Metadata memory metadata
     )
         public
         returns (address payable clone)
@@ -46,17 +46,20 @@ contract Organigram {
         // Check if procedure is in registry.
         require(Organ(procedures).getEntryIndexForAddress(procedureId) > 0, "Procedure not found.");
         procedure = _createClone(procedureId);
-        // The initialize method needs to be called directly.
         procedureCreated(procedureId, procedure);
+        // NB: The initialize method will need to be called directly.
         return procedure;
     }
 
-    function registerProcedures(OrganLibrary.Entry[] memory entries)
+    function registerProcedures(CoreLibrary.Entry[] memory entries)
         external
     {
         // Only valid procedures
         for (uint256 i; i < entries.length; ++i) {
-            require(ERC165Checker.supportsInterface(entries[i].addr, 0x71dbd330), "An entry in parameters is not a valid procedure.");
+            require(
+                ERC165Checker.supportsInterface(entries[i].addr, 0x71dbd330),
+                "An entry in parameters is not a valid procedure."
+            );
         }
         Organ(organ).addEntries(entries);
     }
@@ -74,5 +77,6 @@ contract Organigram {
             mstore(add(clone, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
             result := create(0, clone, 0x37)
         }
+        return result;
     }
 }

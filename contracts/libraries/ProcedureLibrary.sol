@@ -3,7 +3,7 @@ pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 import "../IOrgan.sol";
-import "./MetadataLibrary.sol";
+import "./CoreLibrary.sol";
 
 /*
     Organigr.am Contracts Framework - Procedure library.
@@ -17,10 +17,10 @@ import "./MetadataLibrary.sol";
 */
 
 library ProcedureLibrary {
-    using MetadataLibrary for MetadataLibrary.Metadata;
+    using CoreLibrary for CoreLibrary.Metadata;
 
     struct ProcedureData {
-        MetadataLibrary.Metadata metadata;
+        CoreLibrary.Metadata metadata;
         address payable proposers;
         address payable moderators;
         address payable deciders;
@@ -32,8 +32,8 @@ library ProcedureLibrary {
 
     struct Proposal {
         address payable creator;
-        MetadataLibrary.Metadata metadata;
-        MetadataLibrary.Metadata blockReason;
+        CoreLibrary.Metadata metadata;
+        CoreLibrary.Metadata blockReason;
         bool presented;
         bool blocked;
         bool adopted;
@@ -105,6 +105,7 @@ library ProcedureLibrary {
         uint8 hashFunction,
         uint8 hashSize
     );
+    event ProposalPresented(address payable indexed presenter, uint256 indexed proposalKey);
     event ProposalApplied(uint256 indexed proposalKey);
 
     /*
@@ -113,7 +114,7 @@ library ProcedureLibrary {
 
     function init(
         ProcedureData storage self,
-        MetadataLibrary.Metadata memory metadata,
+        CoreLibrary.Metadata memory metadata,
         address payable proposers,
         address payable moderators,
         address payable deciders,
@@ -141,7 +142,7 @@ library ProcedureLibrary {
     }
 
     function updateMetadata(
-        ProcedureData storage self, MetadataLibrary.Metadata memory metadata
+        ProcedureData storage self, CoreLibrary.Metadata memory metadata
     )
         public onlyInOrgan(self.admin)
     {
@@ -169,7 +170,7 @@ library ProcedureLibrary {
     /// @return proposalKey of proposal created.
     function propose(
         ProcedureData storage self,
-        MetadataLibrary.Metadata memory metadata,
+        CoreLibrary.Metadata memory metadata,
         Operation[] memory operations
     )
         public
@@ -202,7 +203,7 @@ library ProcedureLibrary {
     function blockProposal(
         ProcedureData storage self,
         uint256 proposalKey,
-        MetadataLibrary.Metadata memory reason
+        CoreLibrary.Metadata memory reason
     )
         public
         onlyInOrgan(self.moderators)
@@ -212,6 +213,21 @@ library ProcedureLibrary {
         self.proposals[proposalKey].blocked = true;
         self.proposals[proposalKey].blockReason = reason;
         emit ProposalBlocked(msg.sender, proposalKey, reason.ipfsHash, reason.hashFunction, reason.hashSize);
+    }
+
+    /// @notice Present proposal, in Moderation mode.
+    /// @param proposalKey of proposal.
+    function presentProposal(
+        ProcedureData storage self,
+        uint256 proposalKey
+    )
+        public
+        onlyInOrgan(self.moderators)
+        onlyNewProposal(self, proposalKey)
+    {
+        require(self.withModeration, "Moderation not enabled.");
+        self.proposals[proposalKey].presented = true;
+        emit ProposalPresented(msg.sender, proposalKey);
     }
 
     /// @notice Adopt proposal and attempt to apply it.

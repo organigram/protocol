@@ -2,7 +2,7 @@
 pragma solidity >=0.6.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
-import "./libraries/MetadataLibrary.sol";
+import "./libraries/CoreLibrary.sol";
 import "./libraries/ProcedureLibrary.sol";
 import "@openzeppelin/contracts/introspection/ERC165.sol";
 import "@openzeppelin/contracts/proxy/Initializable.sol";
@@ -15,10 +15,9 @@ import "@openzeppelin/contracts/proxy/Initializable.sol";
 */
 
 contract Procedure is ERC165, Initializable {
-    using MetadataLibrary for MetadataLibrary.Metadata;
+    using CoreLibrary for CoreLibrary.Metadata;
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Operation;
-    using OrganLibrary for OrganLibrary.Entry;
     ProcedureLibrary.ProcedureData internal procedureData;
     bytes4 constant public _INTERFACE_ID_PROCEDURE = 0x71dbd330;
 
@@ -46,7 +45,7 @@ contract Procedure is ERC165, Initializable {
         // Register EIP165 interface for introspection.
         _registerInterface(_INTERFACE_ID_PROCEDURE);
         procedureData.init(
-            MetadataLibrary.Metadata(0, 0, 0),
+            CoreLibrary.Metadata(0, 0, 0),
             address(0), // Proposers.
             address(0), // Moderators.
             address(0), // Deciders.
@@ -55,7 +54,7 @@ contract Procedure is ERC165, Initializable {
     }
 
     function initialize(
-        MetadataLibrary.Metadata memory _metadata,
+        CoreLibrary.Metadata memory _metadata,
         address payable _proposers,
         address payable _moderators,
         address payable _deciders,
@@ -65,7 +64,8 @@ contract Procedure is ERC165, Initializable {
         virtual
         initializer
     {
-        // Register EIP165 interface for introspection.
+        // Register ERC165 interfaces for introspection.
+        _registerInterface(0x01ffc9a7); // ERC-165
         _registerInterface(_INTERFACE_ID_PROCEDURE);
         procedureData.init(_metadata, _proposers, _moderators, _deciders, _withModeration);
     }
@@ -74,7 +74,7 @@ contract Procedure is ERC165, Initializable {
         Public API : Procedure Metadata and Admin.
     */
 
-    function updateMetadata(MetadataLibrary.Metadata memory metadata)
+    function updateMetadata(CoreLibrary.Metadata memory metadata)
         public
     {
         procedureData.updateMetadata(metadata);
@@ -91,7 +91,7 @@ contract Procedure is ERC165, Initializable {
     */
 
     function propose(
-        MetadataLibrary.Metadata memory metadata,
+        CoreLibrary.Metadata memory metadata,
         ProcedureLibrary.Operation[] memory operations
     )
         public
@@ -101,12 +101,19 @@ contract Procedure is ERC165, Initializable {
         return procedureData.propose(metadata, operations);
     }
 
-    /// @notice The procedure calls this method directly to adopt and apply proposal.
-    function blockProposal(uint256 proposalKey, MetadataLibrary.Metadata calldata reason)
+    /// @notice The procedure can override this method.
+    function blockProposal(uint256 proposalKey, CoreLibrary.Metadata calldata reason)
         public
         virtual
     {
         procedureData.blockProposal(proposalKey, reason);
+    }
+
+    /// @notice When moderation is enabled, moderators must accept the proposal. 
+    function presentProposal(uint256 proposalKey)
+        public
+    {
+        procedureData.presentProposal(proposalKey);
     }
 
     /// @notice The procedure calls this method directly to adopt and apply proposal.
@@ -133,10 +140,11 @@ contract Procedure is ERC165, Initializable {
         public
         view
         returns (
-            MetadataLibrary.Metadata memory metadata,
+            CoreLibrary.Metadata memory metadata,
             address payable proposers,
             address payable moderators,
             address payable deciders,
+            bool withModeration,
             uint256 proposalsLength
         )
     {
@@ -145,6 +153,7 @@ contract Procedure is ERC165, Initializable {
             procedureData.proposers,
             procedureData.moderators,
             procedureData.deciders,
+            procedureData.withModeration,
             procedureData.proposalsLength
         );
     }

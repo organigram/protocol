@@ -10,7 +10,7 @@ const HASH_FUNCTION = "0x12"
 const HASH_SIZE = "0x20"
 
 module.exports = async (deployer, network, accounts) => {
-  if (network !== "development" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork")
+  if (network !== "development" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork" && network !== "pichain")
     return;
 
   const EMPTY_CID = multihashToCid({
@@ -21,20 +21,8 @@ module.exports = async (deployer, network, accounts) => {
 
   const from = accounts[0]
   console.log("Current account", from)
-  if (accounts.length === 1) {
-    accounts = [
-      from,
-      "0xc3a7897616Ae683089C737076e2751ADC9ecE481",
-      "0x6a0e35c6d4eCC16f821d198Dc7EeE3cEC1c45b75",
-      "0xD3039751280B3a4bFd80d0bBD8C033A5E350AC00",
-      "0xBa1e14454b7A17409B72a2314C8e2dde4537e84B",
-      "0x386e805DD81Bb8b5Ad87a93C449687970389B921",
-      "0x90B4C72567A1875cd83307C9FF874Ad7dc30A8BB",
-      "0x0Af900493B6152AC30224b42A487543C45E5b699",
-      "0x653292056173817feE247fce89A7164fB9275B46",
-      "0xC93eE1256E568564007421a6A2f46eB0e8764843"
-    ]
-  }
+  accounts.forEach((acc, index) => index > 1 && console.log("Account accessible", acc))
+
   const organigram = await Organigram.deployed()
   const masterOrgan = await organigram.organ()
   const masterProcedures = await organigram.procedures()
@@ -81,7 +69,7 @@ module.exports = async (deployer, network, accounts) => {
     admins.address, // Proposers
     admins.address, // Moderators
     admins.address, // Deciders
-    false,          // No moderation
+    true,           // With moderation
     { from }
   )
   console.log(`- nominateAdmins: ${nominateAdmins.address}`)
@@ -179,6 +167,9 @@ module.exports = async (deployer, network, accounts) => {
     presented, blocked, adopted, applied,
     operations: operations.map(({ organ, data, value }) => ({ organ, data, value }))
   })))
+  // Moderation: A moderator must present the proposal.
+  await nominateAdmins.presentProposal(nominateAdminsProposal, { from })
+  console.log(`nominateAdmins.presentProposal(nominateAdminsProposal)`)
   await nominateAdmins.nominate(nominateAdminsProposal, { from })
   console.log(`nominateAdmins.nominate(nominateAdminsProposal)`)
 
@@ -217,14 +208,14 @@ module.exports = async (deployer, network, accounts) => {
   })))
   await voteNorms.vote(voteNormsProposal, true, { from })
   console.log(`voteNorms.vote(voteNormsProposal, true)`)
-  const ballot = await voteNorms.ballot(voteNormsProposal)
+  const ballot = await voteNorms.getBallot(voteNormsProposal)
   console.log("Ballot start", ballot.start.toString())
   console.log("Vote duration", (await voteNorms.voteDuration()).toString())
 
   const waitBlock = async (height) => {
     console.log("Waiting for block", height.toString())
     return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error("Timeout")), 30000)
+      const timeout = setTimeout(() => reject(new Error("Timeout")), 60000)
       const checkBlock = async (height) => {
         const block = await web3.eth.getBlockNumber()
         console.log("Current block number", block.toString())
@@ -258,6 +249,7 @@ module.exports = async (deployer, network, accounts) => {
         metadata: multihashToCid(data.metadata).uri,
         proceduresLength: data.proceduresLength.toString(),
         entriesLength: data.entriesLength.toString(),
+        entriesCount: data.entriesCount.toString(),
       })),
     },
     "norms": {
@@ -268,6 +260,7 @@ module.exports = async (deployer, network, accounts) => {
         metadata: multihashToCid(data.metadata).uri,
         proceduresLength: data.proceduresLength.toString(),
         entriesLength: data.entriesLength.toString(),
+        entriesCount: data.entriesCount.toString(),
       })),
     },
     "nominateAdmins": {

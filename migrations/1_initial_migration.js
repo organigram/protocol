@@ -1,5 +1,5 @@
 var Migrations = artifacts.require("Migrations")
-var MetadataLibrary = artifacts.require("MetadataLibrary")
+var CoreLibrary = artifacts.require("CoreLibrary")
 var OrganLibrary = artifacts.require("OrganLibrary")
 var ProcedureLibrary = artifacts.require("ProcedureLibrary")
 

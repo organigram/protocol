@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "../libraries/CoreLibrary.sol";
@@ -36,11 +36,9 @@ contract VoteProcedure is Procedure {
     uint32 public voteDuration;     // Duration of vote in blocks.
     uint32 public majoritySize;     // majoritySize.div((2^32)-1) is the minimum ratio for adoption.
 
-    constructor ()
-        public
-    {
-        // Register EIP165 interface for introspection.
-        _registerInterface(_INTERFACE_VOTE);
+    // Register EIP165 interfaces for introspection.
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == _INTERFACE_VOTE || super.supportsInterface(interfaceId);
     }
 
     function initialize(
@@ -51,6 +49,7 @@ contract VoteProcedure is Procedure {
         bool
     )
         public
+        pure
         override
     {
         revert("Missing parameters");
@@ -70,7 +69,6 @@ contract VoteProcedure is Procedure {
     {
         super.initialize(_metadata, _proposers, _moderators, _deciders, _withModeration);
         // Register EIP165 interface for introspection.
-        _registerInterface(_INTERFACE_VOTE);
         quorumSize = _quorumSize;
         voteDuration = _voteDuration;
         majoritySize = _majoritySize;
@@ -112,7 +110,7 @@ contract VoteProcedure is Procedure {
                 approvals++;
             }
         }
-        return (approvals / ballots[proposalKey].votesCount) > (majoritySize / (uint32(-1)));
+        return (approvals / ballots[proposalKey].votesCount) > (majoritySize / (uint32((2**32)-1)));
     }
 
     /**

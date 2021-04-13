@@ -7,7 +7,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider({
           mnemonic: process.env.MNEMONIC,
-          providerOrUrl: "http://192.168.1.58:8545",
+          providerOrUrl: "http://192.168.1.30:8545",
           numberOfAddresses: 10
         }),
       network_id: "*",
@@ -38,7 +38,7 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: "^0.6.0",
+      version: "^0.8.0",
       settings: {
         optimizer: {
           enabled: true,

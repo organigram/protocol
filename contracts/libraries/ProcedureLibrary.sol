@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "../IOrgan.sol";
@@ -96,16 +96,16 @@ library ProcedureLibrary {
     */
 
     event MetadataUpdated(address from, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize);
-    event AdminUpdated(address from, address payable admin);
-    event ProposalCreated(address payable indexed creator, uint256 indexed proposalKey);
+    event AdminUpdated(address from, address admin);
+    event ProposalCreated(address indexed creator, uint256 indexed proposalKey);
     event ProposalBlocked(
-        address payable indexed moderator,
+        address indexed moderator,
         uint256 indexed proposalKey,
         bytes32 ipfsHash,
         uint8 hashFunction,
         uint8 hashSize
     );
-    event ProposalPresented(address payable indexed presenter, uint256 indexed proposalKey);
+    event ProposalPresented(address indexed presenter, uint256 indexed proposalKey);
     event ProposalApplied(uint256 indexed proposalKey);
 
     /*
@@ -127,7 +127,7 @@ library ProcedureLibrary {
         self.moderators = moderators;
         self.deciders = deciders;
         self.withModeration = withModeration;
-        self.admin = msg.sender;
+        self.admin = payable(msg.sender);
     }
 
     /**
@@ -153,7 +153,7 @@ library ProcedureLibrary {
     /**
         Utils.
     */
-    function isInOrgan(address payable organ, address payable caller)
+    function isInOrgan(address payable organ, address caller)
         public view returns (bool)
     {
         return organ == address(0) || organ == caller || IOrgan(organ).getEntryIndexForAddress(caller) != 0;
@@ -178,7 +178,7 @@ library ProcedureLibrary {
         returns (uint256 proposalKey)
     {
         proposalKey = self.proposalsLength++;
-        self.proposals[proposalKey].creator = msg.sender;
+        self.proposals[proposalKey].creator = payable(msg.sender);
         self.proposals[proposalKey].metadata = metadata;
         for (uint256 i = 0 ; i < operations.length ; ++i) {
             self.proposals[proposalKey].operations.push(Operation({
@@ -251,10 +251,13 @@ library ProcedureLibrary {
         for (uint256 i = 0; i < self.proposals[proposalKey].operations.length; ++i) {
             if (!self.proposals[proposalKey].operations[i].processed) {
                 if (self.proposals[proposalKey].operations[i].organ != address(0)) {
-                    self.proposals[proposalKey].operations[i].organ.call(self.proposals[proposalKey].operations[i].data);
+                    // solhint-disable-next-line avoid-low-level-calls
+                    (bool success,) = self.proposals[proposalKey].operations[i].organ.call{value: self.proposals[proposalKey].operations[i].value}(self.proposals[proposalKey].operations[i].data);
+                    require(success, "Proposal not applied, underlying transaction reverted.");
                 } else {
-                    // @todo Fix arbitrary call.
-                    address(msg.sender).call(self.proposals[proposalKey].operations[i].data);
+                    // solhint-disable-next-line avoid-low-level-calls
+                    (bool success,) = address(msg.sender).call{value: self.proposals[proposalKey].operations[i].value}(self.proposals[proposalKey].operations[i].data);
+                    require(success, "Proposal not applied, underlying transaction reverted.");
                 }
                 self.proposals[proposalKey].operations[i].processed = true;
             }

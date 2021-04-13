@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 /*
@@ -8,7 +8,7 @@ pragma experimental ABIEncoderV2;
 */
 
 import "./CoreLibrary.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 
@@ -53,8 +53,8 @@ library OrganLibrary {
     event collectibleReceived(address operator, address from, uint256 tokenId);
     event coinsTransferred(address operator, address from, address to, uint256 amount);
     event coinsReceived(address operator, address from, address to, uint256 amount);
-    event etherTransferred(address payable from, address to, uint256 amount);
-    event etherReceived(address payable from, uint256 amount);
+    event etherTransferred(address from, address to, uint256 amount);
+    event etherReceived(address from, uint256 amount);
     event entryAdded(address from, uint256 index, address addr, bytes32 ipfsHash, uint8 hashFunction, uint8 hashSize);
     event entryRemoved(address from, uint256 index);
 
@@ -82,7 +82,7 @@ library OrganLibrary {
         public
     {
         // Initializing with deployer as admin.
-        address _admin = defaultAdmin != address(0) ? defaultAdmin : msg.sender;
+        address payable _admin = payable(defaultAdmin != address(0) ? defaultAdmin : msg.sender);
 
         // Add _admin in procedures set.
         self.permissions[_admin] = 0xffff;

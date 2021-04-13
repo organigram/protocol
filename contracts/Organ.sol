@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "./libraries/CoreLibrary.sol";
 import "./libraries/OrganLibrary.sol";
 import "./IOrgan.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
-import "@openzeppelin/contracts/introspection/ERC165.sol";
-import "@openzeppelin/contracts/proxy/Initializable.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
 import "@openzeppelin/contracts/token/ERC777/IERC777Sender.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
@@ -31,9 +31,7 @@ contract Organ is
     using CoreLibrary for CoreLibrary.Metadata;
     using CoreLibrary for CoreLibrary.Entry;
     using OrganLibrary for OrganLibrary.OrganData;
-    
-    // Organ contract interface.
-    bytes4 private constant _INTERFACE_ID_ORGAN = 0xbae78d7b;
+
     // Organ data storage.
     OrganLibrary.OrganData internal organData;
 
@@ -42,11 +40,13 @@ contract Organ is
     */
 
     constructor()
-        public
     {
-        // Register EIP165 interfaces for introspection.
-        _registerInterface(_INTERFACE_ID_ORGAN);
         organData.init(msg.sender, CoreLibrary.Metadata(0, 0, 0));
+    }
+
+    // Register EIP165 interfaces for introspection.
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IOrgan).interfaceId || super.supportsInterface(interfaceId);
     }
 
     function initialize(
@@ -57,9 +57,6 @@ contract Organ is
         initializer
         override
     {
-        // Register ERC165 interfaces for introspection.
-        _registerInterface(0x01ffc9a7); // ERC-165
-        _registerInterface(_INTERFACE_ID_ORGAN);
         organData.init(admin, metadata);
     }
 

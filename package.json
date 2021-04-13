@@ -5,6 +5,7 @@
   "author": "Organigr.am <dev@organigr.am> (https://organigr.am)",
   "license": "LGPL-3.0-or-later",
   "scripts": {
+    "build:contracts": "yarn solc contracts/*.sol --abi -o abis --overwrite && yarn solc contracts/*.sol --bin -o bin --overwrite",
     "test": "echo \"Error: no test specified\" && exit 1",
     "cleanup": "yarn truffle networks --clean"
   },
@@ -13,6 +14,8 @@
     "@truffle/hdwallet-provider": "^1.2.2"
   },
   "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.20.0",
+    "@graphprotocol/graph-ts": "^0.20.0",
     "bs58": "^4.0.1",
     "cids": "^1.0.2",
     "ipfs": "^0.54.2",

@@ -1,0 +1,57 @@
+type Metadata {
+    ipfsHash: Bytes         # bytes32
+    hashFunction: String    # uint8
+    hashSize: String        # uint8
+}
+
+type Entry {
+    addr: Bytes
+    doc: Metadata
+}
+
+type Organigram @entity {
+    id: ID!
+    organ: Bytes!
+    procedures: Bytes!
+}
+
+type Permission {
+    addr: Bytes
+    permissions: Bytes
+}
+
+type Organ @entity {
+    metadata: Metadata!
+    entries: Entry[]
+    entriesCount: String
+    procedures: Bytes[]
+    permissions: Permission[]
+}
+
+type Operation {
+    index: String!
+    organ: Bytes
+    data: Bytes
+    value: String
+    processed: Boolean
+}
+
+type Proposal {
+    creator: Bytes!
+    metadata: Metadata!
+    blockReason: Metadata
+    presented: Boolean
+    blocked: Boolean
+    adopted: Boolean
+    applied: Boolean
+    operations: Operation[]
+}
+
+type Procedure @entity {
+    metadata: Metadata!
+    proposers: Bytes!
+    moderators: Bytes!
+    deciders: Bytes!
+    admin: Bytes!
+    proposals: Proposal[]
+}

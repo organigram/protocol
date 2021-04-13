@@ -2,29 +2,17 @@ const HDWalletProvider = require('@truffle/hdwallet-provider')
 
 module.exports = {
   networks: {
-    pichain: {
-      networkCheckTimeout: 100000,
-      provider: () =>
-        new HDWalletProvider({
-          mnemonic: process.env.MNEMONIC,
-          providerOrUrl: "http://192.168.1.30:8545",
-          numberOfAddresses: 10
-        }),
-      network_id: "*",
-      gasPrice: 89000000000
-    },
     development: {
       host: "127.0.0.1",
       port: 8545,
       network_id: "*",
-      gasPrice: 89000000000
+      gasPrice: 150000000000  // 150 gwei
     },
     ganache: {
       host: "127.0.0.1",
       port: 8545,
       network_id: "*",
-      gasPrice: 1,
-      gas: 234881023
+      gasPrice: 1
     },
     rinkeby: {
       provider: () =>

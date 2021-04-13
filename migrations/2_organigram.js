@@ -1,5 +1,5 @@
 var CID = require("cids")
-var MetadataLibrary = artifacts.require("MetadataLibrary")
+var CoreLibrary = artifacts.require("CoreLibrary")
 var Organigram = artifacts.require("Organigram")
 var OrganLibrary = artifacts.require("OrganLibrary")
 var ProcedureLibrary = artifacts.require("ProcedureLibrary")
@@ -87,6 +87,10 @@ module.exports = async (deployer, network, accounts) => {
   entries = (await Promise.all(
     entries.map(entry =>
       proceduresRegistry.getEntryIndexForAddress(entry.addr)
+      .catch(error => {
+        console.warn(error.message)
+        return "0"
+      })
       .then(index => ({ ...entry, inRegistry: parseInt(index.toString()) > 0 }))
     )
   )).filter(e => !e.inRegistry)

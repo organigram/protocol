@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "./Organ.sol";
 import "./libraries/CoreLibrary.sol";
-import "@openzeppelin/contracts/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
 
 contract Organigram {
     using CoreLibrary for CoreLibrary.Entry;
@@ -16,10 +17,9 @@ contract Organigram {
     event procedureCreated(address payable procedureType, address payable procedure);
 
     constructor(CoreLibrary.Metadata memory metadata)
-        public
     {
         organ = payable(address(new Organ()));
-        procedures = createOrgan(msg.sender, metadata);
+        procedures = createOrgan(payable(msg.sender), metadata);
     }
 
     function createOrgan(
@@ -30,7 +30,7 @@ contract Organigram {
         returns (address payable clone)
     {
         // Clone organ and initialize it.
-        clone = _createClone(organ);
+        clone = payable(Clones.clone(organ));
         Organ(clone).initialize(admin, metadata);
         organCreated(clone);
         return clone;
@@ -45,7 +45,7 @@ contract Organigram {
         require(ERC165Checker.supportsInterface(procedureId, 0x71dbd330), "Not a procedure.");
         // Check if procedure is in registry.
         require(Organ(procedures).getEntryIndexForAddress(procedureId) > 0, "Procedure not found.");
-        procedure = _createClone(procedureId);
+        procedure = payable(Clones.clone(procedureId));
         procedureCreated(procedureId, procedure);
         // NB: The initialize method will need to be called directly.
         return procedure;
@@ -62,21 +62,5 @@ contract Organigram {
             );
         }
         Organ(organ).addEntries(entries);
-    }
-
-    // From https://github.com/optionality/clone-factory.
-    function _createClone(address payable target)
-        internal
-        returns (address payable result)
-    {
-        bytes20 targetBytes = bytes20(target);
-        assembly {
-            let clone := mload(0x40)
-            mstore(clone, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
-            mstore(add(clone, 0x14), targetBytes)
-            mstore(add(clone, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
-            result := create(0, clone, 0x37)
-        }
-        return result;
     }
 }

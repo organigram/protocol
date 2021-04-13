@@ -28,12 +28,11 @@ module.exports = async (deployer, network, accounts) => {
   const masterProcedures = await organigram.procedures()
   console.log("Organigram", organigram.address)
   console.log("Master Organ", masterOrgan)
-  console.log("Master Procedures", masterProcedures)
   const procedures = await Organ.at(masterProcedures)
-  const vote = await VoteProcedure.deployed()
+  console.log("Master Procedures", procedures.address)
   const nomination = await NominationProcedure.deployed()
-
   console.log("Index of Nomination", (await procedures.getEntryIndexForAddress(nomination.address)).toString())
+  const vote = await VoteProcedure.deployed()
   console.log("Index of Vote", (await procedures.getEntryIndexForAddress(vote.address)).toString())
 
   const admins = await Organ.at((await organigram.createOrgan(

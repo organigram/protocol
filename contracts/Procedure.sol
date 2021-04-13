@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "./libraries/CoreLibrary.sol";
 import "./libraries/ProcedureLibrary.sol";
-import "@openzeppelin/contracts/introspection/ERC165.sol";
-import "@openzeppelin/contracts/proxy/Initializable.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 /*
     A procedure defines a set of operations compiled in a proposal.
@@ -40,17 +40,21 @@ contract Procedure is ERC165, Initializable {
     */
 
     constructor ()
-        public
     {
         // Register EIP165 interface for introspection.
-        _registerInterface(_INTERFACE_ID_PROCEDURE);
         procedureData.init(
             CoreLibrary.Metadata(0, 0, 0),
-            address(0), // Proposers.
-            address(0), // Moderators.
-            address(0), // Deciders.
+            payable(address(0)), // Proposers.
+            payable(address(0)), // Moderators.
+            payable(address(0)), // Deciders.
             false       // With Moderation.
         );
+    }
+
+    // Register EIP165 interfaces for introspection.
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        // @todo : Use type(IProcedure).interfaceId
+        return interfaceId == _INTERFACE_ID_PROCEDURE || super.supportsInterface(interfaceId);
     }
 
     function initialize(
@@ -64,9 +68,6 @@ contract Procedure is ERC165, Initializable {
         virtual
         initializer
     {
-        // Register ERC165 interfaces for introspection.
-        _registerInterface(0x01ffc9a7); // ERC-165
-        _registerInterface(_INTERFACE_ID_PROCEDURE);
         procedureData.init(_metadata, _proposers, _moderators, _deciders, _withModeration);
     }
 

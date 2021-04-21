@@ -21,7 +21,8 @@ module.exports = {
           providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
           numberOfAddresses: 10
         }),
-      network_id: 4
+      network_id: 4,
+      gasPrice: 1
     }
   },
   compilers: {

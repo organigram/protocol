@@ -32,11 +32,11 @@ contract Organigram {
         // Clone organ and initialize it.
         clone = payable(Clones.clone(organ));
         Organ(clone).initialize(admin, metadata);
-        organCreated(clone);
+        emit organCreated(clone);
         return clone;
     }
 
-    // @todo : Implement Diamond in Organigram.sol - https://eips.ethereum.org/EIPS/eip-2535
+    // @todo : Implement Diamond in Organigram.sol ? https://eips.ethereum.org/EIPS/eip-2535
     function createProcedure(address payable procedureId)
         public
         returns (address payable procedure)
@@ -46,7 +46,7 @@ contract Organigram {
         // Check if procedure is in registry.
         require(Organ(procedures).getEntryIndexForAddress(procedureId) > 0, "Procedure not found.");
         procedure = payable(Clones.clone(procedureId));
-        procedureCreated(procedureId, procedure);
+        emit procedureCreated(procedureId, procedure);
         // NB: The initialize method will need to be called directly.
         return procedure;
     }

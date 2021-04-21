@@ -34,6 +34,7 @@ contract Organ is
 
     // Organ data storage.
     OrganLibrary.OrganData internal organData;
+    bytes4 constant INTERFACE_ID = type(IOrgan).interfaceId;
 
     /**
         Organ API.
@@ -46,7 +47,7 @@ contract Organ is
 
     // Register EIP165 interfaces for introspection.
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IOrgan).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == INTERFACE_ID || super.supportsInterface(interfaceId);
     }
 
     function initialize(

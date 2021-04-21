@@ -39,8 +39,6 @@ library ProcedureLibrary {
         bool adopted;
         bool applied;
         Operation[] operations;
-        // @todo : Reference other proposals from a proposal?
-        // uint256[] proposals;
     }
 
     struct Operation {

@@ -214,7 +214,7 @@ module.exports = async (deployer, network, accounts) => {
   const waitBlock = async (height) => {
     console.log("Waiting for block", height.toString())
     return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error("Timeout")), 60000)
+      const timeout = setTimeout(() => reject(new Error("Timeout")), 360000) // Abort if stuck after 6 minutes.
       const checkBlock = async (height) => {
         const block = await web3.eth.getBlockNumber()
         console.log("Current block number", block.toString())

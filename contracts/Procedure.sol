@@ -19,7 +19,7 @@ contract Procedure is ERC165, Initializable {
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Operation;
     ProcedureLibrary.ProcedureData internal procedureData;
-    bytes4 constant public _INTERFACE_ID_PROCEDURE = 0x71dbd330;
+    bytes4 constant public INTERFACE_ID = 0x71dbd330;
 
     /**
         Modifiers.
@@ -54,7 +54,7 @@ contract Procedure is ERC165, Initializable {
     // Register EIP165 interfaces for introspection.
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         // @todo : Use type(IProcedure).interfaceId
-        return interfaceId == _INTERFACE_ID_PROCEDURE || super.supportsInterface(interfaceId);
+        return interfaceId == INTERFACE_ID || super.supportsInterface(interfaceId);
     }
 
     function initialize(

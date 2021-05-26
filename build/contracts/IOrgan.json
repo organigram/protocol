@@ -1,0 +1,2900 @@
+{
+  "contractName": "IOrgan",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address payable",
+          "name": "admin",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "ipfsHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint8",
+              "name": "hashFunction",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "hashSize",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct CoreLibrary.Metadata",
+          "name": "metadata",
+          "type": "tuple"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "ipfsHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint8",
+              "name": "hashFunction",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "hashSize",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct CoreLibrary.Metadata",
+          "name": "metadata",
+          "type": "tuple"
+        }
+      ],
+      "name": "updateMetadata",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "bytes32",
+                  "name": "ipfsHash",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "hashFunction",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "hashSize",
+                  "type": "uint8"
+                }
+              ],
+              "internalType": "struct CoreLibrary.Metadata",
+              "name": "doc",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct CoreLibrary.Entry[]",
+          "name": "entries",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "addEntries",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "indexes",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "indexes",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "removeEntries",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "bytes32",
+                  "name": "ipfsHash",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "hashFunction",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "hashSize",
+                  "type": "uint8"
+                }
+              ],
+              "internalType": "struct CoreLibrary.Metadata",
+              "name": "doc",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct CoreLibrary.Entry",
+          "name": "entry",
+          "type": "tuple"
+        }
+      ],
+      "name": "replaceEntry",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "procedure",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes2",
+          "name": "permissions",
+          "type": "bytes2"
+        }
+      ],
+      "name": "addProcedure",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "procedure",
+          "type": "address"
+        }
+      ],
+      "name": "removeProcedure",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "oldProcedure",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "newProcedure",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes2",
+          "name": "permissions",
+          "type": "bytes2"
+        }
+      ],
+      "name": "replaceProcedure",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOrgan",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "ipfsHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint8",
+              "name": "hashFunction",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "hashSize",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct CoreLibrary.Metadata",
+          "name": "metadata",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint256",
+          "name": "proceduresLength",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "entriesLength",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "entriesCount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "getEntryIndexForAddress",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getEntry",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "bytes32",
+                  "name": "ipfsHash",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "hashFunction",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "hashSize",
+                  "type": "uint8"
+                }
+              ],
+              "internalType": "struct CoreLibrary.Metadata",
+              "name": "doc",
+              "type": "tuple"
+            }
+          ],
+          "internalType": "struct CoreLibrary.Entry",
+          "name": "entry",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProcedure",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes2",
+          "name": "perms",
+          "type": "bytes2"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "getPermissions",
+      "outputs": [
+        {
+          "internalType": "bytes2",
+          "name": "perms",
+          "type": "bytes2"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"doc\",\"type\":\"tuple\"}],\"internalType\":\"struct CoreLibrary.Entry[]\",\"name\":\"entries\",\"type\":\"tuple[]\"}],\"name\":\"addEntries\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"indexes\",\"type\":\"uint256[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"procedure\",\"type\":\"address\"},{\"internalType\":\"bytes2\",\"name\":\"permissions\",\"type\":\"bytes2\"}],\"name\":\"addProcedure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getEntry\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"doc\",\"type\":\"tuple\"}],\"internalType\":\"struct CoreLibrary.Entry\",\"name\":\"entry\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"getEntryIndexForAddress\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOrgan\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"metadata\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"proceduresLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"entriesLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"entriesCount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"getPermissions\",\"outputs\":[{\"internalType\":\"bytes2\",\"name\":\"perms\",\"type\":\"bytes2\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getProcedure\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"bytes2\",\"name\":\"perms\",\"type\":\"bytes2\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"admin\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"metadata\",\"type\":\"tuple\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"indexes\",\"type\":\"uint256[]\"}],\"name\":\"removeEntries\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"procedure\",\"type\":\"address\"}],\"name\":\"removeProcedure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"doc\",\"type\":\"tuple\"}],\"internalType\":\"struct CoreLibrary.Entry\",\"name\":\"entry\",\"type\":\"tuple\"}],\"name\":\"replaceEntry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oldProcedure\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"newProcedure\",\"type\":\"address\"},{\"internalType\":\"bytes2\",\"name\":\"permissions\",\"type\":\"bytes2\"}],\"name\":\"replaceProcedure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"metadata\",\"type\":\"tuple\"}],\"name\":\"updateMetadata\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/IOrgan.sol\":\"IOrgan\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":10},\"remappings\":[]},\"sources\":{\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/IOrgan.sol\":{\"keccak256\":\"0x690735554872919bf0623cbdbd876c4c1c4cef3156df319b4652548772d5a056\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://29e0d3d144b7391c137cf6d79807b49ee9927a8b4698a0cc91fefb6d17d19d8c\",\"dweb:/ipfs/QmbdYKgdgsaUCgvq2RgPx95gkMPnqrwH8eAEYFPucGrjBh\"]},\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol\":{\"keccak256\":\"0xe9cf947cef24add09f3160c1aee5433b2e68b392f3b158379e123dd7fea360f1\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://92d81571db4f1f5c48ef8167f274363edf7ad00ba6662308728c0bdf369e8ba0\",\"dweb:/ipfs/QmNz5p8bE2oFiLWtzmHW8TsYoBTYVR8g4w2bVPxGLhm2Qz\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: LGPL-3.0-or-later\npragma solidity ^0.8.0;\npragma experimental ABIEncoderV2;\n\nimport \"./libraries/CoreLibrary.sol\";\n\ninterface IOrgan {\n    function initialize(\n        address payable admin,\n        CoreLibrary.Metadata memory metadata\n    ) external;\n    function updateMetadata(CoreLibrary.Metadata calldata metadata) external;\n    function addEntries(CoreLibrary.Entry[] memory entries) external returns (uint256[] memory indexes);\n    function removeEntries(uint256[] memory indexes) external;\n    function replaceEntry(\n        uint256 index,\n        CoreLibrary.Entry memory entry\n    ) external;\n    function addProcedure(address procedure, bytes2 permissions) external;\n    function removeProcedure(address procedure) external;\n    function replaceProcedure(\n        address oldProcedure,\n        address newProcedure,\n        bytes2 permissions\n    ) external;\n    function getOrgan()\n        external view\n        returns (\n            CoreLibrary.Metadata memory metadata,\n            uint256 proceduresLength,\n            uint256 entriesLength,\n            uint256 entriesCount\n        );\n    function getEntryIndexForAddress(address addr)\n        external view\n        returns (uint256 index);\n    function getEntry(uint256 index)\n        external\n        view\n        returns (CoreLibrary.Entry memory entry);\n    function getProcedure(uint256 index)\n        external\n        view\n        returns (address addr, bytes2 perms);\n    function getPermissions(address addr)\n        external\n        view\n        returns (bytes2 perms);\n} ",
+  "sourcePath": "/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/IOrgan.sol",
+  "ast": {
+    "absolutePath": "/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/IOrgan.sol",
+    "exportedSymbols": {
+      "CoreLibrary": [
+        1078
+      ],
+      "IOrgan": [
+        106
+      ]
+    },
+    "id": 107,
+    "license": "LGPL-3.0-or-later",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "46:23:0"
+      },
+      {
+        "id": 2,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "70:33:0"
+      },
+      {
+        "absolutePath": "/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol",
+        "file": "./libraries/CoreLibrary.sol",
+        "id": 3,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 107,
+        "sourceUnit": 1079,
+        "src": "105:37:0",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 106,
+        "linearizedBaseContracts": [
+          106
+        ],
+        "name": "IOrgan",
+        "nameLocation": "154:6:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "95304aa1",
+            "id": 11,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "initialize",
+            "nameLocation": "176:10:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 9,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5,
+                  "mutability": "mutable",
+                  "name": "admin",
+                  "nameLocation": "212:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 11,
+                  "src": "196:21:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address_payable",
+                    "typeString": "address payable"
+                  },
+                  "typeName": {
+                    "id": 4,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "196:15:0",
+                    "stateMutability": "payable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address_payable",
+                      "typeString": "address payable"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 8,
+                  "mutability": "mutable",
+                  "name": "metadata",
+                  "nameLocation": "255:8:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 11,
+                  "src": "227:36:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Metadata_$1071_memory_ptr",
+                    "typeString": "struct CoreLibrary.Metadata"
+                  },
+                  "typeName": {
+                    "id": 7,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6,
+                      "name": "CoreLibrary.Metadata",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1071,
+                      "src": "227:20:0"
+                    },
+                    "referencedDeclaration": 1071,
+                    "src": "227:20:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Metadata_$1071_storage_ptr",
+                      "typeString": "struct CoreLibrary.Metadata"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "186:83:0"
+            },
+            "returnParameters": {
+              "id": 10,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "278:0:0"
+            },
+            "scope": 106,
+            "src": "167:112:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "4d3f8407",
+            "id": 17,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "updateMetadata",
+            "nameLocation": "293:14:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 15,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14,
+                  "mutability": "mutable",
+                  "name": "metadata",
+                  "nameLocation": "338:8:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 17,
+                  "src": "308:38:0",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Metadata_$1071_calldata_ptr",
+                    "typeString": "struct CoreLibrary.Metadata"
+                  },
+                  "typeName": {
+                    "id": 13,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 12,
+                      "name": "CoreLibrary.Metadata",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1071,
+                      "src": "308:20:0"
+                    },
+                    "referencedDeclaration": 1071,
+                    "src": "308:20:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Metadata_$1071_storage_ptr",
+                      "typeString": "struct CoreLibrary.Metadata"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "307:40:0"
+            },
+            "returnParameters": {
+              "id": 16,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "356:0:0"
+            },
+            "scope": 106,
+            "src": "284:73:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "bbc56af9",
+            "id": 27,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "addEntries",
+            "nameLocation": "371:10:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 22,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 21,
+                  "mutability": "mutable",
+                  "name": "entries",
+                  "nameLocation": "409:7:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27,
+                  "src": "382:34:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_Entry_$1077_memory_ptr_$dyn_memory_ptr",
+                    "typeString": "struct CoreLibrary.Entry[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 19,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 18,
+                        "name": "CoreLibrary.Entry",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 1077,
+                        "src": "382:17:0"
+                      },
+                      "referencedDeclaration": 1077,
+                      "src": "382:17:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Entry_$1077_storage_ptr",
+                        "typeString": "struct CoreLibrary.Entry"
+                      }
+                    },
+                    "id": 20,
+                    "nodeType": "ArrayTypeName",
+                    "src": "382:19:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_Entry_$1077_storage_$dyn_storage_ptr",
+                      "typeString": "struct CoreLibrary.Entry[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "381:36:0"
+            },
+            "returnParameters": {
+              "id": 26,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 25,
+                  "mutability": "mutable",
+                  "name": "indexes",
+                  "nameLocation": "453:7:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27,
+                  "src": "436:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 23,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "436:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 24,
+                    "nodeType": "ArrayTypeName",
+                    "src": "436:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "435:26:0"
+            },
+            "scope": 106,
+            "src": "362:100:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "7615eb81",
+            "id": 33,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "removeEntries",
+            "nameLocation": "476:13:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 31,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 30,
+                  "mutability": "mutable",
+                  "name": "indexes",
+                  "nameLocation": "507:7:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 33,
+                  "src": "490:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 28,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "490:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 29,
+                    "nodeType": "ArrayTypeName",
+                    "src": "490:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "489:26:0"
+            },
+            "returnParameters": {
+              "id": 32,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "524:0:0"
+            },
+            "scope": 106,
+            "src": "467:58:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "62f7f997",
+            "id": 41,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "replaceEntry",
+            "nameLocation": "539:12:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 39,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 35,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "569:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41,
+                  "src": "561:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 34,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "561:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 38,
+                  "mutability": "mutable",
+                  "name": "entry",
+                  "nameLocation": "609:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41,
+                  "src": "584:30:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Entry_$1077_memory_ptr",
+                    "typeString": "struct CoreLibrary.Entry"
+                  },
+                  "typeName": {
+                    "id": 37,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 36,
+                      "name": "CoreLibrary.Entry",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1077,
+                      "src": "584:17:0"
+                    },
+                    "referencedDeclaration": 1077,
+                    "src": "584:17:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Entry_$1077_storage_ptr",
+                      "typeString": "struct CoreLibrary.Entry"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "551:69:0"
+            },
+            "returnParameters": {
+              "id": 40,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "629:0:0"
+            },
+            "scope": 106,
+            "src": "530:100:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "7f0a4e27",
+            "id": 48,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "addProcedure",
+            "nameLocation": "644:12:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 46,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43,
+                  "mutability": "mutable",
+                  "name": "procedure",
+                  "nameLocation": "665:9:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 48,
+                  "src": "657:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 42,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "657:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 45,
+                  "mutability": "mutable",
+                  "name": "permissions",
+                  "nameLocation": "683:11:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 48,
+                  "src": "676:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes2",
+                    "typeString": "bytes2"
+                  },
+                  "typeName": {
+                    "id": 44,
+                    "name": "bytes2",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "676:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes2",
+                      "typeString": "bytes2"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "656:39:0"
+            },
+            "returnParameters": {
+              "id": 47,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "704:0:0"
+            },
+            "scope": 106,
+            "src": "635:70:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "19b9404c",
+            "id": 53,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "removeProcedure",
+            "nameLocation": "719:15:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 51,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 50,
+                  "mutability": "mutable",
+                  "name": "procedure",
+                  "nameLocation": "743:9:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 53,
+                  "src": "735:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 49,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "735:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "734:19:0"
+            },
+            "returnParameters": {
+              "id": 52,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "762:0:0"
+            },
+            "scope": 106,
+            "src": "710:53:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "d0922d4a",
+            "id": 62,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "replaceProcedure",
+            "nameLocation": "777:16:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 60,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55,
+                  "mutability": "mutable",
+                  "name": "oldProcedure",
+                  "nameLocation": "811:12:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 62,
+                  "src": "803:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 54,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "803:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 57,
+                  "mutability": "mutable",
+                  "name": "newProcedure",
+                  "nameLocation": "841:12:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 62,
+                  "src": "833:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 56,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "833:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 59,
+                  "mutability": "mutable",
+                  "name": "permissions",
+                  "nameLocation": "870:11:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 62,
+                  "src": "863:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes2",
+                    "typeString": "bytes2"
+                  },
+                  "typeName": {
+                    "id": 58,
+                    "name": "bytes2",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "863:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes2",
+                      "typeString": "bytes2"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "793:94:0"
+            },
+            "returnParameters": {
+              "id": 61,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "896:0:0"
+            },
+            "scope": 106,
+            "src": "768:129:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "685b3cb5",
+            "id": 74,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getOrgan",
+            "nameLocation": "911:8:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 63,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "919:2:0"
+            },
+            "returnParameters": {
+              "id": 73,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 66,
+                  "mutability": "mutable",
+                  "name": "metadata",
+                  "nameLocation": "1002:8:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 74,
+                  "src": "974:36:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Metadata_$1071_memory_ptr",
+                    "typeString": "struct CoreLibrary.Metadata"
+                  },
+                  "typeName": {
+                    "id": 65,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 64,
+                      "name": "CoreLibrary.Metadata",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1071,
+                      "src": "974:20:0"
+                    },
+                    "referencedDeclaration": 1071,
+                    "src": "974:20:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Metadata_$1071_storage_ptr",
+                      "typeString": "struct CoreLibrary.Metadata"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 68,
+                  "mutability": "mutable",
+                  "name": "proceduresLength",
+                  "nameLocation": "1032:16:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 74,
+                  "src": "1024:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 67,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1024:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 70,
+                  "mutability": "mutable",
+                  "name": "entriesLength",
+                  "nameLocation": "1070:13:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 74,
+                  "src": "1062:21:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 69,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1062:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 72,
+                  "mutability": "mutable",
+                  "name": "entriesCount",
+                  "nameLocation": "1105:12:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 74,
+                  "src": "1097:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 71,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1097:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "960:167:0"
+            },
+            "scope": 106,
+            "src": "902:226:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "2f2bf18e",
+            "id": 81,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getEntryIndexForAddress",
+            "nameLocation": "1142:23:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 77,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 76,
+                  "mutability": "mutable",
+                  "name": "addr",
+                  "nameLocation": "1174:4:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 81,
+                  "src": "1166:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 75,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1166:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1165:14:0"
+            },
+            "returnParameters": {
+              "id": 80,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 79,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "1227:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 81,
+                  "src": "1219:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 78,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1219:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1218:15:0"
+            },
+            "scope": 106,
+            "src": "1133:101:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "bae78d7b",
+            "id": 89,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getEntry",
+            "nameLocation": "1248:8:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 84,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 83,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "1265:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 89,
+                  "src": "1257:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 82,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1257:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1256:15:0"
+            },
+            "returnParameters": {
+              "id": 88,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 87,
+                  "mutability": "mutable",
+                  "name": "entry",
+                  "nameLocation": "1344:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 89,
+                  "src": "1319:30:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Entry_$1077_memory_ptr",
+                    "typeString": "struct CoreLibrary.Entry"
+                  },
+                  "typeName": {
+                    "id": 86,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 85,
+                      "name": "CoreLibrary.Entry",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1077,
+                      "src": "1319:17:0"
+                    },
+                    "referencedDeclaration": 1077,
+                    "src": "1319:17:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Entry_$1077_storage_ptr",
+                      "typeString": "struct CoreLibrary.Entry"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1318:32:0"
+            },
+            "scope": 106,
+            "src": "1239:112:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "d28fbf0a",
+            "id": 98,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getProcedure",
+            "nameLocation": "1365:12:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 92,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 91,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "1386:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 98,
+                  "src": "1378:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 90,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1378:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1377:15:0"
+            },
+            "returnParameters": {
+              "id": 97,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 94,
+                  "mutability": "mutable",
+                  "name": "addr",
+                  "nameLocation": "1448:4:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 98,
+                  "src": "1440:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 93,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1440:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 96,
+                  "mutability": "mutable",
+                  "name": "perms",
+                  "nameLocation": "1461:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 98,
+                  "src": "1454:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes2",
+                    "typeString": "bytes2"
+                  },
+                  "typeName": {
+                    "id": 95,
+                    "name": "bytes2",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1454:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes2",
+                      "typeString": "bytes2"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1439:28:0"
+            },
+            "scope": 106,
+            "src": "1356:112:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "160a7925",
+            "id": 105,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getPermissions",
+            "nameLocation": "1482:14:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 101,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 100,
+                  "mutability": "mutable",
+                  "name": "addr",
+                  "nameLocation": "1505:4:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 105,
+                  "src": "1497:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 99,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1497:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1496:14:0"
+            },
+            "returnParameters": {
+              "id": 104,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 103,
+                  "mutability": "mutable",
+                  "name": "perms",
+                  "nameLocation": "1565:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 105,
+                  "src": "1558:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes2",
+                    "typeString": "bytes2"
+                  },
+                  "typeName": {
+                    "id": 102,
+                    "name": "bytes2",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1558:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes2",
+                      "typeString": "bytes2"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1557:14:0"
+            },
+            "scope": 106,
+            "src": "1473:99:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 107,
+        "src": "144:1430:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "46:1529:0"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/IOrgan.sol",
+    "exportedSymbols": {
+      "CoreLibrary": [
+        1078
+      ],
+      "IOrgan": [
+        106
+      ]
+    },
+    "id": 107,
+    "license": "LGPL-3.0-or-later",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "46:23:0"
+      },
+      {
+        "id": 2,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "70:33:0"
+      },
+      {
+        "absolutePath": "/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol",
+        "file": "./libraries/CoreLibrary.sol",
+        "id": 3,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 107,
+        "sourceUnit": 1079,
+        "src": "105:37:0",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 106,
+        "linearizedBaseContracts": [
+          106
+        ],
+        "name": "IOrgan",
+        "nameLocation": "154:6:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "95304aa1",
+            "id": 11,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "initialize",
+            "nameLocation": "176:10:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 9,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5,
+                  "mutability": "mutable",
+                  "name": "admin",
+                  "nameLocation": "212:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 11,
+                  "src": "196:21:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address_payable",
+                    "typeString": "address payable"
+                  },
+                  "typeName": {
+                    "id": 4,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "196:15:0",
+                    "stateMutability": "payable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address_payable",
+                      "typeString": "address payable"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 8,
+                  "mutability": "mutable",
+                  "name": "metadata",
+                  "nameLocation": "255:8:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 11,
+                  "src": "227:36:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Metadata_$1071_memory_ptr",
+                    "typeString": "struct CoreLibrary.Metadata"
+                  },
+                  "typeName": {
+                    "id": 7,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6,
+                      "name": "CoreLibrary.Metadata",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1071,
+                      "src": "227:20:0"
+                    },
+                    "referencedDeclaration": 1071,
+                    "src": "227:20:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Metadata_$1071_storage_ptr",
+                      "typeString": "struct CoreLibrary.Metadata"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "186:83:0"
+            },
+            "returnParameters": {
+              "id": 10,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "278:0:0"
+            },
+            "scope": 106,
+            "src": "167:112:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "4d3f8407",
+            "id": 17,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "updateMetadata",
+            "nameLocation": "293:14:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 15,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14,
+                  "mutability": "mutable",
+                  "name": "metadata",
+                  "nameLocation": "338:8:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 17,
+                  "src": "308:38:0",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Metadata_$1071_calldata_ptr",
+                    "typeString": "struct CoreLibrary.Metadata"
+                  },
+                  "typeName": {
+                    "id": 13,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 12,
+                      "name": "CoreLibrary.Metadata",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1071,
+                      "src": "308:20:0"
+                    },
+                    "referencedDeclaration": 1071,
+                    "src": "308:20:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Metadata_$1071_storage_ptr",
+                      "typeString": "struct CoreLibrary.Metadata"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "307:40:0"
+            },
+            "returnParameters": {
+              "id": 16,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "356:0:0"
+            },
+            "scope": 106,
+            "src": "284:73:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "bbc56af9",
+            "id": 27,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "addEntries",
+            "nameLocation": "371:10:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 22,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 21,
+                  "mutability": "mutable",
+                  "name": "entries",
+                  "nameLocation": "409:7:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27,
+                  "src": "382:34:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_Entry_$1077_memory_ptr_$dyn_memory_ptr",
+                    "typeString": "struct CoreLibrary.Entry[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 19,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 18,
+                        "name": "CoreLibrary.Entry",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 1077,
+                        "src": "382:17:0"
+                      },
+                      "referencedDeclaration": 1077,
+                      "src": "382:17:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Entry_$1077_storage_ptr",
+                        "typeString": "struct CoreLibrary.Entry"
+                      }
+                    },
+                    "id": 20,
+                    "nodeType": "ArrayTypeName",
+                    "src": "382:19:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_Entry_$1077_storage_$dyn_storage_ptr",
+                      "typeString": "struct CoreLibrary.Entry[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "381:36:0"
+            },
+            "returnParameters": {
+              "id": 26,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 25,
+                  "mutability": "mutable",
+                  "name": "indexes",
+                  "nameLocation": "453:7:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27,
+                  "src": "436:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 23,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "436:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 24,
+                    "nodeType": "ArrayTypeName",
+                    "src": "436:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "435:26:0"
+            },
+            "scope": 106,
+            "src": "362:100:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "7615eb81",
+            "id": 33,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "removeEntries",
+            "nameLocation": "476:13:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 31,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 30,
+                  "mutability": "mutable",
+                  "name": "indexes",
+                  "nameLocation": "507:7:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 33,
+                  "src": "490:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                    "typeString": "uint256[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 28,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "490:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 29,
+                    "nodeType": "ArrayTypeName",
+                    "src": "490:9:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                      "typeString": "uint256[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "489:26:0"
+            },
+            "returnParameters": {
+              "id": 32,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "524:0:0"
+            },
+            "scope": 106,
+            "src": "467:58:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "62f7f997",
+            "id": 41,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "replaceEntry",
+            "nameLocation": "539:12:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 39,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 35,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "569:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41,
+                  "src": "561:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 34,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "561:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 38,
+                  "mutability": "mutable",
+                  "name": "entry",
+                  "nameLocation": "609:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41,
+                  "src": "584:30:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Entry_$1077_memory_ptr",
+                    "typeString": "struct CoreLibrary.Entry"
+                  },
+                  "typeName": {
+                    "id": 37,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 36,
+                      "name": "CoreLibrary.Entry",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1077,
+                      "src": "584:17:0"
+                    },
+                    "referencedDeclaration": 1077,
+                    "src": "584:17:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Entry_$1077_storage_ptr",
+                      "typeString": "struct CoreLibrary.Entry"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "551:69:0"
+            },
+            "returnParameters": {
+              "id": 40,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "629:0:0"
+            },
+            "scope": 106,
+            "src": "530:100:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "7f0a4e27",
+            "id": 48,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "addProcedure",
+            "nameLocation": "644:12:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 46,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 43,
+                  "mutability": "mutable",
+                  "name": "procedure",
+                  "nameLocation": "665:9:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 48,
+                  "src": "657:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 42,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "657:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 45,
+                  "mutability": "mutable",
+                  "name": "permissions",
+                  "nameLocation": "683:11:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 48,
+                  "src": "676:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes2",
+                    "typeString": "bytes2"
+                  },
+                  "typeName": {
+                    "id": 44,
+                    "name": "bytes2",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "676:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes2",
+                      "typeString": "bytes2"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "656:39:0"
+            },
+            "returnParameters": {
+              "id": 47,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "704:0:0"
+            },
+            "scope": 106,
+            "src": "635:70:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "19b9404c",
+            "id": 53,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "removeProcedure",
+            "nameLocation": "719:15:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 51,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 50,
+                  "mutability": "mutable",
+                  "name": "procedure",
+                  "nameLocation": "743:9:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 53,
+                  "src": "735:17:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 49,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "735:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "734:19:0"
+            },
+            "returnParameters": {
+              "id": 52,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "762:0:0"
+            },
+            "scope": 106,
+            "src": "710:53:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "d0922d4a",
+            "id": 62,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "replaceProcedure",
+            "nameLocation": "777:16:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 60,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55,
+                  "mutability": "mutable",
+                  "name": "oldProcedure",
+                  "nameLocation": "811:12:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 62,
+                  "src": "803:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 54,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "803:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 57,
+                  "mutability": "mutable",
+                  "name": "newProcedure",
+                  "nameLocation": "841:12:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 62,
+                  "src": "833:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 56,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "833:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 59,
+                  "mutability": "mutable",
+                  "name": "permissions",
+                  "nameLocation": "870:11:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 62,
+                  "src": "863:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes2",
+                    "typeString": "bytes2"
+                  },
+                  "typeName": {
+                    "id": 58,
+                    "name": "bytes2",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "863:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes2",
+                      "typeString": "bytes2"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "793:94:0"
+            },
+            "returnParameters": {
+              "id": 61,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "896:0:0"
+            },
+            "scope": 106,
+            "src": "768:129:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "685b3cb5",
+            "id": 74,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getOrgan",
+            "nameLocation": "911:8:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 63,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "919:2:0"
+            },
+            "returnParameters": {
+              "id": 73,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 66,
+                  "mutability": "mutable",
+                  "name": "metadata",
+                  "nameLocation": "1002:8:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 74,
+                  "src": "974:36:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Metadata_$1071_memory_ptr",
+                    "typeString": "struct CoreLibrary.Metadata"
+                  },
+                  "typeName": {
+                    "id": 65,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 64,
+                      "name": "CoreLibrary.Metadata",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1071,
+                      "src": "974:20:0"
+                    },
+                    "referencedDeclaration": 1071,
+                    "src": "974:20:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Metadata_$1071_storage_ptr",
+                      "typeString": "struct CoreLibrary.Metadata"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 68,
+                  "mutability": "mutable",
+                  "name": "proceduresLength",
+                  "nameLocation": "1032:16:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 74,
+                  "src": "1024:24:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 67,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1024:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 70,
+                  "mutability": "mutable",
+                  "name": "entriesLength",
+                  "nameLocation": "1070:13:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 74,
+                  "src": "1062:21:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 69,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1062:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 72,
+                  "mutability": "mutable",
+                  "name": "entriesCount",
+                  "nameLocation": "1105:12:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 74,
+                  "src": "1097:20:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 71,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1097:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "960:167:0"
+            },
+            "scope": 106,
+            "src": "902:226:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "2f2bf18e",
+            "id": 81,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getEntryIndexForAddress",
+            "nameLocation": "1142:23:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 77,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 76,
+                  "mutability": "mutable",
+                  "name": "addr",
+                  "nameLocation": "1174:4:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 81,
+                  "src": "1166:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 75,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1166:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1165:14:0"
+            },
+            "returnParameters": {
+              "id": 80,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 79,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "1227:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 81,
+                  "src": "1219:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 78,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1219:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1218:15:0"
+            },
+            "scope": 106,
+            "src": "1133:101:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "bae78d7b",
+            "id": 89,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getEntry",
+            "nameLocation": "1248:8:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 84,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 83,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "1265:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 89,
+                  "src": "1257:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 82,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1257:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1256:15:0"
+            },
+            "returnParameters": {
+              "id": 88,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 87,
+                  "mutability": "mutable",
+                  "name": "entry",
+                  "nameLocation": "1344:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 89,
+                  "src": "1319:30:0",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Entry_$1077_memory_ptr",
+                    "typeString": "struct CoreLibrary.Entry"
+                  },
+                  "typeName": {
+                    "id": 86,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 85,
+                      "name": "CoreLibrary.Entry",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1077,
+                      "src": "1319:17:0"
+                    },
+                    "referencedDeclaration": 1077,
+                    "src": "1319:17:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Entry_$1077_storage_ptr",
+                      "typeString": "struct CoreLibrary.Entry"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1318:32:0"
+            },
+            "scope": 106,
+            "src": "1239:112:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "d28fbf0a",
+            "id": 98,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getProcedure",
+            "nameLocation": "1365:12:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 92,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 91,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "1386:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 98,
+                  "src": "1378:13:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 90,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1378:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1377:15:0"
+            },
+            "returnParameters": {
+              "id": 97,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 94,
+                  "mutability": "mutable",
+                  "name": "addr",
+                  "nameLocation": "1448:4:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 98,
+                  "src": "1440:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 93,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1440:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 96,
+                  "mutability": "mutable",
+                  "name": "perms",
+                  "nameLocation": "1461:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 98,
+                  "src": "1454:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes2",
+                    "typeString": "bytes2"
+                  },
+                  "typeName": {
+                    "id": 95,
+                    "name": "bytes2",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1454:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes2",
+                      "typeString": "bytes2"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1439:28:0"
+            },
+            "scope": 106,
+            "src": "1356:112:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "160a7925",
+            "id": 105,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getPermissions",
+            "nameLocation": "1482:14:0",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 101,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 100,
+                  "mutability": "mutable",
+                  "name": "addr",
+                  "nameLocation": "1505:4:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 105,
+                  "src": "1497:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 99,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1497:7:0",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1496:14:0"
+            },
+            "returnParameters": {
+              "id": 104,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 103,
+                  "mutability": "mutable",
+                  "name": "perms",
+                  "nameLocation": "1565:5:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 105,
+                  "src": "1558:12:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes2",
+                    "typeString": "bytes2"
+                  },
+                  "typeName": {
+                    "id": 102,
+                    "name": "bytes2",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1558:6:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes2",
+                      "typeString": "bytes2"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1557:14:0"
+            },
+            "scope": 106,
+            "src": "1473:99:0",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 107,
+        "src": "144:1430:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "46:1529:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.4+commit.c7e474f2.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.1",
+  "updatedAt": "2021-05-26T21:15:04.793Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

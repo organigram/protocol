@@ -1,26 +1,27 @@
 {
   "name": "@organigram/contracts",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Solidity smart-contracts framework for governance systems.",
   "author": "Organigr.am <dev@organigr.am> (https://organigr.am)",
   "license": "LGPL-3.0-or-later",
   "scripts": {
-    "build:contracts": "yarn solc contracts/*.sol --abi -o abis --overwrite && yarn solc contracts/*.sol --bin -o bin --overwrite",
+    "build": "yarn truffle build",
+    "build:abis": "docker run --rm -v $(pwd):/var/data -w /var/data ethereum/solc:stable contracts/*.sol --abi -o abis --overwrite",
+    "build:bin": "docker run --rm -v $(pwd):/var/data -w /var/data ethereum/solc:stable contracts/*.sol --bin -o bin --overwrite",
     "test": "echo \"Error: no test specified\" && exit 1",
     "cleanup": "yarn truffle networks --clean"
   },
-  "peerDependencies": {
-    "@openzeppelin/contracts": "^4.0.0"
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.1.0"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.0",
     "@graphprotocol/graph-ts": "^0.20.0",
-    "@openzeppelin/contracts": "^4.0.0",
     "@truffle/hdwallet-provider": "^1.2.2",
     "bs58": "^4.0.1",
     "cids": "^1.0.2",
-    "ipfs": "^0.54.2",
-    "ipfs-http-client": "^49.0.2",
+    "ipfs": "^0.55.2",
+    "ipfs-http-client": "^50.1.0",
     "truffle": "^5.1.49"
   },
   "directories": {

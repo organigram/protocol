@@ -2,7 +2,7 @@ const HDWalletProvider = require('@truffle/hdwallet-provider')
 
 module.exports = {
   networks: {
-    development: {
+    dev: {
       host: "127.0.0.1",
       port: 8545,
       network_id: "*",
@@ -10,9 +10,9 @@ module.exports = {
     },
     ganache: {
       host: "127.0.0.1",
-      port: 8545,
+      port: 7545,
       network_id: "*",
-      gasPrice: 1
+      gasPrice: 20000000000  // 20 gwei
     },
     rinkeby: {
       provider: () =>
@@ -22,7 +22,8 @@ module.exports = {
           numberOfAddresses: 10
         }),
       network_id: 4,
-      gasPrice: 1
+      // gas: 6700000,
+      gasPrice: 1000000000 // 1 gwei
     }
   },
   compilers: {

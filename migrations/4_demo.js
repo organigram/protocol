@@ -10,7 +10,7 @@ const HASH_FUNCTION = "0x12"
 const HASH_SIZE = "0x20"
 
 module.exports = async (deployer, network, accounts) => {
-  if (network !== "development" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork" && network !== "pichain")
+  if (network !== "dev" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork" && network !== "ganache")
     return;
 
   const EMPTY_CID = multihashToCid({

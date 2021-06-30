@@ -9,7 +9,7 @@ const PROCEDURE_EVERYONE = "0x0000000000000000000000000000000000000000"
 const PERMISSION_ADD_ENTRIES = "0x0004"
 
 module.exports = async (deployer, network, accounts) => {
-  if (network !== "development" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork")
+  if (network !== "dev" && network !== "develop" && network !== "rinkeby" && network !== "rinkeby-fork" && network !== "ganache")
     return;
 
   const from = accounts[0]

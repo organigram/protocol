@@ -10,8 +10,6 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 /*
     A procedure defines a set of operations compiled in a proposal.
     The procedure dictates the way the proposal can be applied.
-
-    @TODO : Add proposals getters.
 */
 
 contract Procedure is ERC165, Initializable {
@@ -113,6 +111,7 @@ contract Procedure is ERC165, Initializable {
     /// @notice When moderation is enabled, moderators must accept the proposal. 
     function presentProposal(uint256 proposalKey)
         public
+        virtual
     {
         procedureData.presentProposal(proposalKey);
     }

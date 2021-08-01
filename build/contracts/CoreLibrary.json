@@ -1,18 +1,18 @@
 {
   "contractName": "CoreLibrary",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.6+commit.11564f7e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol\":\"CoreLibrary\"},\"evmVersion\":\"berlin\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":10},\"remappings\":[]},\"sources\":{\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol\":{\"keccak256\":\"0xe9cf947cef24add09f3160c1aee5433b2e68b392f3b158379e123dd7fea360f1\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://92d81571db4f1f5c48ef8167f274363edf7ad00ba6662308728c0bdf369e8ba0\",\"dweb:/ipfs/QmNz5p8bE2oFiLWtzmHW8TsYoBTYVR8g4w2bVPxGLhm2Qz\"]}},\"version\":1}",
-  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212201793cb2347cbaed9bce480ce43e5e1155238aea30983b07579b140ec00d7b05664736f6c63430008060033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212201793cb2347cbaed9bce480ce43e5e1155238aea30983b07579b140ec00d7b05664736f6c63430008060033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.6+commit.11564f7e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/workspace/contracts/contracts/libraries/CoreLibrary.sol\":\"CoreLibrary\"},\"evmVersion\":\"berlin\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":10},\"remappings\":[]},\"sources\":{\"/workspace/contracts/contracts/libraries/CoreLibrary.sol\":{\"keccak256\":\"0xe9cf947cef24add09f3160c1aee5433b2e68b392f3b158379e123dd7fea360f1\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://92d81571db4f1f5c48ef8167f274363edf7ad00ba6662308728c0bdf369e8ba0\",\"dweb:/ipfs/QmNz5p8bE2oFiLWtzmHW8TsYoBTYVR8g4w2bVPxGLhm2Qz\"]}},\"version\":1}",
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122067d9ef0e59b9d2ad0a9cdb86ee3ab459c38d7f8f920beb8bcd635f73d6edf75464736f6c63430008060033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122067d9ef0e59b9d2ad0a9cdb86ee3ab459c38d7f8f920beb8bcd635f73d6edf75464736f6c63430008060033",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
   "sourceMap": "71:260:5:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;71:260:5;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "71:260:5:-:0;;;;;;;;",
   "source": "// SPDX-License-Identifier: LGPL-3.0-or-later\npragma solidity ^0.8.0;\n\nlibrary CoreLibrary {\n    struct Metadata {\n        bytes32 ipfsHash;\n        uint8 hashFunction;\n        uint8 hashSize;\n    }\n    struct Entry {\n        address addr;   // Address of account or contract.\n        Metadata doc;   // Doc stored on IPFS.\n    }\n}",
-  "sourcePath": "/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol",
+  "sourcePath": "/workspace/contracts/contracts/libraries/CoreLibrary.sol",
   "ast": {
-    "absolutePath": "/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol",
+    "absolutePath": "/workspace/contracts/contracts/libraries/CoreLibrary.sol",
     "exportedSymbols": {
       "CoreLibrary": [
         1078
@@ -223,7 +223,7 @@
     "src": "46:285:5"
   },
   "legacyAST": {
-    "absolutePath": "/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol",
+    "absolutePath": "/workspace/contracts/contracts/libraries/CoreLibrary.sol",
     "exportedSymbols": {
       "CoreLibrary": [
         1078
@@ -439,7 +439,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.1",
-  "updatedAt": "2021-07-05T14:11:45.131Z",
+  "updatedAt": "2021-08-01T14:59:44.928Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

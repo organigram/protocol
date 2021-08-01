@@ -8,18 +8,21 @@
     "build": "yarn truffle build",
     "build:abis": "docker run --rm -v $(pwd):/var/data -w /var/data ethereum/solc:stable contracts/*.sol --abi -o abis --overwrite",
     "build:bin": "docker run --rm -v $(pwd):/var/data -w /var/data ethereum/solc:stable contracts/*.sol --bin -o bin --overwrite",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --exit --recursive",
     "cleanup": "yarn truffle networks --clean"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.2.0"
   },
   "devDependencies": {
+    "@openzeppelin/test-environment": "^0.1.9",
     "@truffle/hdwallet-provider": "^1.4.2",
     "bs58": "^4.0.1",
+    "chai": "^4.3.4",
     "cids": "^1.0.2",
     "ipfs": "^0.56.1",
     "ipfs-http-client": "^51.0.1",
+    "mocha": "^9.0.3",
     "truffle": "^5.4.3"
   },
   "directories": {

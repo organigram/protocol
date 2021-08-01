@@ -8,7 +8,8 @@
     },
     {
       "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "payable": true
     },
     {
       "inputs": [
@@ -27,7 +28,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -455,7 +457,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -474,7 +477,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -522,7 +526,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -546,7 +551,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -565,7 +571,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.6+commit.11564f7e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"doc\",\"type\":\"tuple\"}],\"internalType\":\"struct CoreLibrary.Entry[]\",\"name\":\"entries\",\"type\":\"tuple[]\"}],\"name\":\"addEntries\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"indexes\",\"type\":\"uint256[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"procedure\",\"type\":\"address\"},{\"internalType\":\"bytes2\",\"name\":\"permissions\",\"type\":\"bytes2\"}],\"name\":\"addProcedure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getEntry\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"doc\",\"type\":\"tuple\"}],\"internalType\":\"struct CoreLibrary.Entry\",\"name\":\"entry\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"getEntryIndexForAddress\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOrgan\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"metadata\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"proceduresLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"entriesLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"entriesCount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"getPermissions\",\"outputs\":[{\"internalType\":\"bytes2\",\"name\":\"perms\",\"type\":\"bytes2\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getProcedure\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"bytes2\",\"name\":\"perms\",\"type\":\"bytes2\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"admin\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"metadata\",\"type\":\"tuple\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"onERC721Received\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"indexes\",\"type\":\"uint256[]\"}],\"name\":\"removeEntries\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"procedure\",\"type\":\"address\"}],\"name\":\"removeProcedure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"doc\",\"type\":\"tuple\"}],\"internalType\":\"struct CoreLibrary.Entry\",\"name\":\"entry\",\"type\":\"tuple\"}],\"name\":\"replaceEntry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"oldProcedure\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"newProcedure\",\"type\":\"address\"},{\"internalType\":\"bytes2\",\"name\":\"permissions\",\"type\":\"bytes2\"}],\"name\":\"replaceProcedure\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"tokensReceived\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"name\":\"tokensToSend\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferCoins\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"ipfsHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"hashFunction\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"hashSize\",\"type\":\"uint8\"}],\"internalType\":\"struct CoreLibrary.Metadata\",\"name\":\"metadata\",\"type\":\"tuple\"}],\"name\":\"updateMetadata\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"supportsInterface(bytes4)\":{\"details\":\"See {IERC165-supportsInterface}.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":{\"notice\":\"Organ API.\"}},\"notice\":\"An organ contains a list of entries and a set of procedures. A procedure is a contract that can effect changes on organs. An entry can be a document and/or an address (a wallet or a contract).\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/Organ.sol\":\"Organ\"},\"evmVersion\":\"berlin\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":10},\"remappings\":[]},\"sources\":{\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/IOrgan.sol\":{\"keccak256\":\"0x690735554872919bf0623cbdbd876c4c1c4cef3156df319b4652548772d5a056\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://29e0d3d144b7391c137cf6d79807b49ee9927a8b4698a0cc91fefb6d17d19d8c\",\"dweb:/ipfs/QmbdYKgdgsaUCgvq2RgPx95gkMPnqrwH8eAEYFPucGrjBh\"]},\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/Organ.sol\":{\"keccak256\":\"0x4129cec790ad698da70edf97aba7ee733d4a515b5fdba09cb63a12ac01a18f74\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://b738a49df60041701813099cc273f6159f32aeeb317f07a238a06e50ce71d790\",\"dweb:/ipfs/Qmdek2s7NfG1XnDu7LK7G4rDmuscjCrkReQi8yn219Wrb8\"]},\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/CoreLibrary.sol\":{\"keccak256\":\"0xe9cf947cef24add09f3160c1aee5433b2e68b392f3b158379e123dd7fea360f1\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://92d81571db4f1f5c48ef8167f274363edf7ad00ba6662308728c0bdf369e8ba0\",\"dweb:/ipfs/QmNz5p8bE2oFiLWtzmHW8TsYoBTYVR8g4w2bVPxGLhm2Qz\"]},\"/Users/alex/Code/organigr.am-refactoring/packages/@organigram/contracts/contracts/libraries/OrganLibrary.sol\":{\"keccak256\":\"0xe76ea1e5479a2b7511e79da5e598155474454f0a487f2b88fba2217c9699b01e\",\"license\":\"LGPL-3.0-or-later\",\"urls\":[\"bzz-raw://1741c3e202abc366ccfd137e67f076b8811b4ed5b23a81bf733d6384f875da39\",\"dweb:/ipfs/QmNkJbrL5mnspgFsvjL7biC4Q8X4UdtPGFo8zbvocx7UDF\"]},\"@openzeppelin/contracts/proxy/utils/Initializable.sol\":{\"keccak256\":\"0x67d2f282a9678e58e878a0b774041ba7a01e2740a262aea97a3f681339914713\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://297df5725003e586651278a5d021b176457c5bb05a954c8490f21db2754e7352\",\"dweb:/ipfs/QmSe9AHjVnDn39NqT9hkjuCCGUwtc989WuZ5rWTe3GHrUD\"]},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xc1c941ad1e580b4623007305921efe2f26fc7320a4edc226234dd707c658a428\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://473e11d739868e0d9f48254ccf84ba63290d6a2321d59a37b74c244a27f9cad7\",\"dweb:/ipfs/QmUGzDmecP936jzgM7SYyGwR1YgBGsveoHHJTbDfB8jbGF\"]},\"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol\":{\"keccak256\":\"0x96877bb2eb8ca360e949ee1bd77b47a14e92e42f79897c350f088f87a3c231d4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://48593d699a4ef6b5bd2efb20d37320e69303fd27d4b59a2b6b8a8e563e608456\",\"dweb:/ipfs/QmdAPS8uLrzPJEeFZyJVkwTtaL3KB9jo9wJm1UcoJP55wT\"]},\"@openzeppelin/contracts/token/ERC777/IERC777.sol\":{\"keccak256\":\"0x180af7df8832ffcba53dae0c5450b062d2c571a8eaec22619fcaef5758503d7d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6232d44d9a11c9764c655bb481213a0a92afd27f6b5a1083343d512f04063735\",\"dweb:/ipfs/QmSfSAzCgcMMaXVc7EnoC98opUjizqx6svmJNotiBWaGbc\"]},\"@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol\":{\"keccak256\":\"0x0fd59f83d16f090c27a8105db0f4ad05b0f5d127f9878b82ebf0ad2bbc4e3f03\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b0f20fa38853a7b046933b0c905b6e021b081712032ee395c3ecca01998047ff\",\"dweb:/ipfs/QmRDRgthGgc9XTfQKKN29KZF8BYanfcE5XP9cvAdh1E146\"]},\"@openzeppelin/contracts/token/ERC777/IERC777Sender.sol\":{\"keccak256\":\"0x54230ad917ef5075db47e57ac43655f1197ac913686d5ced13062c2da0cce857\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0e198d3b0abb92a8ac98583349c07a653714a581dbd587f17ea7bff17b460e09\",\"dweb:/ipfs/QmR1TtTSFZkTAH6QdXj4eFCtfMnThmBKhroDqsWtzU65SJ\"]},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0x5718c5df9bd67ac68a796961df938821bb5dc0cd4c6118d77e9145afb187409b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d10e1d9b26042424789246603906ad06143bf9a928f4e99de8b5e3bdc662f549\",\"dweb:/ipfs/Qmejonoaj5MLekPus229rJQHcC6E9dz2xorjHJR84fMfmn\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0xa28007762d9da9db878dd421960c8cb9a10471f47ab5c1b3309bfe48e9e79ff4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://796ab6e88af7bf0e78def0f059310c903af6a312b565344e0ff524a0f26e81c6\",\"dweb:/ipfs/QmcsVgLgzWdor3UnAztUkXKNGcysm1MPneWksF72AvnwBx\"]},\"@openzeppelin/contracts/utils/structs/EnumerableSet.sol\":{\"keccak256\":\"0x4878ef6c288f4cef3c2a288d32cc548c648831cc55503ad3d9a581ed3b93aad9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ff1bdcc04ffc6b0a39e76ca4d8c09fb36927c2355008294db28096c1bd9ef544\",\"dweb:/ipfs/QmSNmMUxcuQ9i6U1PVcd14gTCEYmFgkjPg3anzDckGhVRS\"]}},\"version\":1}",
@@ -26849,7 +26856,8 @@
   },
   "networks": {},
   "schemaVersion": "3.4.1",
-  "updatedAt": "2021-06-30T10:27:25.820Z",
+  "updatedAt": "2021-07-05T14:12:03.809Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {

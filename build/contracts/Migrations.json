@@ -2020,8 +2020,8 @@
     "version": "0.8.6+commit.11564f7e.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.4.1",
-  "updatedAt": "2021-08-01T15:00:02.272Z",
+  "schemaVersion": "3.4.2",
+  "updatedAt": "2021-08-01T15:14:56.309Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

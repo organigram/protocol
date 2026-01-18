@@ -10,7 +10,7 @@ import Organigram from '../ignition/modules/Organigram'
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
-export type ManagerContracts = {
+export type ClientContracts = {
   coreLibrary: GetContractReturnType
   organLibrary: GetContractReturnType
   procedureLibrary: GetContractReturnType
@@ -36,7 +36,7 @@ export const deployAndLoadContract = async (module: any, parameters?: any) => {
   )
 }
 
-export const deployManager = async (): Promise<ManagerContracts> => {
+export const deployClient = async (): Promise<ClientContracts> => {
   console.info('Network:', network.name)
 
   const coreLibrary = await deployAndLoadContract(CoreLibrary)
@@ -135,7 +135,7 @@ export const deployManager = async (): Promise<ManagerContracts> => {
   // await tenderly.persistArtifacts(...artifacts)
 
   console.info()
-  console.info('Organigram DAO deployed successfully! ✅🚀')
+  console.info('Organigram Client deployed successfully! ✅🚀')
   console.info()
 
   return {

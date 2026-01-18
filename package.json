@@ -20,7 +20,7 @@
     "postbuild": "pnpm node ./scripts/generateABIs.js",
     "docs": "node scripts/docs.js",
     "test": "env-cmd --silent pnpm hardhat test",
-    "deploy:manager": "env-cmd --silent tsx scripts/deploy-manager.ts",
+    "deploy:client": "env-cmd --silent tsx scripts/deploy-client.ts",
     "deploy:gasstation": "env-cmd --silent tsx scripts/deploy-gas-station.ts",
     "hardhat:node": "pnpm hardhat node",
     "hardhat:clean": "env-cmd --silent pnpm hardhat clean && pnpm build"

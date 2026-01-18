@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@opengsn/contracts/src/ERC2771Recipient.sol";
 
-contract Organigram is ERC2771Recipient {
+contract OrganigramClient is ERC2771Recipient {
     using CoreLibrary for CoreLibrary.Entry;
     address payable public organ;
     address payable public procedures; // Organ with procedures addresses.

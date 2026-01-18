@@ -2,15 +2,15 @@ import { assert } from 'chai'
 import { viem } from 'hardhat'
 import { parseEventLogs } from 'viem'
 
-import { deployManager, type ManagerContracts } from '../src/dao'
+import { deployClient, type ClientContracts } from '../src/client'
 
 describe('Organigram protocol', function () {
-  let testValues: ManagerContracts & {
+  let testValues: ClientContracts & {
     signers: Array<`0x${string}`>
     publicClient: any
   }
 
-  it('Deploy manager', async function () {
+  it('Deploy client', async function () {
     const {
       coreLibrary,
       organLibrary,
@@ -21,7 +21,7 @@ describe('Organigram protocol', function () {
       erc20VoteProcedure,
       organigram,
       proceduresRegistry
-    } = await deployManager()
+    } = await deployClient()
 
     testValues = {
       coreLibrary,

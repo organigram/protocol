@@ -1,5 +1,5 @@
 import MetaGasStationModule from '../ignition/modules/MetaGasStation'
-import { deployAndLoadContract } from '../src/dao'
+import { deployAndLoadContract } from '../src/client'
 
 async function main() {
   const { metaGasStation } = await deployAndLoadContract(MetaGasStationModule)

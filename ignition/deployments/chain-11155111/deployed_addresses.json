@@ -1,0 +1,11 @@
+{
+  "CoreLibraryModule#CoreLibrary": "0x7439E00e66D33E33B0B6fAC83145801104733f50",
+  "OrganLibraryModule#OrganLibrary": "0x43D5Fa52Ee21506Cb5a435f810457c2ECF92247A",
+  "ProcedureLibraryModule#ProcedureLibrary": "0xC3FD96560f22085d9359471F051A3e9289004c24",
+  "OrganModule#Organ": "0x044324efCb8D3F92C710812a09C787352F7eA799",
+  "ProcedureModule#ERC20VoteProcedure": "0xFC4c8c764e8806252ED139ad3b31a3B0912DFF77",
+  "ProcedureModule#NominationProcedure": "0xdFE806FfA390Bc94ed85a4f61f62c25cb4b5b52A",
+  "ProcedureModule#VoteProcedure": "0x72b6769cD89e8B5b2cc0221C8317506B72c2cF18",
+  "OrganigramModule#Organigram": "0xC0E85e381ccA0105b998f6A4C39f81d2aCC60034",
+  "MetaGasStationModule#MetaGasStation": "0x1B669eBdCA500202ACD155Fa1914849FfcBAB646"
+}

@@ -1,0 +1,1465 @@
+{
+  "contractName": "IForwarder",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "domainSeparator",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "domainValue",
+          "type": "bytes"
+        }
+      ],
+      "name": "DomainRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "typeHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "typeStr",
+          "type": "string"
+        }
+      ],
+      "name": "RequestTypeRegistered",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        }
+      ],
+      "name": "getNonce",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "gas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validUntilTime",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IForwarder.ForwardRequest",
+          "name": "forwardRequest",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "domainSeparator",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "requestTypeHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "suffixData",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "verify",
+      "outputs": [],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "gas",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "validUntilTime",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IForwarder.ForwardRequest",
+          "name": "forwardRequest",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "domainSeparator",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "requestTypeHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "suffixData",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "signature",
+          "type": "bytes"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes",
+          "name": "ret",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "typeName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "typeSuffix",
+          "type": "string"
+        }
+      ],
+      "name": "registerRequestType",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "version",
+          "type": "string"
+        }
+      ],
+      "name": "registerDomainSeparator",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.19+commit.7dd6d404\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"domainSeparator\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"domainValue\",\"type\":\"bytes\"}],\"name\":\"DomainRegistered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"typeHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"typeStr\",\"type\":\"string\"}],\"name\":\"RequestTypeRegistered\",\"type\":\"event\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gas\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"validUntilTime\",\"type\":\"uint256\"}],\"internalType\":\"struct IForwarder.ForwardRequest\",\"name\":\"forwardRequest\",\"type\":\"tuple\"},{\"internalType\":\"bytes32\",\"name\":\"domainSeparator\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"requestTypeHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"suffixData\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"execute\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"success\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"ret\",\"type\":\"bytes\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"}],\"name\":\"getNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"version\",\"type\":\"string\"}],\"name\":\"registerDomainSeparator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"typeName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"typeSuffix\",\"type\":\"string\"}],\"name\":\"registerRequestType\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gas\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"uint256\",\"name\":\"validUntilTime\",\"type\":\"uint256\"}],\"internalType\":\"struct IForwarder.ForwardRequest\",\"name\":\"forwardRequest\",\"type\":\"tuple\"},{\"internalType\":\"bytes32\",\"name\":\"domainSeparator\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"requestTypeHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"suffixData\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"verify\",\"outputs\":[],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"execute((address,address,uint256,uint256,uint256,bytes,uint256),bytes32,bytes32,bytes,bytes)\":{\"params\":{\"domainSeparator\":\"The domain used when signing this request.\",\"forwardRequest\":\"All requested transaction parameters.\",\"requestTypeHash\":\"The request type used when signing this request.\",\"signature\":\"The client signature to be validated.\",\"suffixData\":\"The ABI-encoded extension data for the current `RequestType` used when signing this request.\"},\"returns\":{\"ret\":\"The byte array returned by the underlying `CALL` to the target address.\",\"success\":\"The success flag of the underlying `CALL` to the target address.\"}},\"getNonce(address)\":{\"params\":{\"from\":\"The address of a sender.\"},\"returns\":{\"_0\":\"The nonce for this address.\"}},\"registerDomainSeparator(string,string)\":{\"params\":{\"name\":\"The domain's display name.\",\"version\":\"The domain/protocol version.\"}},\"registerRequestType(string,string)\":{\"params\":{\"typeName\":\"The name of the request type.\",\"typeSuffix\":\"Any extra data after the generic params. Must contain add at least one param. The generic ForwardRequest type is always registered by the constructor.\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"}},\"title\":\"The Forwarder Interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"execute((address,address,uint256,uint256,uint256,bytes,uint256),bytes32,bytes32,bytes,bytes)\":{\"notice\":\"Executes a transaction specified by the `ForwardRequest`. The transaction is first verified and then executed. The success flag and returned bytes array of the `CALL` are returned as-is. This method would revert only in case of a verification error. All the target errors are reported using the returned success flag and returned bytes array.\"},\"registerDomainSeparator(string,string)\":{\"notice\":\"Register a new domain separator.This is necessary for the Forwarder to be able to verify the signatures conforming to the ERC-712.The domain separator must have the following fields: `name`, `version`, `chainId`, `verifyingContract`. The `chainId` is the current network's `chainId`, and the `verifyingContract` is this Forwarder's address. This method accepts the domain name and version to create and register the domain separator value.\"},\"registerRequestType(string,string)\":{\"notice\":\"Register a new Request typehash.This is necessary for the Forwarder to be able to verify the signatures conforming to the ERC-712.\"},\"verify((address,address,uint256,uint256,uint256,bytes,uint256),bytes32,bytes32,bytes,bytes)\":{\"notice\":\"Verify the transaction is valid and can be executed. Implementations must validate the signature and the nonce of the request are correct. Does not revert and returns successfully if the input is valid. Reverts if any validation has failed. For instance, if either signature or nonce are incorrect. Reverts if `domainSeparator` or `requestTypeHash` are not registered as well.\"}},\"notice\":\"The contracts implementing this interface take a role of authorization, authentication and replay protection for contracts that choose to trust a `Forwarder`, instead of relying on a mechanism built into the Ethereum protocol.if the `Forwarder` contract decides that an incoming `ForwardRequest` is valid, it must append 20 bytes that represent the caller to the `data` field of the request and send this new data to the target address (the `to` field) :warning: **Warning** :warning: The Forwarder can have a full control over a `Recipient` contract. Any vulnerability in a `Forwarder` implementation can make all of its `Recipient` contracts susceptible! Recipient contracts should only trust forwarders that passed through security audit, otherwise they are susceptible to identity theft.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"@opengsn/contracts/src/forwarder/IForwarder.sol\":\"IForwarder\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":10},\"remappings\":[]},\"sources\":{\"@opengsn/contracts/src/forwarder/IForwarder.sol\":{\"keccak256\":\"0x28669953bd3dcc98a5f959fa3cac97444584b6fbe59341681b9a59f11a83b171\",\"license\":\"GPL-3.0-only\",\"urls\":[\"bzz-raw://a21d3f5fb9861fecd89da8aab73fc458e48bdfd2d7d9fd8a2f05b1afe54de278\",\"dweb:/ipfs/QmcNDQsr83ASBADBQmqdrvSvRt81rhUmyJwSVTu5is7WzW\"]},\"@openzeppelin/contracts/interfaces/IERC165.sol\":{\"keccak256\":\"0xd04b0f06e0666f29cf7cccc82894de541e19bb30a765b107b1e40bb7fe5f7d7a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7b652499d098e88d8d878374616bb58434301061cae2253298b3f374044e0ddb\",\"dweb:/ipfs/QmbhAzctqo5jrSKU6idHdVyqfmzCcDbNUPvmx4GiXxfA6q\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: GPL-3.0-only\npragma solidity >=0.7.6;\npragma abicoder v2;\n\nimport \"@openzeppelin/contracts/interfaces/IERC165.sol\";\n\n/**\n * @title The Forwarder Interface\n * @notice The contracts implementing this interface take a role of authorization, authentication and replay protection\n * for contracts that choose to trust a `Forwarder`, instead of relying on a mechanism built into the Ethereum protocol.\n *\n * @notice if the `Forwarder` contract decides that an incoming `ForwardRequest` is valid, it must append 20 bytes that\n * represent the caller to the `data` field of the request and send this new data to the target address (the `to` field)\n *\n * :warning: **Warning** :warning: The Forwarder can have a full control over a `Recipient` contract.\n * Any vulnerability in a `Forwarder` implementation can make all of its `Recipient` contracts susceptible!\n * Recipient contracts should only trust forwarders that passed through security audit,\n * otherwise they are susceptible to identity theft.\n */\ninterface IForwarder is IERC165 {\n\n    /**\n     * @notice A representation of a request for a `Forwarder` to send `data` on behalf of a `from` to a target (`to`).\n     */\n    struct ForwardRequest {\n        address from;\n        address to;\n        uint256 value;\n        uint256 gas;\n        uint256 nonce;\n        bytes data;\n        uint256 validUntilTime;\n    }\n\n    event DomainRegistered(bytes32 indexed domainSeparator, bytes domainValue);\n\n    event RequestTypeRegistered(bytes32 indexed typeHash, string typeStr);\n\n    /**\n     * @param from The address of a sender.\n     * @return The nonce for this address.\n     */\n    function getNonce(address from)\n    external view\n    returns(uint256);\n\n    /**\n     * @notice Verify the transaction is valid and can be executed.\n     * Implementations must validate the signature and the nonce of the request are correct.\n     * Does not revert and returns successfully if the input is valid.\n     * Reverts if any validation has failed. For instance, if either signature or nonce are incorrect.\n     * Reverts if `domainSeparator` or `requestTypeHash` are not registered as well.\n     */\n    function verify(\n        ForwardRequest calldata forwardRequest,\n        bytes32 domainSeparator,\n        bytes32 requestTypeHash,\n        bytes calldata suffixData,\n        bytes calldata signature\n    ) external view;\n\n    /**\n     * @notice Executes a transaction specified by the `ForwardRequest`.\n     * The transaction is first verified and then executed.\n     * The success flag and returned bytes array of the `CALL` are returned as-is.\n     *\n     * This method would revert only in case of a verification error.\n     *\n     * All the target errors are reported using the returned success flag and returned bytes array.\n     *\n     * @param forwardRequest All requested transaction parameters.\n     * @param domainSeparator The domain used when signing this request.\n     * @param requestTypeHash The request type used when signing this request.\n     * @param suffixData The ABI-encoded extension data for the current `RequestType` used when signing this request.\n     * @param signature The client signature to be validated.\n     *\n     * @return success The success flag of the underlying `CALL` to the target address.\n     * @return ret The byte array returned by the underlying `CALL` to the target address.\n     */\n    function execute(\n        ForwardRequest calldata forwardRequest,\n        bytes32 domainSeparator,\n        bytes32 requestTypeHash,\n        bytes calldata suffixData,\n        bytes calldata signature\n    )\n    external payable\n    returns (bool success, bytes memory ret);\n\n    /**\n     * @notice Register a new Request typehash.\n     *\n     * @notice This is necessary for the Forwarder to be able to verify the signatures conforming to the ERC-712.\n     *\n     * @param typeName The name of the request type.\n     * @param typeSuffix Any extra data after the generic params. Must contain add at least one param.\n     * The generic ForwardRequest type is always registered by the constructor.\n     */\n    function registerRequestType(string calldata typeName, string calldata typeSuffix) external;\n\n    /**\n     * @notice Register a new domain separator.\n     *\n     * @notice This is necessary for the Forwarder to be able to verify the signatures conforming to the ERC-712.\n     *\n     * @notice The domain separator must have the following fields: `name`, `version`, `chainId`, `verifyingContract`.\n     * The `chainId` is the current network's `chainId`, and the `verifyingContract` is this Forwarder's address.\n     * This method accepts the domain name and version to create and register the domain separator value.\n     * @param name The domain's display name.\n     * @param version The domain/protocol version.\n     */\n    function registerDomainSeparator(string calldata name, string calldata version) external;\n}\n",
+  "sourcePath": "@opengsn/contracts/src/forwarder/IForwarder.sol",
+  "ast": {
+    "absolutePath": "@opengsn/contracts/src/forwarder/IForwarder.sol",
+    "exportedSymbols": {
+      "IERC165": [
+        7927
+      ],
+      "IForwarder": [
+        593
+      ]
+    },
+    "id": 594,
+    "license": "GPL-3.0-only",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 502,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.7",
+          ".6"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "41:24:2"
+      },
+      {
+        "id": 503,
+        "literals": [
+          "abicoder",
+          "v2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "66:19:2"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/interfaces/IERC165.sol",
+        "file": "@openzeppelin/contracts/interfaces/IERC165.sol",
+        "id": 504,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 594,
+        "sourceUnit": 2075,
+        "src": "87:56:2",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 506,
+              "name": "IERC165",
+              "nameLocations": [
+                "1050:7:2"
+              ],
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 7927,
+              "src": "1050:7:2"
+            },
+            "id": 507,
+            "nodeType": "InheritanceSpecifier",
+            "src": "1050:7:2"
+          }
+        ],
+        "canonicalName": "IForwarder",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 505,
+          "nodeType": "StructuredDocumentation",
+          "src": "145:880:2",
+          "text": " @title The Forwarder Interface\n @notice The contracts implementing this interface take a role of authorization, authentication and replay protection\n for contracts that choose to trust a `Forwarder`, instead of relying on a mechanism built into the Ethereum protocol.\n @notice if the `Forwarder` contract decides that an incoming `ForwardRequest` is valid, it must append 20 bytes that\n represent the caller to the `data` field of the request and send this new data to the target address (the `to` field)\n :warning: **Warning** :warning: The Forwarder can have a full control over a `Recipient` contract.\n Any vulnerability in a `Forwarder` implementation can make all of its `Recipient` contracts susceptible!\n Recipient contracts should only trust forwarders that passed through security audit,\n otherwise they are susceptible to identity theft."
+        },
+        "fullyImplemented": false,
+        "id": 593,
+        "linearizedBaseContracts": [
+          593,
+          7927
+        ],
+        "name": "IForwarder",
+        "nameLocation": "1036:10:2",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "IForwarder.ForwardRequest",
+            "id": 522,
+            "members": [
+              {
+                "constant": false,
+                "id": 509,
+                "mutability": "mutable",
+                "name": "from",
+                "nameLocation": "1241:4:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 522,
+                "src": "1233:12:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 508,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1233:7:2",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 511,
+                "mutability": "mutable",
+                "name": "to",
+                "nameLocation": "1263:2:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 522,
+                "src": "1255:10:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 510,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1255:7:2",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 513,
+                "mutability": "mutable",
+                "name": "value",
+                "nameLocation": "1283:5:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 522,
+                "src": "1275:13:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 512,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1275:7:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 515,
+                "mutability": "mutable",
+                "name": "gas",
+                "nameLocation": "1306:3:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 522,
+                "src": "1298:11:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 514,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1298:7:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 517,
+                "mutability": "mutable",
+                "name": "nonce",
+                "nameLocation": "1327:5:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 522,
+                "src": "1319:13:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 516,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1319:7:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 519,
+                "mutability": "mutable",
+                "name": "data",
+                "nameLocation": "1348:4:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 522,
+                "src": "1342:10:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes_storage_ptr",
+                  "typeString": "bytes"
+                },
+                "typeName": {
+                  "id": 518,
+                  "name": "bytes",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1342:5:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_storage_ptr",
+                    "typeString": "bytes"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 521,
+                "mutability": "mutable",
+                "name": "validUntilTime",
+                "nameLocation": "1370:14:2",
+                "nodeType": "VariableDeclaration",
+                "scope": 522,
+                "src": "1362:22:2",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 520,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1362:7:2",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "ForwardRequest",
+            "nameLocation": "1208:14:2",
+            "nodeType": "StructDefinition",
+            "scope": 593,
+            "src": "1201:190:2",
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "eventSelector": "4bc68689cbe89a4a6333a3ab0a70093874da3e5bfb71e93102027f3f073687d8",
+            "id": 528,
+            "name": "DomainRegistered",
+            "nameLocation": "1403:16:2",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 527,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 524,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "domainSeparator",
+                  "nameLocation": "1436:15:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 528,
+                  "src": "1420:31:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 523,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1420:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 526,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "domainValue",
+                  "nameLocation": "1459:11:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 528,
+                  "src": "1453:17:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 525,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1453:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1419:52:2"
+            },
+            "src": "1397:75:2"
+          },
+          {
+            "anonymous": false,
+            "eventSelector": "64d6bce64323458c44643c51fe45113efc882082f7b7fd5f09f0d69d2eedb202",
+            "id": 534,
+            "name": "RequestTypeRegistered",
+            "nameLocation": "1484:21:2",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 533,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 530,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "typeHash",
+                  "nameLocation": "1522:8:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 534,
+                  "src": "1506:24:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 529,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1506:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 532,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "typeStr",
+                  "nameLocation": "1539:7:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 534,
+                  "src": "1532:14:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 531,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1532:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1505:42:2"
+            },
+            "src": "1478:70:2"
+          },
+          {
+            "documentation": {
+              "id": 535,
+              "nodeType": "StructuredDocumentation",
+              "src": "1554:98:2",
+              "text": " @param from The address of a sender.\n @return The nonce for this address."
+            },
+            "functionSelector": "2d0335ab",
+            "id": 542,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getNonce",
+            "nameLocation": "1666:8:2",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 538,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 537,
+                  "mutability": "mutable",
+                  "name": "from",
+                  "nameLocation": "1683:4:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 542,
+                  "src": "1675:12:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 536,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1675:7:2",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1674:14:2"
+            },
+            "returnParameters": {
+              "id": 541,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 540,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 542,
+                  "src": "1719:7:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 539,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1719:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1718:9:2"
+            },
+            "scope": 593,
+            "src": "1657:71:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 543,
+              "nodeType": "StructuredDocumentation",
+              "src": "1734:431:2",
+              "text": " @notice Verify the transaction is valid and can be executed.\n Implementations must validate the signature and the nonce of the request are correct.\n Does not revert and returns successfully if the input is valid.\n Reverts if any validation has failed. For instance, if either signature or nonce are incorrect.\n Reverts if `domainSeparator` or `requestTypeHash` are not registered as well."
+            },
+            "functionSelector": "ad9f99c7",
+            "id": 557,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "verify",
+            "nameLocation": "2179:6:2",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 555,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 546,
+                  "mutability": "mutable",
+                  "name": "forwardRequest",
+                  "nameLocation": "2219:14:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 557,
+                  "src": "2195:38:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_ForwardRequest_$522_calldata_ptr",
+                    "typeString": "struct IForwarder.ForwardRequest"
+                  },
+                  "typeName": {
+                    "id": 545,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 544,
+                      "name": "ForwardRequest",
+                      "nameLocations": [
+                        "2195:14:2"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 522,
+                      "src": "2195:14:2"
+                    },
+                    "referencedDeclaration": 522,
+                    "src": "2195:14:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_ForwardRequest_$522_storage_ptr",
+                      "typeString": "struct IForwarder.ForwardRequest"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 548,
+                  "mutability": "mutable",
+                  "name": "domainSeparator",
+                  "nameLocation": "2251:15:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 557,
+                  "src": "2243:23:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 547,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2243:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 550,
+                  "mutability": "mutable",
+                  "name": "requestTypeHash",
+                  "nameLocation": "2284:15:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 557,
+                  "src": "2276:23:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 549,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2276:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 552,
+                  "mutability": "mutable",
+                  "name": "suffixData",
+                  "nameLocation": "2324:10:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 557,
+                  "src": "2309:25:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 551,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2309:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 554,
+                  "mutability": "mutable",
+                  "name": "signature",
+                  "nameLocation": "2359:9:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 557,
+                  "src": "2344:24:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 553,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2344:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2185:189:2"
+            },
+            "returnParameters": {
+              "id": 556,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2388:0:2"
+            },
+            "scope": 593,
+            "src": "2170:219:2",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 558,
+              "nodeType": "StructuredDocumentation",
+              "src": "2395:1003:2",
+              "text": " @notice Executes a transaction specified by the `ForwardRequest`.\n The transaction is first verified and then executed.\n The success flag and returned bytes array of the `CALL` are returned as-is.\n This method would revert only in case of a verification error.\n All the target errors are reported using the returned success flag and returned bytes array.\n @param forwardRequest All requested transaction parameters.\n @param domainSeparator The domain used when signing this request.\n @param requestTypeHash The request type used when signing this request.\n @param suffixData The ABI-encoded extension data for the current `RequestType` used when signing this request.\n @param signature The client signature to be validated.\n @return success The success flag of the underlying `CALL` to the target address.\n @return ret The byte array returned by the underlying `CALL` to the target address."
+            },
+            "functionSelector": "e024dc7f",
+            "id": 576,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nameLocation": "3412:7:2",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 570,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 561,
+                  "mutability": "mutable",
+                  "name": "forwardRequest",
+                  "nameLocation": "3453:14:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 576,
+                  "src": "3429:38:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_ForwardRequest_$522_calldata_ptr",
+                    "typeString": "struct IForwarder.ForwardRequest"
+                  },
+                  "typeName": {
+                    "id": 560,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 559,
+                      "name": "ForwardRequest",
+                      "nameLocations": [
+                        "3429:14:2"
+                      ],
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 522,
+                      "src": "3429:14:2"
+                    },
+                    "referencedDeclaration": 522,
+                    "src": "3429:14:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_ForwardRequest_$522_storage_ptr",
+                      "typeString": "struct IForwarder.ForwardRequest"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 563,
+                  "mutability": "mutable",
+                  "name": "domainSeparator",
+                  "nameLocation": "3485:15:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 576,
+                  "src": "3477:23:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 562,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3477:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 565,
+                  "mutability": "mutable",
+                  "name": "requestTypeHash",
+                  "nameLocation": "3518:15:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 576,
+                  "src": "3510:23:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 564,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3510:7:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 567,
+                  "mutability": "mutable",
+                  "name": "suffixData",
+                  "nameLocation": "3558:10:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 576,
+                  "src": "3543:25:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 566,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3543:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 569,
+                  "mutability": "mutable",
+                  "name": "signature",
+                  "nameLocation": "3593:9:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 576,
+                  "src": "3578:24:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 568,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3578:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3419:189:2"
+            },
+            "returnParameters": {
+              "id": 575,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 572,
+                  "mutability": "mutable",
+                  "name": "success",
+                  "nameLocation": "3648:7:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 576,
+                  "src": "3643:12:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 571,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3643:4:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 574,
+                  "mutability": "mutable",
+                  "name": "ret",
+                  "nameLocation": "3670:3:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 576,
+                  "src": "3657:16:2",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 573,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3657:5:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3642:32:2"
+            },
+            "scope": 593,
+            "src": "3403:272:2",
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 577,
+              "nodeType": "StructuredDocumentation",
+              "src": "3681:423:2",
+              "text": " @notice Register a new Request typehash.\n @notice This is necessary for the Forwarder to be able to verify the signatures conforming to the ERC-712.\n @param typeName The name of the request type.\n @param typeSuffix Any extra data after the generic params. Must contain add at least one param.\n The generic ForwardRequest type is always registered by the constructor."
+            },
+            "functionSelector": "d9210be5",
+            "id": 584,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerRequestType",
+            "nameLocation": "4118:19:2",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 582,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 579,
+                  "mutability": "mutable",
+                  "name": "typeName",
+                  "nameLocation": "4154:8:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 584,
+                  "src": "4138:24:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 578,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4138:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 581,
+                  "mutability": "mutable",
+                  "name": "typeSuffix",
+                  "nameLocation": "4180:10:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 584,
+                  "src": "4164:26:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 580,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4164:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4137:54:2"
+            },
+            "returnParameters": {
+              "id": 583,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "4200:0:2"
+            },
+            "scope": 593,
+            "src": "4109:92:2",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 585,
+              "nodeType": "StructuredDocumentation",
+              "src": "4207:623:2",
+              "text": " @notice Register a new domain separator.\n @notice This is necessary for the Forwarder to be able to verify the signatures conforming to the ERC-712.\n @notice The domain separator must have the following fields: `name`, `version`, `chainId`, `verifyingContract`.\n The `chainId` is the current network's `chainId`, and the `verifyingContract` is this Forwarder's address.\n This method accepts the domain name and version to create and register the domain separator value.\n @param name The domain's display name.\n @param version The domain/protocol version."
+            },
+            "functionSelector": "9c7b4592",
+            "id": 592,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerDomainSeparator",
+            "nameLocation": "4844:23:2",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 590,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 587,
+                  "mutability": "mutable",
+                  "name": "name",
+                  "nameLocation": "4884:4:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 592,
+                  "src": "4868:20:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 586,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4868:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 589,
+                  "mutability": "mutable",
+                  "name": "version",
+                  "nameLocation": "4906:7:2",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 592,
+                  "src": "4890:23:2",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_calldata_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 588,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4890:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4867:47:2"
+            },
+            "returnParameters": {
+              "id": 591,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "4923:0:2"
+            },
+            "scope": 593,
+            "src": "4835:89:2",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 594,
+        "src": "1026:3900:2",
+        "usedErrors": []
+      }
+    ],
+    "src": "41:4886:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.19+commit.7dd6d404.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.16",
+  "updatedAt": "2023-10-01T15:05:50.402Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "execute((address,address,uint256,uint256,uint256,bytes,uint256),bytes32,bytes32,bytes,bytes)": {
+        "params": {
+          "domainSeparator": "The domain used when signing this request.",
+          "forwardRequest": "All requested transaction parameters.",
+          "requestTypeHash": "The request type used when signing this request.",
+          "signature": "The client signature to be validated.",
+          "suffixData": "The ABI-encoded extension data for the current `RequestType` used when signing this request."
+        },
+        "returns": {
+          "ret": "The byte array returned by the underlying `CALL` to the target address.",
+          "success": "The success flag of the underlying `CALL` to the target address."
+        }
+      },
+      "getNonce(address)": {
+        "params": {
+          "from": "The address of a sender."
+        },
+        "returns": {
+          "_0": "The nonce for this address."
+        }
+      },
+      "registerDomainSeparator(string,string)": {
+        "params": {
+          "name": "The domain's display name.",
+          "version": "The domain/protocol version."
+        }
+      },
+      "registerRequestType(string,string)": {
+        "params": {
+          "typeName": "The name of the request type.",
+          "typeSuffix": "Any extra data after the generic params. Must contain add at least one param. The generic ForwardRequest type is always registered by the constructor."
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+      }
+    },
+    "title": "The Forwarder Interface",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "execute((address,address,uint256,uint256,uint256,bytes,uint256),bytes32,bytes32,bytes,bytes)": {
+        "notice": "Executes a transaction specified by the `ForwardRequest`. The transaction is first verified and then executed. The success flag and returned bytes array of the `CALL` are returned as-is. This method would revert only in case of a verification error. All the target errors are reported using the returned success flag and returned bytes array."
+      },
+      "registerDomainSeparator(string,string)": {
+        "notice": "Register a new domain separator.This is necessary for the Forwarder to be able to verify the signatures conforming to the ERC-712.The domain separator must have the following fields: `name`, `version`, `chainId`, `verifyingContract`. The `chainId` is the current network's `chainId`, and the `verifyingContract` is this Forwarder's address. This method accepts the domain name and version to create and register the domain separator value."
+      },
+      "registerRequestType(string,string)": {
+        "notice": "Register a new Request typehash.This is necessary for the Forwarder to be able to verify the signatures conforming to the ERC-712."
+      },
+      "verify((address,address,uint256,uint256,uint256,bytes,uint256),bytes32,bytes32,bytes,bytes)": {
+        "notice": "Verify the transaction is valid and can be executed. Implementations must validate the signature and the nonce of the request are correct. Does not revert and returns successfully if the input is valid. Reverts if any validation has failed. For instance, if either signature or nonce are incorrect. Reverts if `domainSeparator` or `requestTypeHash` are not registered as well."
+      }
+    },
+    "notice": "The contracts implementing this interface take a role of authorization, authentication and replay protection for contracts that choose to trust a `Forwarder`, instead of relying on a mechanism built into the Ethereum protocol.if the `Forwarder` contract decides that an incoming `ForwardRequest` is valid, it must append 20 bytes that represent the caller to the `data` field of the request and send this new data to the target address (the `to` field) :warning: **Warning** :warning: The Forwarder can have a full control over a `Recipient` contract. Any vulnerability in a `Forwarder` implementation can make all of its `Recipient` contracts susceptible! Recipient contracts should only trust forwarders that passed through security audit, otherwise they are susceptible to identity theft.",
+    "version": 1
+  }
+}

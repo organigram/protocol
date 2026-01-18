@@ -1,0 +1,51 @@
+name: Sync Monorepo IN (public repo -> monorepo)
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  sync_in:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout monorepo
+        uses: actions/checkout@v4
+        with:
+          repository: organigram/organigram
+          token: ${{ secrets.MONOREPO_TOKEN }}
+          fetch-depth: 0
+
+      - name: Add public remote
+        env:
+          GH_TOKEN: ${{ secrets.PUBLIC_REPO_READ_TOKEN }}
+        run: |
+          set -e
+          git remote add public "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          git fetch public main
+
+      - name: Subtree pull into monorepo
+        run: |
+          set -e
+          PREFIX="packages/contracts"   
+          git config user.name "sync-bot"
+          git config user.email "sync-bot@users.noreply.github.com"
+          git subtree pull --prefix="$PREFIX" public main -m "Sync ${PREFIX} from ${GITHUB_REPOSITORY}@${GITHUB_SHA}"
+
+      - name: Create PR in monorepo
+        env:
+          GH_TOKEN: ${{ secrets.MONOREPO_TOKEN }}
+        run: |
+          set -e
+          BR="sync/${{ github.event.repository.name }}/${{ github.sha }}"
+          git checkout -b "$BR"
+          git push origin "$BR"
+          gh pr create \
+            --title "Sync ${{ github.event.repository.name }} from public repo" \
+            --body "Imported changes from ${{ github.repository }}@${{ github.sha }} via git subtree." \
+            --base main \
+            --head "$BR"

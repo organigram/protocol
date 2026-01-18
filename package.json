@@ -1,0 +1,50 @@
+{
+  "name": "@organigram/protocol",
+  "version": "0.1.0",
+  "description": "Smart contract framework for building incorruptible organizations",
+  "author": "Organigram (https://organigram.ai)",
+  "contributors": [
+    "alex <alex@organigr.am> (https://github.com/alxmhe)"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:organigram/organigram.git",
+    "directory": "packages/contracts"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "build": "pnpm hardhat compile",
+    "postbuild": "pnpm node ./scripts/generateABIs.js",
+    "docs": "node scripts/docs.js",
+    "test": "env-cmd --silent pnpm hardhat test",
+    "deploy:manager": "env-cmd --silent tsx scripts/deploy-manager.ts",
+    "deploy:gasstation": "env-cmd --silent tsx scripts/deploy-gas-station.ts",
+    "hardhat:node": "pnpm hardhat node",
+    "hardhat:clean": "env-cmd --silent pnpm hardhat clean && pnpm build"
+  },
+  "dependencies": {
+    "@opengsn/contracts": "^3.0.0-beta.10",
+    "@openzeppelin/contracts": "^4.9.6"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.7",
+    "@nomicfoundation/hardhat-ignition": "^0.15.5",
+    "@nomicfoundation/hardhat-ignition-viem": "^0.15.6",
+    "@nomicfoundation/hardhat-viem": "^2.0.5",
+    "@openzeppelin/test-environment": "^0.1.9",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/chai": "^5.0.0",
+    "@types/jest": "^29.5.12",
+    "bs58": "^6.0.0",
+    "chai": "^4.3.4",
+    "ethers": "^6.13.2",
+    "ganache": "^7.9.2",
+    "hardhat": "^2.22.9",
+    "mocha": "^10.7.0",
+    "modules": "link:@nomicfoundation/hardhat-ignition/modules",
+    "viem": "^2.18.2"
+  }
+}

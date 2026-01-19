@@ -6,7 +6,7 @@ import OrganLibrary from '../ignition/modules/OrganLibrary'
 import ProcedureLibrary from '../ignition/modules/ProcedureLibrary'
 import Organ from '../ignition/modules/Organ'
 import Procedures from '../ignition/modules/Procedures'
-import Organigram from '../ignition/modules/Organigram'
+import OrganigramClient from '../ignition/modules/OrganigramClient'
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
@@ -18,7 +18,7 @@ export type ClientContracts = {
   nominationProcedure: GetContractReturnType
   voteProcedure: GetContractReturnType
   erc20VoteProcedure: GetContractReturnType
-  organigram: GetContractReturnType
+  organigramClient: GetContractReturnType
   proceduresRegistry: GetContractReturnType
 }
 
@@ -57,7 +57,7 @@ export const deployClient = async (): Promise<ClientContracts> => {
   /*
    * Deploying the Organigram DAO
    */
-  const { organigram } = await deployAndLoadContract(Organigram, {
+  const { organigramClient } = await deployAndLoadContract(OrganigramClient, {
     parameters: {
       Organigram: {
         nominationProcedureAddress: nominationProcedure.address,
@@ -72,7 +72,7 @@ export const deployClient = async (): Promise<ClientContracts> => {
    */
   // @ts-ignore (Property 'getSigners' does not exist on type 'ethers')
   const signers = await viem.getWalletClients()
-  const proceduresRegistryAddress = await organigram.read.procedures()
+  const proceduresRegistryAddress = await organigramClient.read.procedures()
   const proceduresRegistry = await viem.getContractAt(
     'Organ',
     proceduresRegistryAddress as `0x${string}`
@@ -130,7 +130,7 @@ export const deployClient = async (): Promise<ClientContracts> => {
   //   { name: 'ProcedureLibrary', address: await procedureLibrary.address },
   //   { name: 'Organ', address: await organ.address },
   //   { name: 'Procedures', address: await organ.address },
-  //   { name: 'Organigram', address: await organigram.address }
+  //   { name: 'Organigram', address: await organigramClient.address }
   // ]
   // await tenderly.persistArtifacts(...artifacts)
 
@@ -146,7 +146,7 @@ export const deployClient = async (): Promise<ClientContracts> => {
     nominationProcedure,
     voteProcedure,
     erc20VoteProcedure,
-    organigram,
+    organigramClient,
     proceduresRegistry
   }
 }

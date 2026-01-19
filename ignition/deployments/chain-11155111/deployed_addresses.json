@@ -7,5 +7,7 @@
   "ProcedureModule#NominationProcedure": "0xdFE806FfA390Bc94ed85a4f61f62c25cb4b5b52A",
   "ProcedureModule#VoteProcedure": "0x72b6769cD89e8B5b2cc0221C8317506B72c2cF18",
   "OrganigramModule#Organigram": "0xC0E85e381ccA0105b998f6A4C39f81d2aCC60034",
-  "MetaGasStationModule#MetaGasStation": "0x1B669eBdCA500202ACD155Fa1914849FfcBAB646"
+  "MetaGasStationModule#MetaGasStation": "0x1B669eBdCA500202ACD155Fa1914849FfcBAB646",
+  "OrganigramClientModule#Organigram": "0xab788ed043B02772bf140d73c280899e32cdDf6d",
+  "OrganigramClientModule#OrganigramClient": "0x8ac97ac5E4E46CF815a9ac017421bEcaCDFe2601"
 }

@@ -17,7 +17,6 @@
   },
   "scripts": {
     "build": "pnpm hardhat compile",
-    "postbuild": "pnpm node ./scripts/generateABIs.js",
     "docs": "node scripts/docs.js",
     "test": "env-cmd --silent pnpm hardhat test",
     "deploy:client": "env-cmd --silent tsx scripts/deploy-client.ts",

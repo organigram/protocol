@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { IERC4906$Type } from './IERC4906'
+import { IERC4906$Type } from "./IERC4906";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['IERC4906']: IERC4906$Type;
-    ['@openzeppelin/contracts/interfaces/IERC4906.sol:IERC4906']: IERC4906$Type;
+    ["IERC4906"]: IERC4906$Type;
+    ["@openzeppelin/contracts/interfaces/IERC4906.sol:IERC4906"]: IERC4906$Type;
   }
 
   interface ContractTypesMap {
-    ['IERC4906']: GetContractReturnType<IERC4906$Type['abi']>;
-    ['@openzeppelin/contracts/interfaces/IERC4906.sol:IERC4906']: GetContractReturnType<IERC4906$Type['abi']>;
+    ["IERC4906"]: GetContractReturnType<IERC4906$Type["abi"]>;
+    ["@openzeppelin/contracts/interfaces/IERC4906.sol:IERC4906"]: GetContractReturnType<IERC4906$Type["abi"]>;
   }
 }

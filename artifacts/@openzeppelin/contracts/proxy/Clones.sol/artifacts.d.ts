@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { Clones$Type } from './Clones'
+import { Clones$Type } from "./Clones";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['Clones']: Clones$Type;
-    ['@openzeppelin/contracts/proxy/Clones.sol:Clones']: Clones$Type;
+    ["Clones"]: Clones$Type;
+    ["@openzeppelin/contracts/proxy/Clones.sol:Clones"]: Clones$Type;
   }
 
   interface ContractTypesMap {
-    ['Clones']: GetContractReturnType<Clones$Type['abi']>;
-    ['@openzeppelin/contracts/proxy/Clones.sol:Clones']: GetContractReturnType<Clones$Type['abi']>;
+    ["Clones"]: GetContractReturnType<Clones$Type["abi"]>;
+    ["@openzeppelin/contracts/proxy/Clones.sol:Clones"]: GetContractReturnType<Clones$Type["abi"]>;
   }
 }

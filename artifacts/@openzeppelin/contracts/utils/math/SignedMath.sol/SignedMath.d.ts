@@ -3,58 +3,58 @@
 // tslint:disable
 // eslint-disable
 
-import type { Address } from 'viem'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
-import '@nomicfoundation/hardhat-viem/types'
+import type { Address } from "viem";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
+import "@nomicfoundation/hardhat-viem/types";
 
 export interface SignedMath$Type {
-  _format: 'hh-sol-artifact-1',
-  contractName: 'SignedMath',
-  sourceName: '@openzeppelin/contracts/utils/math/SignedMath.sol',
-  abi: [],
-  bytecode: '0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212209b8f35f7b626e9114ee186f284510cc6443bc775faed5fa9685a7f5226c50b1f64736f6c63430008130033',
-  deployedBytecode: '0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212209b8f35f7b626e9114ee186f284510cc6443bc775faed5fa9685a7f5226c50b1f64736f6c63430008130033',
-  linkReferences: {},
-  deployedLinkReferences: {}
+  "_format": "hh-sol-artifact-1",
+  "contractName": "SignedMath",
+  "sourceName": "@openzeppelin/contracts/utils/math/SignedMath.sol",
+  "abi": [],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220daeddad2694c2b2f37dc977fdd546977a2063fb131ad5d1899b381ec9e04f4f764736f6c63430008140033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220daeddad2694c2b2f37dc977fdd546977a2063fb131ad5d1899b381ec9e04f4f764736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
 
-declare module '@nomicfoundation/hardhat-viem/types' {
-  export function deployContract (
-    contractName: 'SignedMath',
+declare module "@nomicfoundation/hardhat-viem/types" {
+  export function deployContract(
+    contractName: "SignedMath",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<SignedMath$Type['abi']>>
-  export function deployContract (
-    contractName: '@openzeppelin/contracts/utils/math/SignedMath.sol:SignedMath',
+  ): Promise<GetContractReturnType<SignedMath$Type["abi"]>>;
+  export function deployContract(
+    contractName: "@openzeppelin/contracts/utils/math/SignedMath.sol:SignedMath",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<SignedMath$Type['abi']>>
+  ): Promise<GetContractReturnType<SignedMath$Type["abi"]>>;
 
-  export function sendDeploymentTransaction (
-    contractName: 'SignedMath',
+  export function sendDeploymentTransaction(
+    contractName: "SignedMath",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<SignedMath$Type['abi']>;
+    contract: GetContractReturnType<SignedMath$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
-  export function sendDeploymentTransaction (
-    contractName: '@openzeppelin/contracts/utils/math/SignedMath.sol:SignedMath',
+  }>;
+  export function sendDeploymentTransaction(
+    contractName: "@openzeppelin/contracts/utils/math/SignedMath.sol:SignedMath",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<SignedMath$Type['abi']>;
+    contract: GetContractReturnType<SignedMath$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
+  }>;
 
-  export function getContractAt (
-    contractName: 'SignedMath',
+  export function getContractAt(
+    contractName: "SignedMath",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<SignedMath$Type['abi']>>
-  export function getContractAt (
-    contractName: '@openzeppelin/contracts/utils/math/SignedMath.sol:SignedMath',
+  ): Promise<GetContractReturnType<SignedMath$Type["abi"]>>;
+  export function getContractAt(
+    contractName: "@openzeppelin/contracts/utils/math/SignedMath.sol:SignedMath",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<SignedMath$Type['abi']>>
+  ): Promise<GetContractReturnType<SignedMath$Type["abi"]>>;
 }

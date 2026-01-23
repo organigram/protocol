@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity 0.8.19;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../Procedure.sol";
+import '../Procedure.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 struct Vote {
     bool voted;
@@ -34,7 +34,7 @@ contract ERC20VoteProcedure is Procedure {
     uint32 public voteDuration;
     /// @notice majoritySize is the minimum percentage of votes required to validate a election.
     /// @dev Minimum value (1) is 0.0001% (1/1000000) of all addresses allowed to vote.
-    uint32 public majoritySize; // 
+    uint32 public majoritySize; //
 
     ///@notice Register EIP165 interfaces for introspection.
     /// @param interfaceId The interface identifier.
@@ -56,7 +56,7 @@ contract ERC20VoteProcedure is Procedure {
         bool,
         address
     ) public pure override {
-        revert("Missing parameters");
+        revert('Missing parameters');
     }
 
     /// @notice Initialize the procedure.
@@ -106,15 +106,15 @@ contract ERC20VoteProcedure is Procedure {
     ) public onlyInOrgan(procedureData.deciders) {
         require(
             block.timestamp > elections[proposalKey].start,
-            "Election not started"
+            'Election not started'
         );
         require(
             block.timestamp < (elections[proposalKey].start + voteDuration),
-            "Election ended"
+            'Election ended'
         );
         require(
             !elections[proposalKey].votes[_msgSender()].voted,
-            "Duplicate record"
+            'Duplicate record'
         );
         elections[proposalKey].votes[_msgSender()] = Vote({
             voted: true,
@@ -128,10 +128,10 @@ contract ERC20VoteProcedure is Procedure {
     /// @param proposalKey The key used to identify the proposal.
     /// @return approved True if the election has been approved.
     function count(uint256 proposalKey) public view returns (bool approved) {
-        require(elections[proposalKey].start > 0, "No election");
+        require(elections[proposalKey].start > 0, 'No election');
         require(
             block.timestamp >= (elections[proposalKey].start + voteDuration),
-            "Election not ended"
+            'Election not ended'
         );
         if (procedureData.deciders != address(0)) {
             (, , , uint256 decidersCount, ) = IOrgan(procedureData.deciders)
@@ -139,14 +139,16 @@ contract ERC20VoteProcedure is Procedure {
             require(
                 elections[proposalKey].votesCount >
                     ((quorumSize * decidersCount) / 100000),
-                "Quorum has not been reached"
+                'Quorum has not been reached'
             );
         }
         uint256 approvals;
         uint256 objections;
         for (uint256 i = 0; i < elections[proposalKey].voters.length; i++) {
             if (
-                elections[proposalKey].votes[elections[proposalKey].voters[i]].voted
+                elections[proposalKey]
+                    .votes[elections[proposalKey].voters[i]]
+                    .voted
             ) {
                 if (
                     elections[proposalKey]
@@ -163,7 +165,7 @@ contract ERC20VoteProcedure is Procedure {
                 }
             }
         }
-        require((approvals + objections) > 0, "No vote");
+        require((approvals + objections) > 0, 'No vote');
         return (approvals >
             (((approvals + objections) * majoritySize) / 100000));
     }
@@ -211,7 +213,7 @@ contract ERC20VoteProcedure is Procedure {
         uint256 proposalKey,
         string calldata reason
     ) public override onlyInOrgan(procedureData.moderators) {
-        require(elections[proposalKey].start != 0, "Election started");
+        require(elections[proposalKey].start != 0, 'Election started');
         super.blockProposal(proposalKey, reason);
     }
 

@@ -3,58 +3,64 @@
 // tslint:disable
 // eslint-disable
 
-import type { Address } from 'viem'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
-import '@nomicfoundation/hardhat-viem/types'
+import type { Address } from "viem";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
+import "@nomicfoundation/hardhat-viem/types";
 
 export interface Clones$Type {
-  _format: 'hh-sol-artifact-1',
-  contractName: 'Clones',
-  sourceName: '@openzeppelin/contracts/proxy/Clones.sol',
-  abi: [],
-  bytecode: '0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212205adcf1e88ebe301c149fba366ffca449039772c0444263f97c092deb3fadc0fa64736f6c63430008130033',
-  deployedBytecode: '0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212205adcf1e88ebe301c149fba366ffca449039772c0444263f97c092deb3fadc0fa64736f6c63430008130033',
-  linkReferences: {},
-  deployedLinkReferences: {}
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Clones",
+  "sourceName": "@openzeppelin/contracts/proxy/Clones.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "CloneArgumentsTooLong",
+      "type": "error"
+    }
+  ],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212208fbd22b88887303aa7c26011f4fdef4ad12d9c1d3a4ae9e7688f54bb8a7ce30564736f6c63430008140033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212208fbd22b88887303aa7c26011f4fdef4ad12d9c1d3a4ae9e7688f54bb8a7ce30564736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
 
-declare module '@nomicfoundation/hardhat-viem/types' {
-  export function deployContract (
-    contractName: 'Clones',
+declare module "@nomicfoundation/hardhat-viem/types" {
+  export function deployContract(
+    contractName: "Clones",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<Clones$Type['abi']>>
-  export function deployContract (
-    contractName: '@openzeppelin/contracts/proxy/Clones.sol:Clones',
+  ): Promise<GetContractReturnType<Clones$Type["abi"]>>;
+  export function deployContract(
+    contractName: "@openzeppelin/contracts/proxy/Clones.sol:Clones",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<Clones$Type['abi']>>
+  ): Promise<GetContractReturnType<Clones$Type["abi"]>>;
 
-  export function sendDeploymentTransaction (
-    contractName: 'Clones',
+  export function sendDeploymentTransaction(
+    contractName: "Clones",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<Clones$Type['abi']>;
+    contract: GetContractReturnType<Clones$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
-  export function sendDeploymentTransaction (
-    contractName: '@openzeppelin/contracts/proxy/Clones.sol:Clones',
+  }>;
+  export function sendDeploymentTransaction(
+    contractName: "@openzeppelin/contracts/proxy/Clones.sol:Clones",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<Clones$Type['abi']>;
+    contract: GetContractReturnType<Clones$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
+  }>;
 
-  export function getContractAt (
-    contractName: 'Clones',
+  export function getContractAt(
+    contractName: "Clones",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<Clones$Type['abi']>>
-  export function getContractAt (
-    contractName: '@openzeppelin/contracts/proxy/Clones.sol:Clones',
+  ): Promise<GetContractReturnType<Clones$Type["abi"]>>;
+  export function getContractAt(
+    contractName: "@openzeppelin/contracts/proxy/Clones.sol:Clones",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<Clones$Type['abi']>>
+  ): Promise<GetContractReturnType<Clones$Type["abi"]>>;
 }

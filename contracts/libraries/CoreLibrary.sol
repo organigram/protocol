@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity 0.8.19;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
 
 library CoreLibrary {
     struct Entry {
-        address addr;   // Address of account or contract.
-        string cid;   // Metadata stored on IPFS.
+        address addr; // Address of account or contract.
+        string cid; // Metadata stored on IPFS.
     }
 }

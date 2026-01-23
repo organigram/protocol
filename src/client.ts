@@ -7,6 +7,7 @@ import ProcedureLibrary from '../ignition/modules/ProcedureLibrary'
 import Organ from '../ignition/modules/Organ'
 import Procedures from '../ignition/modules/Procedures'
 import OrganigramClient from '../ignition/modules/OrganigramClient'
+import MetaGasStation from '../ignition/modules/MetaGasStation'
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
@@ -55,7 +56,7 @@ export const deployClient = async (): Promise<ClientContracts> => {
     await deployAndLoadContract(Procedures)
 
   /*
-   * Deploying the Organigram DAO
+   * Deploying the Organigram client
    */
   const { organigramClient } = await deployAndLoadContract(OrganigramClient, {
     parameters: {
@@ -70,7 +71,6 @@ export const deployClient = async (): Promise<ClientContracts> => {
   /*
    * Adding procedures to the procedures registry
    */
-  // @ts-ignore (Property 'getSigners' does not exist on type 'ethers')
   const signers = await viem.getWalletClients()
   const proceduresRegistryAddress = await organigramClient.read.procedures()
   const proceduresRegistry = await viem.getContractAt(
@@ -124,6 +124,11 @@ export const deployClient = async (): Promise<ClientContracts> => {
     console.info(organData[3].toString(), 'procedures registered.')
   }
 
+  /*
+   * Deploying MetaGasStation forwarder & ERC2771Recipient
+   */
+  await deployAndLoadContract(MetaGasStation)
+
   // const artifacts = [
   //   { name: 'CoreLibrary', address: await coreLibrary.address },
   //   { name: 'OrganLibrary', address: await organLibrary.address },
@@ -135,7 +140,7 @@ export const deployClient = async (): Promise<ClientContracts> => {
   // await tenderly.persistArtifacts(...artifacts)
 
   console.info()
-  console.info('Organigram Client deployed successfully! ✅🚀')
+  console.info('Organigram Protocol deployed successfully! ✅🚀')
   console.info()
 
   return {

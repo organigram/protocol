@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { EnumerableSet$Type } from './EnumerableSet'
+import { EnumerableSet$Type } from "./EnumerableSet";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['EnumerableSet']: EnumerableSet$Type;
-    ['@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet']: EnumerableSet$Type;
+    ["EnumerableSet"]: EnumerableSet$Type;
+    ["@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet"]: EnumerableSet$Type;
   }
 
   interface ContractTypesMap {
-    ['EnumerableSet']: GetContractReturnType<EnumerableSet$Type['abi']>;
-    ['@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet']: GetContractReturnType<EnumerableSet$Type['abi']>;
+    ["EnumerableSet"]: GetContractReturnType<EnumerableSet$Type["abi"]>;
+    ["@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet"]: GetContractReturnType<EnumerableSet$Type["abi"]>;
   }
 }

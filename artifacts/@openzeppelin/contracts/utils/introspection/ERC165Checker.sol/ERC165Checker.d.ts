@@ -3,58 +3,58 @@
 // tslint:disable
 // eslint-disable
 
-import type { Address } from 'viem'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
-import '@nomicfoundation/hardhat-viem/types'
+import type { Address } from "viem";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
+import "@nomicfoundation/hardhat-viem/types";
 
 export interface ERC165Checker$Type {
-  _format: 'hh-sol-artifact-1',
-  contractName: 'ERC165Checker',
-  sourceName: '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol',
-  abi: [],
-  bytecode: '0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220b79c7769550653d297c80a95fa35da4c2b516e39d6a56c58e946c5336cdb0d9064736f6c63430008130033',
-  deployedBytecode: '0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220b79c7769550653d297c80a95fa35da4c2b516e39d6a56c58e946c5336cdb0d9064736f6c63430008130033',
-  linkReferences: {},
-  deployedLinkReferences: {}
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ERC165Checker",
+  "sourceName": "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol",
+  "abi": [],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220e1ee74a97e9a27d33919074a816943a7a486ba410fb409833ee4d99ccde7081064736f6c63430008140033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220e1ee74a97e9a27d33919074a816943a7a486ba410fb409833ee4d99ccde7081064736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
 
-declare module '@nomicfoundation/hardhat-viem/types' {
-  export function deployContract (
-    contractName: 'ERC165Checker',
+declare module "@nomicfoundation/hardhat-viem/types" {
+  export function deployContract(
+    contractName: "ERC165Checker",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<ERC165Checker$Type['abi']>>
-  export function deployContract (
-    contractName: '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker',
+  ): Promise<GetContractReturnType<ERC165Checker$Type["abi"]>>;
+  export function deployContract(
+    contractName: "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<ERC165Checker$Type['abi']>>
+  ): Promise<GetContractReturnType<ERC165Checker$Type["abi"]>>;
 
-  export function sendDeploymentTransaction (
-    contractName: 'ERC165Checker',
+  export function sendDeploymentTransaction(
+    contractName: "ERC165Checker",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<ERC165Checker$Type['abi']>;
+    contract: GetContractReturnType<ERC165Checker$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
-  export function sendDeploymentTransaction (
-    contractName: '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker',
+  }>;
+  export function sendDeploymentTransaction(
+    contractName: "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<ERC165Checker$Type['abi']>;
+    contract: GetContractReturnType<ERC165Checker$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
+  }>;
 
-  export function getContractAt (
-    contractName: 'ERC165Checker',
+  export function getContractAt(
+    contractName: "ERC165Checker",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<ERC165Checker$Type['abi']>>
-  export function getContractAt (
-    contractName: '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker',
+  ): Promise<GetContractReturnType<ERC165Checker$Type["abi"]>>;
+  export function getContractAt(
+    contractName: "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<ERC165Checker$Type['abi']>>
+  ): Promise<GetContractReturnType<ERC165Checker$Type["abi"]>>;
 }

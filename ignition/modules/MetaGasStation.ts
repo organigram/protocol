@@ -1,11 +1,10 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules'
 
-const MetaGasStationModule = buildModule('MetaGasStationModule', m => {
-  const metaGasStation = m.contract('MetaGasStation', [
-    process.env.NEXT_PUBLIC_SEPOLIA_GAS_STATION_WHITELIST as string
-  ])
-
-  return { metaGasStation }
+const MetaGasStation = buildModule('MetaGasStation', m => {
+  const forwarderName = m.getParameter('forwarderName', 'MetaGasStation')
+  const metaGasStation = m.contract('MetaGasStation', [forwarderName])
+  const erc2771Recipient = m.contract('ERC2771Recipient', [])
+  return { metaGasStation, erc2771Recipient }
 })
 
-export default MetaGasStationModule
+export default MetaGasStation

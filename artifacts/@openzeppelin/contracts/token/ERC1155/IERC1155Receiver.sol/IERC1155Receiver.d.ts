@@ -3,156 +3,156 @@
 // tslint:disable
 // eslint-disable
 
-import type { Address } from 'viem'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
-import '@nomicfoundation/hardhat-viem/types'
+import type { Address } from "viem";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
+import "@nomicfoundation/hardhat-viem/types";
 
 export interface IERC1155Receiver$Type {
-  _format: 'hh-sol-artifact-1',
-  contractName: 'IERC1155Receiver',
-  sourceName: '@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol',
-  abi: [
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IERC1155Receiver",
+  "sourceName": "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol",
+  "abi": [
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: 'operator',
-          type: 'address'
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
         },
         {
-          internalType: 'address',
-          name: 'from',
-          type: 'address'
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
         },
         {
-          internalType: 'uint256[]',
-          name: 'ids',
-          type: 'uint256[]'
+          "internalType": "uint256[]",
+          "name": "ids",
+          "type": "uint256[]"
         },
         {
-          internalType: 'uint256[]',
-          name: 'values',
-          type: 'uint256[]'
+          "internalType": "uint256[]",
+          "name": "values",
+          "type": "uint256[]"
         },
         {
-          internalType: 'bytes',
-          name: 'data',
-          type: 'bytes'
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
         }
       ],
-      name: 'onERC1155BatchReceived',
-      outputs: [
+      "name": "onERC1155BatchReceived",
+      "outputs": [
         {
-          internalType: 'bytes4',
-          name: '',
-          type: 'bytes4'
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
         }
       ],
-      stateMutability: 'nonpayable',
-      type: 'function'
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'address',
-          name: 'operator',
-          type: 'address'
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
         },
         {
-          internalType: 'address',
-          name: 'from',
-          type: 'address'
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
         },
         {
-          internalType: 'uint256',
-          name: 'id',
-          type: 'uint256'
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
         },
         {
-          internalType: 'uint256',
-          name: 'value',
-          type: 'uint256'
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
         },
         {
-          internalType: 'bytes',
-          name: 'data',
-          type: 'bytes'
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
         }
       ],
-      name: 'onERC1155Received',
-      outputs: [
+      "name": "onERC1155Received",
+      "outputs": [
         {
-          internalType: 'bytes4',
-          name: '',
-          type: 'bytes4'
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
         }
       ],
-      stateMutability: 'nonpayable',
-      type: 'function'
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'bytes4',
-          name: 'interfaceId',
-          type: 'bytes4'
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
         }
       ],
-      name: 'supportsInterface',
-      outputs: [
+      "name": "supportsInterface",
+      "outputs": [
         {
-          internalType: 'bool',
-          name: '',
-          type: 'bool'
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
-      stateMutability: 'view',
-      type: 'function'
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
-  bytecode: '0x',
-  deployedBytecode: '0x',
-  linkReferences: {},
-  deployedLinkReferences: {}
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
 
-declare module '@nomicfoundation/hardhat-viem/types' {
-  export function deployContract (
-    contractName: 'IERC1155Receiver',
+declare module "@nomicfoundation/hardhat-viem/types" {
+  export function deployContract(
+    contractName: "IERC1155Receiver",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<IERC1155Receiver$Type['abi']>>
-  export function deployContract (
-    contractName: '@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol:IERC1155Receiver',
+  ): Promise<GetContractReturnType<IERC1155Receiver$Type["abi"]>>;
+  export function deployContract(
+    contractName: "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol:IERC1155Receiver",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<IERC1155Receiver$Type['abi']>>
+  ): Promise<GetContractReturnType<IERC1155Receiver$Type["abi"]>>;
 
-  export function sendDeploymentTransaction (
-    contractName: 'IERC1155Receiver',
+  export function sendDeploymentTransaction(
+    contractName: "IERC1155Receiver",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<IERC1155Receiver$Type['abi']>;
+    contract: GetContractReturnType<IERC1155Receiver$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
-  export function sendDeploymentTransaction (
-    contractName: '@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol:IERC1155Receiver',
+  }>;
+  export function sendDeploymentTransaction(
+    contractName: "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol:IERC1155Receiver",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<IERC1155Receiver$Type['abi']>;
+    contract: GetContractReturnType<IERC1155Receiver$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
+  }>;
 
-  export function getContractAt (
-    contractName: 'IERC1155Receiver',
+  export function getContractAt(
+    contractName: "IERC1155Receiver",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<IERC1155Receiver$Type['abi']>>
-  export function getContractAt (
-    contractName: '@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol:IERC1155Receiver',
+  ): Promise<GetContractReturnType<IERC1155Receiver$Type["abi"]>>;
+  export function getContractAt(
+    contractName: "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol:IERC1155Receiver",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<IERC1155Receiver$Type['abi']>>
+  ): Promise<GetContractReturnType<IERC1155Receiver$Type["abi"]>>;
 }

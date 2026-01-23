@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { ERC165Checker$Type } from './ERC165Checker'
+import { ERC165Checker$Type } from "./ERC165Checker";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['ERC165Checker']: ERC165Checker$Type;
-    ['@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker']: ERC165Checker$Type;
+    ["ERC165Checker"]: ERC165Checker$Type;
+    ["@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker"]: ERC165Checker$Type;
   }
 
   interface ContractTypesMap {
-    ['ERC165Checker']: GetContractReturnType<ERC165Checker$Type['abi']>;
-    ['@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker']: GetContractReturnType<ERC165Checker$Type['abi']>;
+    ["ERC165Checker"]: GetContractReturnType<ERC165Checker$Type["abi"]>;
+    ["@openzeppelin/contracts/utils/introspection/ERC165Checker.sol:ERC165Checker"]: GetContractReturnType<ERC165Checker$Type["abi"]>;
   }
 }

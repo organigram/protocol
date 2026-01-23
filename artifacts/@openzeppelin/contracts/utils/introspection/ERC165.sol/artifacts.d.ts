@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { ERC165$Type } from './ERC165'
+import { ERC165$Type } from "./ERC165";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['ERC165']: ERC165$Type;
-    ['@openzeppelin/contracts/utils/introspection/ERC165.sol:ERC165']: ERC165$Type;
+    ["ERC165"]: ERC165$Type;
+    ["@openzeppelin/contracts/utils/introspection/ERC165.sol:ERC165"]: ERC165$Type;
   }
 
   interface ContractTypesMap {
-    ['ERC165']: GetContractReturnType<ERC165$Type['abi']>;
-    ['@openzeppelin/contracts/utils/introspection/ERC165.sol:ERC165']: GetContractReturnType<ERC165$Type['abi']>;
+    ["ERC165"]: GetContractReturnType<ERC165$Type["abi"]>;
+    ["@openzeppelin/contracts/utils/introspection/ERC165.sol:ERC165"]: GetContractReturnType<ERC165$Type["abi"]>;
   }
 }

@@ -3,78 +3,78 @@
 // tslint:disable
 // eslint-disable
 
-import type { Address } from 'viem'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
-import '@nomicfoundation/hardhat-viem/types'
+import type { Address } from "viem";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
+import "@nomicfoundation/hardhat-viem/types";
 
 export interface IERC165$Type {
-  _format: 'hh-sol-artifact-1',
-  contractName: 'IERC165',
-  sourceName: '@openzeppelin/contracts/utils/introspection/IERC165.sol',
-  abi: [
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IERC165",
+  "sourceName": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+  "abi": [
     {
-      inputs: [
+      "inputs": [
         {
-          internalType: 'bytes4',
-          name: 'interfaceId',
-          type: 'bytes4'
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
         }
       ],
-      name: 'supportsInterface',
-      outputs: [
+      "name": "supportsInterface",
+      "outputs": [
         {
-          internalType: 'bool',
-          name: '',
-          type: 'bool'
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
-      stateMutability: 'view',
-      type: 'function'
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
-  bytecode: '0x',
-  deployedBytecode: '0x',
-  linkReferences: {},
-  deployedLinkReferences: {}
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
 
-declare module '@nomicfoundation/hardhat-viem/types' {
-  export function deployContract (
-    contractName: 'IERC165',
+declare module "@nomicfoundation/hardhat-viem/types" {
+  export function deployContract(
+    contractName: "IERC165",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<IERC165$Type['abi']>>
-  export function deployContract (
-    contractName: '@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165',
+  ): Promise<GetContractReturnType<IERC165$Type["abi"]>>;
+  export function deployContract(
+    contractName: "@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<IERC165$Type['abi']>>
+  ): Promise<GetContractReturnType<IERC165$Type["abi"]>>;
 
-  export function sendDeploymentTransaction (
-    contractName: 'IERC165',
+  export function sendDeploymentTransaction(
+    contractName: "IERC165",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<IERC165$Type['abi']>;
+    contract: GetContractReturnType<IERC165$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
-  export function sendDeploymentTransaction (
-    contractName: '@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165',
+  }>;
+  export function sendDeploymentTransaction(
+    contractName: "@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<IERC165$Type['abi']>;
+    contract: GetContractReturnType<IERC165$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
+  }>;
 
-  export function getContractAt (
-    contractName: 'IERC165',
+  export function getContractAt(
+    contractName: "IERC165",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<IERC165$Type['abi']>>
-  export function getContractAt (
-    contractName: '@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165',
+  ): Promise<GetContractReturnType<IERC165$Type["abi"]>>;
+  export function getContractAt(
+    contractName: "@openzeppelin/contracts/utils/introspection/IERC165.sol:IERC165",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<IERC165$Type['abi']>>
+  ): Promise<GetContractReturnType<IERC165$Type["abi"]>>;
 }

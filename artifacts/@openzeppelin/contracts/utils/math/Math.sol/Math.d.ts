@@ -3,58 +3,58 @@
 // tslint:disable
 // eslint-disable
 
-import type { Address } from 'viem'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
-import '@nomicfoundation/hardhat-viem/types'
+import type { Address } from "viem";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
+import "@nomicfoundation/hardhat-viem/types";
 
 export interface Math$Type {
-  _format: 'hh-sol-artifact-1',
-  contractName: 'Math',
-  sourceName: '@openzeppelin/contracts/utils/math/Math.sol',
-  abi: [],
-  bytecode: '0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220615eaf28344d51bc3000adabd54264e49f74040d0c43897d468226e6d3b4da4264736f6c63430008130033',
-  deployedBytecode: '0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220615eaf28344d51bc3000adabd54264e49f74040d0c43897d468226e6d3b4da4264736f6c63430008130033',
-  linkReferences: {},
-  deployedLinkReferences: {}
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Math",
+  "sourceName": "@openzeppelin/contracts/utils/math/Math.sol",
+  "abi": [],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220b1b669cde7bee9b3afb12550daf9a1874a6a10e903ee8cbdc0fa3c60203bf69a64736f6c63430008140033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220b1b669cde7bee9b3afb12550daf9a1874a6a10e903ee8cbdc0fa3c60203bf69a64736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
 
-declare module '@nomicfoundation/hardhat-viem/types' {
-  export function deployContract (
-    contractName: 'Math',
+declare module "@nomicfoundation/hardhat-viem/types" {
+  export function deployContract(
+    contractName: "Math",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<Math$Type['abi']>>
-  export function deployContract (
-    contractName: '@openzeppelin/contracts/utils/math/Math.sol:Math',
+  ): Promise<GetContractReturnType<Math$Type["abi"]>>;
+  export function deployContract(
+    contractName: "@openzeppelin/contracts/utils/math/Math.sol:Math",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<Math$Type['abi']>>
+  ): Promise<GetContractReturnType<Math$Type["abi"]>>;
 
-  export function sendDeploymentTransaction (
-    contractName: 'Math',
+  export function sendDeploymentTransaction(
+    contractName: "Math",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<Math$Type['abi']>;
+    contract: GetContractReturnType<Math$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
-  export function sendDeploymentTransaction (
-    contractName: '@openzeppelin/contracts/utils/math/Math.sol:Math',
+  }>;
+  export function sendDeploymentTransaction(
+    contractName: "@openzeppelin/contracts/utils/math/Math.sol:Math",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<Math$Type['abi']>;
+    contract: GetContractReturnType<Math$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
+  }>;
 
-  export function getContractAt (
-    contractName: 'Math',
+  export function getContractAt(
+    contractName: "Math",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<Math$Type['abi']>>
-  export function getContractAt (
-    contractName: '@openzeppelin/contracts/utils/math/Math.sol:Math',
+  ): Promise<GetContractReturnType<Math$Type["abi"]>>;
+  export function getContractAt(
+    contractName: "@openzeppelin/contracts/utils/math/Math.sol:Math",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<Math$Type['abi']>>
+  ): Promise<GetContractReturnType<Math$Type["abi"]>>;
 }

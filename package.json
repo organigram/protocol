@@ -19,14 +19,12 @@
     "build": "pnpm hardhat compile",
     "docs": "node scripts/docs.js",
     "test": "env-cmd --silent pnpm hardhat test",
-    "deploy:client": "env-cmd --silent tsx scripts/deploy-client.ts",
-    "deploy:gasstation": "env-cmd --silent tsx scripts/deploy-gas-station.ts",
+    "deploy:protocol": "env-cmd --silent tsx scripts/deploy-client.ts",
     "hardhat:node": "pnpm hardhat node",
     "hardhat:clean": "env-cmd --silent pnpm hardhat clean && pnpm build"
   },
   "dependencies": {
-    "@opengsn/contracts": "^3.0.0-beta.10",
-    "@openzeppelin/contracts": "^4.9.6"
+    "@openzeppelin/contracts": "^5.4.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.7",

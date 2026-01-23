@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { Math$Type } from './Math'
+import { Math$Type } from "./Math";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['Math']: Math$Type;
-    ['@openzeppelin/contracts/utils/math/Math.sol:Math']: Math$Type;
+    ["Math"]: Math$Type;
+    ["@openzeppelin/contracts/utils/math/Math.sol:Math"]: Math$Type;
   }
 
   interface ContractTypesMap {
-    ['Math']: GetContractReturnType<Math$Type['abi']>;
-    ['@openzeppelin/contracts/utils/math/Math.sol:Math']: GetContractReturnType<Math$Type['abi']>;
+    ["Math"]: GetContractReturnType<Math$Type["abi"]>;
+    ["@openzeppelin/contracts/utils/math/Math.sol:Math"]: GetContractReturnType<Math$Type["abi"]>;
   }
 }

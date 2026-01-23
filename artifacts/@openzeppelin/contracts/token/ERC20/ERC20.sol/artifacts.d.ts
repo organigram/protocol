@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { ERC20$Type } from './ERC20'
+import { ERC20$Type } from "./ERC20";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['ERC20']: ERC20$Type;
-    ['@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20']: ERC20$Type;
+    ["ERC20"]: ERC20$Type;
+    ["@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20"]: ERC20$Type;
   }
 
   interface ContractTypesMap {
-    ['ERC20']: GetContractReturnType<ERC20$Type['abi']>;
-    ['@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20']: GetContractReturnType<ERC20$Type['abi']>;
+    ["ERC20"]: GetContractReturnType<ERC20$Type["abi"]>;
+    ["@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20"]: GetContractReturnType<ERC20$Type["abi"]>;
   }
 }

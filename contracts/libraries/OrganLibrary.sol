@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity 0.8.19;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
 pragma experimental ABIEncoderV2;
 
 /*
@@ -7,11 +7,11 @@ pragma experimental ABIEncoderV2;
     This library holds the logic to manage a simple organ.
 */
 
-import "./CoreLibrary.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import './CoreLibrary.sol';
+import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import '@openzeppelin/contracts/interfaces/IERC721.sol';
+import '@openzeppelin/contracts/interfaces/IERC777.sol';
+import '@openzeppelin/contracts/interfaces/IERC1155.sol';
 
 library OrganLibrary {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -31,7 +31,6 @@ library OrganLibrary {
     /*
         Entries are sets of addresses, contracts or documents.
     */
-
     struct OrganData {
         string cid;
         CoreLibrary.Entry[] entries;
@@ -44,15 +43,24 @@ library OrganLibrary {
     /*
         Events.
     */
-
     event cidUpdated(address from, string cid);
     event adminUpdated(address from, address admin);
     event procedureAdded(address from, address procedure, bytes2 permissions);
     event procedureRemoved(address from, address procedure);
     event collectibleTransferred(address operator, address to, uint256 tokenId);
     event collectibleReceived(address operator, address from, uint256 tokenId);
-    event coinsTransferred(address operator, address from, address to, uint256 amount);
-    event coinsReceived(address operator, address from, address to, uint256 amount);
+    event coinsTransferred(
+        address operator,
+        address from,
+        address to,
+        uint256 amount
+    );
+    event coinsReceived(
+        address operator,
+        address from,
+        address to,
+        uint256 amount
+    );
     event etherTransferred(address from, address to, uint256 amount);
     event etherReceived(address from, uint256 amount);
     event entryAdded(address from, uint256 index, address addr, string cid);
@@ -61,12 +69,15 @@ library OrganLibrary {
     /*
         Modifier.
     */
-
-    modifier onlyPerm(OrganData storage self, bytes2 permission, address caller) {
+    modifier onlyPerm(
+        OrganData storage self,
+        bytes2 permission,
+        address caller
+    ) {
         require(
             self.permissions[caller] & permission == permission ||
-            self.permissions[address(0)] & permission == permission,
-            "Not authorized."
+                self.permissions[address(0)] & permission == permission,
+            'Not authorized.'
         );
         _;
     }
@@ -74,15 +85,16 @@ library OrganLibrary {
     /*
         Constructor.
     */
-
     function init(
-        OrganData storage self, address defaultAdmin,
-        string memory cid, address caller
-    )
-        public
-    {
+        OrganData storage self,
+        address defaultAdmin,
+        string memory cid,
+        address caller
+    ) public {
         // Initializing with deployer as admin.
-        address payable _admin = payable(defaultAdmin != address(0) ? defaultAdmin : caller);
+        address payable _admin = payable(
+            defaultAdmin != address(0) ? defaultAdmin : caller
+        );
 
         // Add _admin in procedures set.
         self.permissions[_admin] = 0xffff;
@@ -92,20 +104,14 @@ library OrganLibrary {
         self.cid = cid;
 
         // Reserve index O for empty Entry.
-        self.entries.push(
-            CoreLibrary.Entry(
-                address(0),
-                string('')
-            )
-        );
+        self.entries.push(CoreLibrary.Entry(address(0), string('')));
     }
 
     function updateCid(
-        OrganData storage self, string memory cid, address caller
-    )
-        public
-        onlyPerm(self, PERMISSION_UPDATE_METADATA, caller)
-    {
+        OrganData storage self,
+        string memory cid,
+        address caller
+    ) public onlyPerm(self, PERMISSION_UPDATE_METADATA, caller) {
         self.cid = cid;
         emit cidUpdated(caller, cid);
     }
@@ -113,91 +119,97 @@ library OrganLibrary {
     /*
         Assets management.
     */
-
     function transferCollectible(
-        OrganData storage self, address token, address from,
-        address to, uint256 tokenId
-    )
-        public
-        onlyPerm(self, PERMISSION_WITHDRAW_COLLECTIBLES, from)
-    {
+        OrganData storage self,
+        address token,
+        address from,
+        address to,
+        uint256 tokenId
+    ) public onlyPerm(self, PERMISSION_WITHDRAW_COLLECTIBLES, from) {
         // @note Organ must be the owner, approved, or operator of ERC-721.
         IERC721(token).safeTransferFrom(from, to, tokenId);
         emit collectibleTransferred(token, to, tokenId);
     }
 
     function receiveCollectible(
-        OrganData storage self, address operator,
-        address from, uint256 tokenId
-    )
-        public
-        onlyPerm(self, PERMISSION_DEPOSIT_COLLECTIBLES, from)
-    {
+        OrganData storage self,
+        address operator,
+        address from,
+        uint256 tokenId
+    ) public onlyPerm(self, PERMISSION_DEPOSIT_COLLECTIBLES, from) {
         emit collectibleReceived(operator, from, tokenId);
     }
 
     function transferCoins(
-        OrganData storage self, address token,
-        address from, address to, uint256 amount
-    )
-        public
-        onlyPerm(self, PERMISSION_WITHDRAW_COINS, from)
-    {
+        OrganData storage self,
+        address token,
+        address from,
+        address to,
+        uint256 amount
+    ) public onlyPerm(self, PERMISSION_WITHDRAW_COINS, from) {
         bytes memory data;
         IERC777(token).send(to, amount, data);
         emit coinsTransferred(token, from, to, amount);
     }
 
     function receiveCoins(
-        OrganData storage self, address operator,
-        address from, address to, uint256 amount
-    )
-        public
-        onlyPerm(self, PERMISSION_DEPOSIT_COINS, from)
-    {
+        OrganData storage self,
+        address operator,
+        address from,
+        address to,
+        uint256 amount
+    ) public onlyPerm(self, PERMISSION_DEPOSIT_COINS, from) {
         emit coinsReceived(operator, from, to, amount);
     }
 
-    function transferEther(OrganData storage self, address payable to, uint256 value, address from)
-        public
-        onlyPerm(self, PERMISSION_WITHDRAW_ETHER, from)
-    {
+    function transferEther(
+        OrganData storage self,
+        address payable to,
+        uint256 value,
+        address from
+    ) public onlyPerm(self, PERMISSION_WITHDRAW_ETHER, from) {
         to.transfer(value);
         emit etherTransferred(from, to, value);
     }
 
-    function receiveEther(OrganData storage self, uint256 value, address from)
-        public
-        onlyPerm(self, PERMISSION_DEPOSIT_ETHER, from)
-    {
+    function receiveEther(
+        OrganData storage self,
+        uint256 value,
+        address from
+    ) public onlyPerm(self, PERMISSION_DEPOSIT_ETHER, from) {
         emit etherReceived(from, value);
     }
 
     /*
         Procedures management.
     */
-
-    function removeProcedure(OrganData storage self, address procedure, address caller)
-        public
-        onlyPerm(self, PERMISSION_REMOVE_PROCEDURES, caller)
-    {
+    function removeProcedure(
+        OrganData storage self,
+        address procedure,
+        address caller
+    ) public onlyPerm(self, PERMISSION_REMOVE_PROCEDURES, caller) {
         // Check procedure is already there.
-        require(self.procedures.contains(procedure), "Record not found.");
+        require(self.procedures.contains(procedure), 'Record not found.');
         // Remove from Procedures set.
         self.procedures.remove(procedure);
         self.permissions[procedure] = bytes2(0);
         emit procedureRemoved(caller, procedure);
     }
 
-    function addProcedure(OrganData storage self, address procedure, bytes2 permissions, address caller)
+    function addProcedure(
+        OrganData storage self,
+        address procedure,
+        bytes2 permissions,
+        address caller
+    )
         public
         onlyPerm(self, PERMISSION_ADD_PROCEDURES, caller)
         returns (uint256 index)
     {
         // Check new procedure is not already there.
-        require(!self.procedures.contains(procedure), "Duplicate record.");
+        require(!self.procedures.contains(procedure), 'Duplicate record.');
         // Check new procedure has permissions.
-        require(permissions != 0x0000, "Wrong permissions set.");
+        require(permissions != 0x0000, 'Wrong permissions set.');
 
         // Store procedures.
         self.procedures.add(procedure);
@@ -206,25 +218,27 @@ library OrganLibrary {
         return index;
     }
 
-    function replaceProcedure (
-        OrganData storage self, address oldProcedure, address newProcedure,
-        bytes2 permissions, address caller
+    function replaceProcedure(
+        OrganData storage self,
+        address oldProcedure,
+        address newProcedure,
+        bytes2 permissions,
+        address caller
     )
         public
         onlyPerm(self, PERMISSION_REMOVE_PROCEDURES, caller)
         onlyPerm(self, PERMISSION_ADD_PROCEDURES, caller)
     {
         // Check old procedure will be removable before adding.
-        require(self.procedures.contains(oldProcedure), "Record not found.");
+        require(self.procedures.contains(oldProcedure), 'Record not found.');
         // Check new procedure has permissions.
-        require(permissions > 0, "Wrong permissions set.");
+        require(permissions > 0, 'Wrong permissions set.');
 
         // Check if we are replacing a master with another, or updating permissions.
         if (oldProcedure != newProcedure) {
             addProcedure(self, newProcedure, permissions, caller);
             removeProcedure(self, oldProcedure, caller);
-        }
-        else {
+        } else {
             // Update permissions.
             self.permissions[newProcedure] = permissions;
         }
@@ -236,22 +250,26 @@ library OrganLibrary {
     /**
         Entries management.
     */
-
     function addEntries(
-        OrganData storage self, CoreLibrary.Entry[] memory entries, address caller
+        OrganData storage self,
+        CoreLibrary.Entry[] memory entries,
+        address caller
     )
         public
         onlyPerm(self, PERMISSION_ADD_ENTRIES, caller)
         returns (uint256[] memory indexes)
     {
-        require(entries.length > 0, "No entries specified.");
+        require(entries.length > 0, 'No entries specified.');
         // uint256 memory initialGas = gasleft();
         indexes = new uint256[](entries.length);
 
-        for (uint256 i = 0 ; i < entries.length ; i++) {
+        for (uint256 i = 0; i < entries.length; i++) {
             // If the entry has an address, we check that the address has not been used before.
             if (entries[i].addr != address(0)) {
-                require(self.addressIndexInEntries[entries[i].addr] == 0, "Duplicate record.");
+                require(
+                    self.addressIndexInEntries[entries[i].addr] == 0,
+                    'Duplicate record.'
+                );
             }
             // Adding the entry.
             self.entries.push(entries[i]);
@@ -272,24 +290,27 @@ library OrganLibrary {
         return indexes;
     }
 
-    function removeEntries(OrganData storage self, uint256[] memory indexes, address caller)
-        public
-        onlyPerm(self, PERMISSION_REMOVE_ENTRIES, caller)
-    {
-        for (uint256 i = 0 ; i < indexes.length ; i++) {
+    function removeEntries(
+        OrganData storage self,
+        uint256[] memory indexes,
+        address caller
+    ) public onlyPerm(self, PERMISSION_REMOVE_ENTRIES, caller) {
+        for (uint256 i = 0; i < indexes.length; i++) {
             address addr = self.entries[indexes[i]].addr;
             delete self.entries[indexes[i]];
             self.entriesCount--;
             // Deleting entry index.
-            if (addr != address(0))
-                self.addressIndexInEntries[addr] = 0;
+            if (addr != address(0)) self.addressIndexInEntries[addr] = 0;
             // Logging event.
             emit entryRemoved(caller, indexes[i]);
         }
     }
 
     function replaceEntry(
-        OrganData storage self, uint256 index, CoreLibrary.Entry memory entry, address caller
+        OrganData storage self,
+        uint256 index,
+        CoreLibrary.Entry memory entry,
+        address caller
     )
         public
         onlyPerm(self, PERMISSION_REMOVE_ENTRIES, caller)
@@ -297,7 +318,10 @@ library OrganLibrary {
     {
         // Check that the replacing address is not registered.
         if (entry.addr != address(0)) {
-            require(self.addressIndexInEntries[entry.addr] > 0, "Record not found.");
+            require(
+                self.addressIndexInEntries[entry.addr] > 0,
+                'Record not found.'
+            );
         }
         self.addressIndexInEntries[self.entries[index].addr] = 0;
         emit entryRemoved(caller, index);
@@ -305,32 +329,28 @@ library OrganLibrary {
         self.entries[index] = entry;
 
         self.addressIndexInEntries[entry.addr] = index;
-        emit entryAdded(caller, index,  entry.addr, entry.cid);
+        emit entryAdded(caller, index, entry.addr, entry.cid);
     }
 
-    function getProceduresLength(OrganData storage self)
-        public
-        view
-        returns (uint256 length)
-    {
+    function getProceduresLength(
+        OrganData storage self
+    ) public view returns (uint256 length) {
         return self.procedures.length();
     }
 
-    function getProcedure(OrganData storage self, uint256 index)
-        public
-        view
-        returns (address addr, bytes2 perms)
-    {
+    function getProcedure(
+        OrganData storage self,
+        uint256 index
+    ) public view returns (address addr, bytes2 perms) {
         addr = self.procedures.at(index);
         perms = self.permissions[addr];
         return (addr, perms);
     }
 
-    function getEntry(OrganData storage self, uint256 index)
-        public
-        view
-        returns (CoreLibrary.Entry storage)
-    {
+    function getEntry(
+        OrganData storage self,
+        uint256 index
+    ) public view returns (CoreLibrary.Entry storage) {
         return self.entries[index];
     }
 }

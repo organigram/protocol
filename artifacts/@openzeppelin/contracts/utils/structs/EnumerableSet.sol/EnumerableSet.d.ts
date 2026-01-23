@@ -3,58 +3,58 @@
 // tslint:disable
 // eslint-disable
 
-import type { Address } from 'viem'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
-import '@nomicfoundation/hardhat-viem/types'
+import type { Address } from "viem";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
+import "@nomicfoundation/hardhat-viem/types";
 
 export interface EnumerableSet$Type {
-  _format: 'hh-sol-artifact-1',
-  contractName: 'EnumerableSet',
-  sourceName: '@openzeppelin/contracts/utils/structs/EnumerableSet.sol',
-  abi: [],
-  bytecode: '0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122014263f4ef4acffa54969c8057f5344ac64774a463e9ba19dd7b8765161a55ba864736f6c63430008130033',
-  deployedBytecode: '0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122014263f4ef4acffa54969c8057f5344ac64774a463e9ba19dd7b8765161a55ba864736f6c63430008130033',
-  linkReferences: {},
-  deployedLinkReferences: {}
+  "_format": "hh-sol-artifact-1",
+  "contractName": "EnumerableSet",
+  "sourceName": "@openzeppelin/contracts/utils/structs/EnumerableSet.sol",
+  "abi": [],
+  "bytecode": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220dbeddc4ffe7eccc57c0d5ec7f868d7143ca1af7f52a0258e8c5fad834b9be06e64736f6c63430008140033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220dbeddc4ffe7eccc57c0d5ec7f868d7143ca1af7f52a0258e8c5fad834b9be06e64736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
 
-declare module '@nomicfoundation/hardhat-viem/types' {
-  export function deployContract (
-    contractName: 'EnumerableSet',
+declare module "@nomicfoundation/hardhat-viem/types" {
+  export function deployContract(
+    contractName: "EnumerableSet",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<EnumerableSet$Type['abi']>>
-  export function deployContract (
-    contractName: '@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet',
+  ): Promise<GetContractReturnType<EnumerableSet$Type["abi"]>>;
+  export function deployContract(
+    contractName: "@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet",
     constructorArgs?: [],
     config?: DeployContractConfig
-  ): Promise<GetContractReturnType<EnumerableSet$Type['abi']>>
+  ): Promise<GetContractReturnType<EnumerableSet$Type["abi"]>>;
 
-  export function sendDeploymentTransaction (
-    contractName: 'EnumerableSet',
+  export function sendDeploymentTransaction(
+    contractName: "EnumerableSet",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<EnumerableSet$Type['abi']>;
+    contract: GetContractReturnType<EnumerableSet$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
-  export function sendDeploymentTransaction (
-    contractName: '@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet',
+  }>;
+  export function sendDeploymentTransaction(
+    contractName: "@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet",
     constructorArgs?: [],
     config?: SendDeploymentTransactionConfig
   ): Promise<{
-    contract: GetContractReturnType<EnumerableSet$Type['abi']>;
+    contract: GetContractReturnType<EnumerableSet$Type["abi"]>;
     deploymentTransaction: GetTransactionReturnType;
-  }>
+  }>;
 
-  export function getContractAt (
-    contractName: 'EnumerableSet',
+  export function getContractAt(
+    contractName: "EnumerableSet",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<EnumerableSet$Type['abi']>>
-  export function getContractAt (
-    contractName: '@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet',
+  ): Promise<GetContractReturnType<EnumerableSet$Type["abi"]>>;
+  export function getContractAt(
+    contractName: "@openzeppelin/contracts/utils/structs/EnumerableSet.sol:EnumerableSet",
     address: Address,
     config?: GetContractAtConfig
-  ): Promise<GetContractReturnType<EnumerableSet$Type['abi']>>
+  ): Promise<GetContractReturnType<EnumerableSet$Type["abi"]>>;
 }

@@ -1,71 +1,90 @@
-//SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
 pragma experimental ABIEncoderV2;
 
-import "./Organ.sol";
-import "@opengsn/contracts/src/BasePaymaster.sol";
+import '@openzeppelin/contracts/utils/Context.sol';
+import '@openzeppelin/contracts/metatx/ERC2771Forwarder.sol';
 
-contract MetaGasStation is BasePaymaster {
-    function versionPaymaster()
-        external
-        view
-        virtual
-        override
-        returns (string memory)
-    {
-        return "3.0.0-beta.10";
+contract MetaGasStation is ERC2771Forwarder {
+    constructor(string memory name) ERC2771Forwarder(name) {}
+}
+
+abstract contract ERC2771Recipient is Context {
+    address private _trustedForwarder;
+
+    function _setTrustedForwarder(address forwarder) internal virtual {
+        _trustedForwarder = forwarder;
     }
 
-    address payable public whitelistsOrgan;
-
-    constructor(address payable _whitelistsOrgan) {
-        whitelistsOrgan = _whitelistsOrgan;
+    function isTrustedForwarder(
+        address forwarder
+    ) public view virtual returns (bool) {
+        return forwarder == _trustedForwarder;
     }
 
-    function _verifyApprovalData(bytes calldata approvalData)
+    function trustedForwarder() public view virtual returns (address) {
+        return _trustedForwarder;
+    }
+
+    /**
+     * @dev Override for `msg.sender`. Defaults to the original `msg.sender` whenever
+     * a call is not performed by the trusted forwarder or the calldata length is less than
+     * 20 bytes (an address length).
+     */
+    function _msgSender() internal view virtual override returns (address) {
+        uint256 calldataLength = msg.data.length;
+        uint256 contextSuffixLength = _contextSuffixLength();
+        if (
+            calldataLength >= contextSuffixLength &&
+            isTrustedForwarder(msg.sender)
+        ) {
+            unchecked {
+                return
+                    address(
+                        bytes20(msg.data[calldataLength - contextSuffixLength:])
+                    );
+            }
+        } else {
+            return super._msgSender();
+        }
+    }
+
+    /**
+     * @dev Override for `msg.data`. Defaults to the original `msg.data` whenever
+     * a call is not performed by the trusted forwarder or the calldata length is less than
+     * 20 bytes (an address length).
+     */
+    function _msgData()
         internal
         view
         virtual
         override
+        returns (bytes calldata)
     {
-        require(approvalData.length != 0, "approvalData should not be empty");
+        uint256 calldataLength = msg.data.length;
+        uint256 contextSuffixLength = _contextSuffixLength();
+        if (
+            calldataLength >= contextSuffixLength &&
+            isTrustedForwarder(msg.sender)
+        ) {
+            unchecked {
+                return msg.data[:calldataLength - contextSuffixLength];
+            }
+        } else {
+            return super._msgData();
+        }
     }
 
-    function _preRelayedCall(
-        GsnTypes.RelayRequest calldata relayRequest,
-        bytes calldata signature,
-        bytes calldata approvalData,
-        uint256 maxPossibleGas
-    )
+    /**
+     * @dev ERC-2771 specifies the context as being a single address (20 bytes).
+     */
+    function _contextSuffixLength()
         internal
+        view
         virtual
         override
-        returns (bytes memory context, bool revertOnRecipientRevert)
+        returns (uint256)
     {
-        (relayRequest, signature, approvalData, maxPossibleGas);
-        (address whitelist) = abi.decode(approvalData, (address));
-        address sender = relayRequest.request.from; 
-        require(
-            Organ(whitelistsOrgan).getEntryIndexForAddress(whitelist) != 0,
-            "Whitelist is not whitelisted."
-        );
-        require(
-            Organ(payable(whitelist)).getEntryIndexForAddress(sender) != 0,
-            "User is not whitelisted."
-        );
-        return (abi.encode(sender, whitelist), false);
+        return 20;
     }
-
-    function _postRelayedCall(
-        bytes calldata context,
-        bool success,
-        uint256 gasUseWithoutPost,
-        GsnTypes.RelayData calldata relayData
-    ) internal virtual override {
-        (context, success, gasUseWithoutPost, relayData);
-        (address sender, address whitelist) = abi.decode(context, (address, address));
-        emit PostRelayed(sender, whitelist, gasUseWithoutPost);
-    }
-
-    event PostRelayed(address indexed payer, address indexed whitelist, uint256 indexed gasUseWithoutPost);
 }

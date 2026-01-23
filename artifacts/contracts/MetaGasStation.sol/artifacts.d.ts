@@ -6,16 +6,21 @@
 import "hardhat/types/artifacts";
 import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
+import { ERC2771Recipient$Type } from "./ERC2771Recipient";
 import { MetaGasStation$Type } from "./MetaGasStation";
 
 declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
+    ["ERC2771Recipient"]: ERC2771Recipient$Type;
     ["MetaGasStation"]: MetaGasStation$Type;
+    ["contracts/MetaGasStation.sol:ERC2771Recipient"]: ERC2771Recipient$Type;
     ["contracts/MetaGasStation.sol:MetaGasStation"]: MetaGasStation$Type;
   }
 
   interface ContractTypesMap {
+    ["ERC2771Recipient"]: GetContractReturnType<ERC2771Recipient$Type["abi"]>;
     ["MetaGasStation"]: GetContractReturnType<MetaGasStation$Type["abi"]>;
+    ["contracts/MetaGasStation.sol:ERC2771Recipient"]: GetContractReturnType<ERC2771Recipient$Type["abi"]>;
     ["contracts/MetaGasStation.sol:MetaGasStation"]: GetContractReturnType<MetaGasStation$Type["abi"]>;
   }
 }

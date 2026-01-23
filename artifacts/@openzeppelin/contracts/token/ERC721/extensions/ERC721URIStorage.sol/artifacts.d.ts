@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { ERC721URIStorage$Type } from './ERC721URIStorage'
+import { ERC721URIStorage$Type } from "./ERC721URIStorage";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['ERC721URIStorage']: ERC721URIStorage$Type;
-    ['@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol:ERC721URIStorage']: ERC721URIStorage$Type;
+    ["ERC721URIStorage"]: ERC721URIStorage$Type;
+    ["@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol:ERC721URIStorage"]: ERC721URIStorage$Type;
   }
 
   interface ContractTypesMap {
-    ['ERC721URIStorage']: GetContractReturnType<ERC721URIStorage$Type['abi']>;
-    ['@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol:ERC721URIStorage']: GetContractReturnType<ERC721URIStorage$Type['abi']>;
+    ["ERC721URIStorage"]: GetContractReturnType<ERC721URIStorage$Type["abi"]>;
+    ["@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol:ERC721URIStorage"]: GetContractReturnType<ERC721URIStorage$Type["abi"]>;
   }
 }

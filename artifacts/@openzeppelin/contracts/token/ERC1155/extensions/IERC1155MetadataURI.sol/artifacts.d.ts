@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { IERC1155MetadataURI$Type } from './IERC1155MetadataURI'
+import { IERC1155MetadataURI$Type } from "./IERC1155MetadataURI";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['IERC1155MetadataURI']: IERC1155MetadataURI$Type;
-    ['@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol:IERC1155MetadataURI']: IERC1155MetadataURI$Type;
+    ["IERC1155MetadataURI"]: IERC1155MetadataURI$Type;
+    ["@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol:IERC1155MetadataURI"]: IERC1155MetadataURI$Type;
   }
 
   interface ContractTypesMap {
-    ['IERC1155MetadataURI']: GetContractReturnType<IERC1155MetadataURI$Type['abi']>;
-    ['@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol:IERC1155MetadataURI']: GetContractReturnType<IERC1155MetadataURI$Type['abi']>;
+    ["IERC1155MetadataURI"]: GetContractReturnType<IERC1155MetadataURI$Type["abi"]>;
+    ["@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol:IERC1155MetadataURI"]: GetContractReturnType<IERC1155MetadataURI$Type["abi"]>;
   }
 }

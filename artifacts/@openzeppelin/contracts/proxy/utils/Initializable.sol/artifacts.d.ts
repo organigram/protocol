@@ -3,19 +3,19 @@
 // tslint:disable
 // eslint-disable
 
-import 'hardhat/types/artifacts'
-import type { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
+import "hardhat/types/artifacts";
+import type { GetContractReturnType } from "@nomicfoundation/hardhat-viem/types";
 
-import { Initializable$Type } from './Initializable'
+import { Initializable$Type } from "./Initializable";
 
-declare module 'hardhat/types/artifacts' {
+declare module "hardhat/types/artifacts" {
   interface ArtifactsMap {
-    ['Initializable']: Initializable$Type;
-    ['@openzeppelin/contracts/proxy/utils/Initializable.sol:Initializable']: Initializable$Type;
+    ["Initializable"]: Initializable$Type;
+    ["@openzeppelin/contracts/proxy/utils/Initializable.sol:Initializable"]: Initializable$Type;
   }
 
   interface ContractTypesMap {
-    ['Initializable']: GetContractReturnType<Initializable$Type['abi']>;
-    ['@openzeppelin/contracts/proxy/utils/Initializable.sol:Initializable']: GetContractReturnType<Initializable$Type['abi']>;
+    ["Initializable"]: GetContractReturnType<Initializable$Type["abi"]>;
+    ["@openzeppelin/contracts/proxy/utils/Initializable.sol:Initializable"]: GetContractReturnType<Initializable$Type["abi"]>;
   }
 }

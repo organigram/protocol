@@ -2,15 +2,15 @@ import { assert } from 'chai'
 import { viem } from 'hardhat'
 import { parseEventLogs } from 'viem'
 
-import { deployClient, type ClientContracts } from '../src/client'
+import { deployProtocol, type ProtocolContracts } from '../src/deploy'
 
 describe('Organigram protocol', function () {
-  let testValues: ClientContracts & {
+  let testValues: ProtocolContracts & {
     signers: Array<`0x${string}`>
     publicClient: any
   }
 
-  it('Deploy client', async function () {
+  it('Deploy protocol', async function () {
     const {
       coreLibrary,
       organLibrary,
@@ -19,9 +19,9 @@ describe('Organigram protocol', function () {
       nominationProcedure,
       voteProcedure,
       erc20VoteProcedure,
-      organigram,
+      organigramClient,
       proceduresRegistry
-    } = await deployClient()
+    } = await deployProtocol()
 
     testValues = {
       coreLibrary,
@@ -31,7 +31,7 @@ describe('Organigram protocol', function () {
       nominationProcedure,
       voteProcedure,
       erc20VoteProcedure,
-      organigram,
+      organigramClient,
       proceduresRegistry,
       signers: await Promise.all(
         (await viem.getWalletClients()).map(
@@ -46,14 +46,14 @@ describe('Organigram protocol', function () {
     const metadataCid = 'QmQzqLQ8V3J4b4m5yQ4yQzqL'
 
     const receipt = await testValues.publicClient.getTransactionReceipt({
-      hash: await testValues.organigram.write.createOrgan([
+      hash: await testValues.organigramClient.write.createOrgan([
         testValues.signers[0],
         metadataCid
       ])
     })
     const logs = parseEventLogs({
       logs: receipt.logs,
-      abi: testValues.organigram.abi
+      abi: testValues.organigramClient.abi
     })
 
     const deployedOrgan = await viem.getContractAt(
@@ -73,7 +73,7 @@ describe('Organigram protocol', function () {
 
   it('Create a nomination procedure', async function () {
     const proceduresRegistryAddress =
-      await testValues.organigram.read.procedures()
+      await testValues.organigramClient.read.procedures()
     const proceduresRegistry = await viem.getContractAt(
       'Organ',
       proceduresRegistryAddress as `0x${string}`
@@ -83,14 +83,14 @@ describe('Organigram protocol', function () {
     )) as { addr: string }
 
     const receipt = await testValues.publicClient.getTransactionReceipt({
-      hash: await testValues.organigram.write.createProcedure([
+      hash: await testValues.organigramClient.write.createProcedure([
         nominationAddress,
         '0x'
       ])
     })
     const logs = parseEventLogs({
       logs: receipt.logs,
-      abi: testValues.organigram.abi
+      abi: testValues.organigramClient.abi
     })
     assert.equal(logs[0].eventName, 'procedureCreated')
   })

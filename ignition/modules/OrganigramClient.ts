@@ -3,9 +3,14 @@ import OrganLibrary from './OrganLibrary'
 
 const OrganigramClientModule = buildModule('OrganigramClientModule', m => {
   const { organLibrary } = m.useModule(OrganLibrary)
+  const metaGasStationAddress = m.getParameter(
+    'metaGasStationAddress',
+    '0x0000000000000000000000000000000000000000' // Default value if not provided
+  )
+
   const organigramClient = m.contract(
     'OrganigramClient',
-    ['', '0x0000000000000000000000000000000000000000'],
+    ['', metaGasStationAddress],
     {
       libraries: {
         OrganLibrary: organLibrary

@@ -1,5 +1,5 @@
-import { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
 import { viem, network, ignition } from 'hardhat'
+import { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
 
 import CoreLibrary from '../ignition/modules/CoreLibrary'
 import OrganLibrary from '../ignition/modules/OrganLibrary'
@@ -9,9 +9,7 @@ import Procedures from '../ignition/modules/Procedures'
 import OrganigramClient from '../ignition/modules/OrganigramClient'
 import MetaGasStation from '../ignition/modules/MetaGasStation'
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-
-export type ClientContracts = {
+export type ProtocolContracts = {
   coreLibrary: GetContractReturnType
   organLibrary: GetContractReturnType
   procedureLibrary: GetContractReturnType
@@ -22,6 +20,8 @@ export type ClientContracts = {
   organigramClient: GetContractReturnType
   proceduresRegistry: GetContractReturnType
 }
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
 export const deployAndLoadContract = async (module: any, parameters?: any) => {
   const contractAddresses = await ignition.deploy(module, parameters)
@@ -37,33 +37,35 @@ export const deployAndLoadContract = async (module: any, parameters?: any) => {
   )
 }
 
-export const deployClient = async (): Promise<ClientContracts> => {
+export const deployProtocol = async (): Promise<ProtocolContracts> => {
   console.info('Network:', network.name)
 
+  /*
+   * Deploying libraries
+   */
   const coreLibrary = await deployAndLoadContract(CoreLibrary)
   const organLibrary = await deployAndLoadContract(OrganLibrary)
   const procedureLibrary = await deployAndLoadContract(ProcedureLibrary)
 
   /*
-   * Deploying the master Organ
+   * Deploying the main Organ and procedures contracts
    */
   const organ = await deployAndLoadContract(Organ)
-
-  /*
-   * Deploying the procedures
-   */
   const { nominationProcedure, voteProcedure, erc20VoteProcedure } =
     await deployAndLoadContract(Procedures)
+
+  /*
+   * Deploying the MetaGasStation forwarder & ERC2771Recipient
+   */
+  const { metaGasStation } = await deployAndLoadContract(MetaGasStation)
 
   /*
    * Deploying the Organigram client
    */
   const { organigramClient } = await deployAndLoadContract(OrganigramClient, {
     parameters: {
-      Organigram: {
-        nominationProcedureAddress: nominationProcedure.address,
-        voteProcedureAddress: voteProcedure.address,
-        erc20VoteProcedureAddress: erc20VoteProcedure.address
+      OrganigramClientModule: {
+        metaGasStationAddress: metaGasStation.address
       }
     }
   })
@@ -123,21 +125,6 @@ export const deployClient = async (): Promise<ClientContracts> => {
     ]
     console.info(organData[3].toString(), 'procedures registered.')
   }
-
-  /*
-   * Deploying MetaGasStation forwarder & ERC2771Recipient
-   */
-  await deployAndLoadContract(MetaGasStation)
-
-  // const artifacts = [
-  //   { name: 'CoreLibrary', address: await coreLibrary.address },
-  //   { name: 'OrganLibrary', address: await organLibrary.address },
-  //   { name: 'ProcedureLibrary', address: await procedureLibrary.address },
-  //   { name: 'Organ', address: await organ.address },
-  //   { name: 'Procedures', address: await organ.address },
-  //   { name: 'Organigram', address: await organigramClient.address }
-  // ]
-  // await tenderly.persistArtifacts(...artifacts)
 
   console.info()
   console.info('Organigram Protocol deployed successfully! ✅🚀')

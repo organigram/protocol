@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "ssh://git@github.com:organigram/organigram.git",
-    "directory": "packages/contracts"
+    "directory": "packages/protocol"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -19,7 +19,7 @@
     "build": "pnpm hardhat compile",
     "docs": "node scripts/docs.js",
     "test": "env-cmd --silent pnpm hardhat test",
-    "deploy:protocol": "env-cmd --silent tsx scripts/deploy-client.ts",
+    "deploy:protocol": "env-cmd --silent tsx scripts/deploy.ts",
     "hardhat:node": "pnpm hardhat node",
     "hardhat:clean": "env-cmd --silent pnpm hardhat clean && pnpm build"
   },

@@ -13,13 +13,14 @@
     "directory": "packages/protocol"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com/@organigram"
   },
   "scripts": {
-    "build": "pnpm hardhat compile",
+    "build": "env-cmd --silent pnpm hardhat compile",
     "docs": "node scripts/docs.js",
     "test": "env-cmd --silent pnpm hardhat test",
     "deploy:protocol": "env-cmd --silent tsx scripts/deploy.ts",
+    "anvil": "env-cmd --silent node scripts/anvil.js",
     "hardhat:node": "pnpm hardhat node",
     "hardhat:clean": "env-cmd --silent pnpm hardhat clean && pnpm build"
   },

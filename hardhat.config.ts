@@ -1,9 +1,8 @@
-import { HardhatUserConfig } from 'hardhat/config'
 import '@nomicfoundation/hardhat-ignition-viem'
 import '@nomicfoundation/hardhat-viem'
 // import "@tenderly/hardhat-tenderly"
 
-const config: HardhatUserConfig = {
+const config = {
   solidity: {
     version: '0.8.20',
     settings: {

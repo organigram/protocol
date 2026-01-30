@@ -20,18 +20,19 @@ contract OrganigramClient is ERC2771Recipient {
         address payable procedure
     );
 
-    constructor(string memory cid, address trustedForwarder) {
+    constructor(string memory cid, address trustedForwarder, bytes32 salt) {
         _setTrustedForwarder(trustedForwarder);
         organ = payable(address(new Organ()));
-        procedures = createOrgan(payable(_msgSender()), cid);
+        procedures = createOrgan(payable(_msgSender()), cid, salt);
     }
 
     function createOrgan(
         address payable admin,
-        string memory cid
+        string memory cid,
+        bytes32 salt
     ) public returns (address payable clone) {
         // Clone organ and initialize it.
-        clone = payable(Clones.clone(organ));
+        clone = payable(Clones.cloneDeterministic(organ, salt));
         Organ(clone).initialize(admin, cid, trustedForwarder());
         emit organCreated(clone);
         return clone;
@@ -44,7 +45,8 @@ contract OrganigramClient is ERC2771Recipient {
      */
     function createProcedure(
         address payable procedureType,
-        bytes memory data
+        bytes memory data,
+        bytes32 salt
     ) public returns (address payable procedure) {
         // Check if procedure.
         require(
@@ -57,7 +59,7 @@ contract OrganigramClient is ERC2771Recipient {
             'Procedure not found.'
         );
         // Creates a minimal clone.
-        procedure = payable(Clones.clone(procedureType));
+        procedure = payable(Clones.cloneDeterministic(procedureType, salt));
         emit procedureCreated(procedureType, procedure);
         // NB: The initialize method will need to be called immediately
         // if not through the data parameter.

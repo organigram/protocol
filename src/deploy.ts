@@ -1,6 +1,7 @@
 import { viem, network, ignition } from 'hardhat'
 import { GetContractReturnType } from '@nomicfoundation/hardhat-viem/types'
 
+import Asset from '../ignition/modules/Asset'
 import CoreLibrary from '../ignition/modules/CoreLibrary'
 import OrganLibrary from '../ignition/modules/OrganLibrary'
 import ProcedureLibrary from '../ignition/modules/ProcedureLibrary'
@@ -10,6 +11,7 @@ import OrganigramClient from '../ignition/modules/OrganigramClient'
 import MetaGasStation from '../ignition/modules/MetaGasStation'
 
 export type ProtocolContracts = {
+  asset: GetContractReturnType
   coreLibrary: GetContractReturnType
   organLibrary: GetContractReturnType
   procedureLibrary: GetContractReturnType
@@ -48,8 +50,9 @@ export const deployProtocol = async (): Promise<ProtocolContracts> => {
   const procedureLibrary = await deployAndLoadContract(ProcedureLibrary)
 
   /*
-   * Deploying the main Organ and procedures contracts
+   * Deploying the main protocol contracts
    */
+  const asset = await deployAndLoadContract(Asset)
   const organ = await deployAndLoadContract(Organ)
   const { nominationProcedure, voteProcedure, erc20VoteProcedure } =
     await deployAndLoadContract(Procedures)
@@ -131,6 +134,7 @@ export const deployProtocol = async (): Promise<ProtocolContracts> => {
   console.info()
 
   return {
+    asset,
     coreLibrary,
     organLibrary,
     procedureLibrary,

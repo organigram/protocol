@@ -66,6 +66,10 @@ library OrganLibrary {
     event entryAdded(address from, uint256 index, address addr, string cid);
     event entryRemoved(address from, uint256 index);
 
+    error LengthMismatch();
+    error ZeroAddress();
+    error DuplicateProcedure(address proc);
+
     /*
         Modifier.
     */
@@ -83,22 +87,34 @@ library OrganLibrary {
     }
 
     /*
-        Constructor.
+        Constructor. Takes an optional array of { procedure, permissions } and sets the permissions in the organ:
     */
     function init(
         OrganData storage self,
-        address defaultAdmin,
-        string memory cid,
-        address caller
+        address[] memory _procedures,
+        bytes2[] memory _permissions,
+        string memory cid
+        // address caller
     ) public {
         // Initializing with deployer as admin.
-        address payable _admin = payable(
-            defaultAdmin != address(0) ? defaultAdmin : caller
-        );
+        // address payable _admin = payable(
+        // defaultAdmin != address(0) ? defaultAdmin : caller
+        // );
 
-        // Add _admin in procedures set.
-        self.permissions[_admin] = 0xffff;
-        self.procedures.add(_admin);
+        // self.permissions[_admin] = 0xffff;
+        // self.procedures.add(_admin);
+        // For each procedure in procedures, set the permissions for that procedure.
+        if (_procedures.length != _permissions.length) revert LengthMismatch();
+
+        for (uint256 i = 0; i < _procedures.length; i++) {
+            address p = _procedures[i];
+            if (p == address(0)) revert ZeroAddress();
+
+            // add() retourne false si déjà présent
+            if (!self.procedures.add(p)) revert DuplicateProcedure(p);
+
+            self.permissions[p] = _permissions[i];
+        }
 
         // Initializing cid.
         self.cid = cid;

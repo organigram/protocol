@@ -6,7 +6,8 @@ import './libraries/CoreLibrary.sol';
 
 interface IOrgan {
     function initialize(
-        address payable admin,
+        address[] memory procedures,
+        bytes2[] memory permissions,
         string memory cid,
         address trustedForwarder
     ) external;

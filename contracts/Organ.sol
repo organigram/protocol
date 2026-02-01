@@ -59,11 +59,12 @@ contract Organ is
     }
 
     function initialize(
-        address payable admin,
+        address[] memory procedures,
+        bytes2[] memory permissions,
         string memory cid,
         address forwarder
     ) external override initializer {
-        organData.init(admin, cid, _msgSender());
+        organData.init(procedures, permissions, cid);
         _setTrustedForwarder(forwarder);
     }
 

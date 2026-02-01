@@ -190,9 +190,14 @@ export interface IOrgan$Type {
     {
       "inputs": [
         {
-          "internalType": "address payable",
-          "name": "admin",
-          "type": "address"
+          "internalType": "address[]",
+          "name": "procedures",
+          "type": "address[]"
+        },
+        {
+          "internalType": "bytes2[]",
+          "name": "permissions",
+          "type": "bytes2[]"
         },
         {
           "internalType": "string",

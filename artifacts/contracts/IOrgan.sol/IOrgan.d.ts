@@ -47,16 +47,16 @@ export interface IOrgan$Type {
       "inputs": [
         {
           "internalType": "address",
-          "name": "procedure",
+          "name": "permissionAddress",
           "type": "address"
         },
         {
           "internalType": "bytes2",
-          "name": "permissions",
+          "name": "permissionValue",
           "type": "bytes2"
         }
       ],
-      "name": "addProcedure",
+      "name": "addPermission",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -122,7 +122,7 @@ export interface IOrgan$Type {
         },
         {
           "internalType": "uint256",
-          "name": "proceduresLength",
+          "name": "permissionsLength",
           "type": "uint256"
         },
         {
@@ -147,13 +147,18 @@ export interface IOrgan$Type {
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getPermission",
+      "outputs": [
+        {
           "internalType": "address",
           "name": "addr",
           "type": "address"
-        }
-      ],
-      "name": "getPermissions",
-      "outputs": [
+        },
         {
           "internalType": "bytes2",
           "name": "perms",
@@ -166,18 +171,13 @@ export interface IOrgan$Type {
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "index",
-          "type": "uint256"
-        }
-      ],
-      "name": "getProcedure",
-      "outputs": [
-        {
           "internalType": "address",
           "name": "addr",
           "type": "address"
-        },
+        }
+      ],
+      "name": "getPermissions",
+      "outputs": [
         {
           "internalType": "bytes2",
           "name": "perms",
@@ -232,11 +232,11 @@ export interface IOrgan$Type {
       "inputs": [
         {
           "internalType": "address",
-          "name": "procedure",
+          "name": "permissionAddress",
           "type": "address"
         }
       ],
-      "name": "removeProcedure",
+      "name": "removePermission",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -275,21 +275,21 @@ export interface IOrgan$Type {
       "inputs": [
         {
           "internalType": "address",
-          "name": "oldProcedure",
+          "name": "oldPermission",
           "type": "address"
         },
         {
           "internalType": "address",
-          "name": "newProcedure",
+          "name": "newPermission",
           "type": "address"
         },
         {
           "internalType": "bytes2",
-          "name": "permissions",
+          "name": "newPermissionValue",
           "type": "bytes2"
         }
       ],
-      "name": "replaceProcedure",
+      "name": "replacePermission",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

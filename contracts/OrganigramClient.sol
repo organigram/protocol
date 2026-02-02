@@ -15,26 +15,26 @@ contract OrganigramClient is ERC2771Recipient {
     address payable public organ; // Cloneable organ implementation.
     address payable public proceduresRegistry; // Organ with the addresses of supported procedures implementations.
 
-    event organCreated(address payable organ);
-    event assetCreated(address payable asset);
-    event procedureCreated(
+    event organDeployed(address payable organ);
+    event assetDeployed(address payable asset);
+    event procedureDeployed(
         address payable procedureType,
         address payable procedure
     );
 
-    struct CreateOrganArgs {
+    struct DeployOrganArgs {
         address[] permissionAddresses;
         bytes2[] permissionValues;
         string cid;
         bytes32 salt;
     }
-    struct CreateProcedureArgs {
+    struct DeployProcedureArgs {
         address payable procedureType;
         bytes data;
         bytes32 salt;
     }
 
-    struct CreateAssetArgs {
+    struct DeployAssetArgs {
         string name;
         string symbol;
         uint256 initialSupply;
@@ -51,7 +51,7 @@ contract OrganigramClient is ERC2771Recipient {
         permissionAddresses[0] = _msgSender(); // Set the sender as default admin...
         permissionValues[0] = bytes2(0xffff); // ...with all permissions.
 
-        proceduresRegistry = createOrgan(
+        proceduresRegistry = deployOrgan(
             permissionAddresses,
             permissionValues,
             cid,
@@ -59,7 +59,7 @@ contract OrganigramClient is ERC2771Recipient {
         );
     }
 
-    function createOrgan(
+    function deployOrgan(
         address[] memory _permissionAddresses,
         bytes2[] memory _permissionValues,
         string memory cid,
@@ -86,17 +86,17 @@ contract OrganigramClient is ERC2771Recipient {
             cid,
             trustedForwarder()
         );
-        emit organCreated(clone);
+        emit organDeployed(clone);
         return clone;
     }
 
-    function createOrgans(
-        CreateOrganArgs[] memory batch
+    function deployOrgans(
+        DeployOrganArgs[] memory batch
     ) public returns (address payable[] memory clones) {
         clones = new address payable[](batch.length);
 
         for (uint256 i = 0; i < batch.length; i++) {
-            clones[i] = createOrgan(
+            clones[i] = deployOrgan(
                 batch[i].permissionAddresses,
                 batch[i].permissionValues,
                 batch[i].cid,
@@ -106,7 +106,7 @@ contract OrganigramClient is ERC2771Recipient {
         return clones;
     }
 
-    function createAsset(
+    function deployAsset(
         string memory name,
         string memory symbol,
         uint256 initialSupply,
@@ -115,17 +115,17 @@ contract OrganigramClient is ERC2771Recipient {
         Asset asset = new Asset(name, symbol, initialSupply);
         clone = payable(Clones.cloneDeterministic(address(asset), salt));
 
-        emit assetCreated(clone);
+        emit assetDeployed(clone);
         return clone;
     }
 
-    function createAssets(
-        CreateAssetArgs[] memory batch
+    function deployAssets(
+        DeployAssetArgs[] memory batch
     ) public returns (address payable[] memory clones) {
         clones = new address payable[](batch.length);
 
         for (uint256 i = 0; i < batch.length; i++) {
-            clones[i] = createAsset(
+            clones[i] = deployAsset(
                 batch[i].name,
                 batch[i].symbol,
                 batch[i].initialSupply,
@@ -135,7 +135,7 @@ contract OrganigramClient is ERC2771Recipient {
         return clones;
     }
 
-    function createProcedure(
+    function deployProcedure(
         address payable procedureType,
         bytes memory data,
         bytes32 salt
@@ -150,7 +150,7 @@ contract OrganigramClient is ERC2771Recipient {
             'Procedure not found.'
         );
         procedure = payable(Clones.cloneDeterministic(procedureType, salt));
-        emit procedureCreated(procedureType, procedure);
+        emit procedureDeployed(procedureType, procedure);
         // NB: The initialize method will need to be called immediately
         // if not through the data parameter.
         if (data.length > 0) {
@@ -159,13 +159,13 @@ contract OrganigramClient is ERC2771Recipient {
         return procedure;
     }
 
-    function createProcedures(
-        CreateProcedureArgs[] memory batch
+    function deployProcedures(
+        DeployProcedureArgs[] memory batch
     ) public returns (address payable[] memory created) {
         created = new address payable[](batch.length);
 
         for (uint256 i = 0; i < batch.length; i++) {
-            created[i] = createProcedure(
+            created[i] = deployProcedure(
                 batch[i].procedureType,
                 batch[i].data,
                 batch[i].salt
@@ -175,21 +175,21 @@ contract OrganigramClient is ERC2771Recipient {
     }
 
     function deployOrganigram(
-        CreateOrganArgs[] memory organBatch,
-        CreateAssetArgs[] memory assetBatch,
-        CreateProcedureArgs[] memory procedureBatch
+        DeployOrganArgs[] memory organBatch,
+        DeployAssetArgs[] memory assetBatch,
+        DeployProcedureArgs[] memory procedureBatch
     )
         public
         returns (
-            address payable[] memory organsCreated,
-            address payable[] memory assetsCreated,
-            address payable[] memory proceduresCreated
+            address payable[] memory organsDeployed,
+            address payable[] memory assetsDeployed,
+            address payable[] memory proceduresDeployed
         )
     {
-        organsCreated = createOrgans(organBatch);
-        assetsCreated = createAssets(assetBatch);
-        proceduresCreated = createProcedures(procedureBatch);
-        return (organsCreated, assetsCreated, proceduresCreated);
+        organsDeployed = deployOrgans(organBatch);
+        assetsDeployed = deployAssets(assetBatch);
+        proceduresDeployed = deployProcedures(procedureBatch);
+        return (organsDeployed, assetsDeployed, proceduresDeployed);
     }
 
     function registerProcedures(CoreLibrary.Entry[] memory entries) external {

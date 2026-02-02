@@ -25,14 +25,17 @@ interface IOrgan {
         CoreLibrary.Entry memory entry
     ) external;
 
-    function addProcedure(address procedure, bytes2 permissions) external;
+    function addPermission(
+        address permissionAddress,
+        bytes2 permissionValue
+    ) external;
 
-    function removeProcedure(address procedure) external;
+    function removePermission(address permissionAddress) external;
 
-    function replaceProcedure(
-        address oldProcedure,
-        address newProcedure,
-        bytes2 permissions
+    function replacePermission(
+        address oldPermission,
+        address newPermission,
+        bytes2 newPermissionValue
     ) external;
 
     function getOrgan()
@@ -40,7 +43,7 @@ interface IOrgan {
         view
         returns (
             string memory cid,
-            uint256 proceduresLength,
+            uint256 permissionsLength,
             uint256 entriesLength,
             uint256 entriesCount,
             bytes4 interfaceId
@@ -54,7 +57,7 @@ interface IOrgan {
         uint256 index
     ) external view returns (CoreLibrary.Entry memory entry);
 
-    function getProcedure(
+    function getPermission(
         uint256 index
     ) external view returns (address addr, bytes2 perms);
 

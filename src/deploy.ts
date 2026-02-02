@@ -77,7 +77,8 @@ export const deployProtocol = async (): Promise<ProtocolContracts> => {
    * Adding procedures to the procedures registry
    */
   const signers = await viem.getWalletClients()
-  const proceduresRegistryAddress = await organigramClient.read.procedures()
+  const proceduresRegistryAddress =
+    await organigramClient.read.proceduresRegistry()
   const proceduresRegistry = await viem.getContractAt(
     'Organ',
     proceduresRegistryAddress as `0x${string}`

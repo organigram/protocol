@@ -35,7 +35,7 @@ library OrganLibrary {
         string cid;
         CoreLibrary.Entry[] entries;
         uint256 entriesCount;
-        EnumerableSet.AddressSet procedures;
+        EnumerableSet.AddressSet permissionAddresses;
         mapping(address => bytes2) permissions;
         mapping(address => uint256) addressIndexInEntries;
     }
@@ -45,8 +45,12 @@ library OrganLibrary {
     */
     event cidUpdated(address from, string cid);
     event adminUpdated(address from, address admin);
-    event procedureAdded(address from, address procedure, bytes2 permissions);
-    event procedureRemoved(address from, address procedure);
+    event permissionAdded(
+        address from,
+        address permissionAddress,
+        bytes2 permissionValue
+    );
+    event permissionRemoved(address from, address permissionAddress);
     event collectibleTransferred(address operator, address to, uint256 tokenId);
     event collectibleReceived(address operator, address from, uint256 tokenId);
     event coinsTransferred(
@@ -68,7 +72,7 @@ library OrganLibrary {
 
     error LengthMismatch();
     error ZeroAddress();
-    error DuplicateProcedure(address proc);
+    error DuplicatePermission(address perm);
 
     /*
         Modifier.
@@ -87,14 +91,13 @@ library OrganLibrary {
     }
 
     /*
-        Constructor. Takes an optional array of { procedure, permissions } and sets the permissions in the organ:
+        Constructor. Takes an optional array of { address, permissionValue } and sets the permissions in the organ:
     */
     function init(
         OrganData storage self,
-        address[] memory _procedures,
-        bytes2[] memory _permissions,
-        string memory cid
-        // address caller
+        address[] memory _permissionAddresses,
+        bytes2[] memory _permissionValues,
+        string memory cid // address caller
     ) public {
         // Initializing with deployer as admin.
         // address payable _admin = payable(
@@ -102,18 +105,19 @@ library OrganLibrary {
         // );
 
         // self.permissions[_admin] = 0xffff;
-        // self.procedures.add(_admin);
-        // For each procedure in procedures, set the permissions for that procedure.
-        if (_procedures.length != _permissions.length) revert LengthMismatch();
+        // self.permissionAddresses.add(_admin);
+        // For each address in permissionAddresses, set the permissions for that address.
+        if (_permissionAddresses.length != _permissionValues.length)
+            revert LengthMismatch();
 
-        for (uint256 i = 0; i < _procedures.length; i++) {
-            address p = _procedures[i];
+        for (uint256 i = 0; i < _permissionAddresses.length; i++) {
+            address p = _permissionAddresses[i];
             if (p == address(0)) revert ZeroAddress();
 
             // add() retourne false si déjà présent
-            if (!self.procedures.add(p)) revert DuplicateProcedure(p);
+            if (!self.permissionAddresses.add(p)) revert DuplicatePermission(p);
 
-            self.permissions[p] = _permissions[i];
+            self.permissions[p] = _permissionValues[i];
         }
 
         // Initializing cid.
@@ -199,68 +203,77 @@ library OrganLibrary {
     /*
         Procedures management.
     */
-    function removeProcedure(
+    function removePermission(
         OrganData storage self,
-        address procedure,
+        address permissionAddress,
         address caller
     ) public onlyPerm(self, PERMISSION_REMOVE_PROCEDURES, caller) {
-        // Check procedure is already there.
-        require(self.procedures.contains(procedure), 'Record not found.');
+        // Check address is already there.
+        require(
+            self.permissionAddresses.contains(permissionAddress),
+            'Record not found.'
+        );
         // Remove from Procedures set.
-        self.procedures.remove(procedure);
-        self.permissions[procedure] = bytes2(0);
-        emit procedureRemoved(caller, procedure);
+        self.permissionAddresses.remove(permissionAddress);
+        self.permissions[permissionAddress] = bytes2(0);
+        emit permissionRemoved(caller, permissionAddress);
     }
 
-    function addProcedure(
+    function addPermission(
         OrganData storage self,
-        address procedure,
-        bytes2 permissions,
+        address permissionAddress,
+        bytes2 permissionValue,
         address caller
     )
         public
         onlyPerm(self, PERMISSION_ADD_PROCEDURES, caller)
         returns (uint256 index)
     {
-        // Check new procedure is not already there.
-        require(!self.procedures.contains(procedure), 'Duplicate record.');
-        // Check new procedure has permissions.
-        require(permissions != 0x0000, 'Wrong permissions set.');
+        // Check new address is not already there.
+        require(
+            !self.permissionAddresses.contains(permissionAddress),
+            'Duplicate record.'
+        );
+        // Check new address has permissions.
+        require(permissionValue != 0x0000, 'Wrong permissions set.');
 
-        // Store procedures.
-        self.procedures.add(procedure);
-        self.permissions[procedure] = permissions;
-        emit procedureAdded(caller, procedure, permissions);
+        // Store permissions.
+        self.permissionAddresses.add(permissionAddress);
+        self.permissions[permissionAddress] = permissionValue;
+        emit permissionAdded(caller, permissionAddress, permissionValue);
         return index;
     }
 
-    function replaceProcedure(
+    function replacePermission(
         OrganData storage self,
-        address oldProcedure,
-        address newProcedure,
-        bytes2 permissions,
+        address oldPermissionAddress,
+        address newPermissionAddress,
+        bytes2 newPermissionValue,
         address caller
     )
         public
         onlyPerm(self, PERMISSION_REMOVE_PROCEDURES, caller)
         onlyPerm(self, PERMISSION_ADD_PROCEDURES, caller)
     {
-        // Check old procedure will be removable before adding.
-        require(self.procedures.contains(oldProcedure), 'Record not found.');
-        // Check new procedure has permissions.
-        require(permissions > 0, 'Wrong permissions set.');
+        // Check old address will be removable before adding.
+        require(
+            self.permissionAddresses.contains(oldPermissionAddress),
+            'Record not found.'
+        );
+        // Check new address has permissions.
+        require(newPermissionValue > 0, 'Wrong permissions set.');
 
         // Check if we are replacing a master with another, or updating permissions.
-        if (oldProcedure != newProcedure) {
-            addProcedure(self, newProcedure, permissions, caller);
-            removeProcedure(self, oldProcedure, caller);
+        if (oldPermissionAddress != newPermissionAddress) {
+            addPermission(self, newPermissionAddress, newPermissionValue, caller);
+            removePermission(self, oldPermissionAddress, caller);
         } else {
             // Update permissions.
-            self.permissions[newProcedure] = permissions;
+            self.permissions[newPermissionAddress] = newPermissionValue;
         }
         // Trigger events.
-        emit procedureRemoved(caller, oldProcedure);
-        emit procedureAdded(caller, newProcedure, permissions);
+        emit permissionRemoved(caller, oldPermissionAddress);
+        emit permissionAdded(caller, newPermissionAddress, newPermissionValue);
     }
 
     /**
@@ -348,17 +361,17 @@ library OrganLibrary {
         emit entryAdded(caller, index, entry.addr, entry.cid);
     }
 
-    function getProceduresLength(
+    function getPermissionsLength(
         OrganData storage self
     ) public view returns (uint256 length) {
-        return self.procedures.length();
+        return self.permissionAddresses.length();
     }
 
-    function getProcedure(
+    function getPermission(
         OrganData storage self,
         uint256 index
     ) public view returns (address addr, bytes2 perms) {
-        addr = self.procedures.at(index);
+        addr = self.permissionAddresses.at(index);
         perms = self.permissions[addr];
         return (addr, perms);
     }

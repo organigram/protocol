@@ -12,8 +12,8 @@ import '@openzeppelin/contracts/utils/Address.sol';
 
 contract OrganigramClient is ERC2771Recipient {
     using CoreLibrary for CoreLibrary.Entry;
-    address payable public organ;
-    address payable public procedures; // Organ with procedures addresses.
+    address payable public organ; // Cloneable organ implementation.
+    address payable public proceduresRegistry; // Organ with the addresses of supported procedures implementations.
 
     event organCreated(address payable organ);
     event assetCreated(address payable asset);
@@ -23,8 +23,8 @@ contract OrganigramClient is ERC2771Recipient {
     );
 
     struct CreateOrganArgs {
-        address[] procedures;
-        bytes2[] permissions;
+        address[] permissionAddresses;
+        bytes2[] permissionValues;
         string cid;
         bytes32 salt;
     }
@@ -45,34 +45,44 @@ contract OrganigramClient is ERC2771Recipient {
         _setTrustedForwarder(trustedForwarder);
         organ = payable(address(new Organ()));
 
-        address[] memory procs = new address[](1);
-        bytes2[] memory perms = new bytes2[](1);
-        procs[0] = _msgSender(); // Set the sender as default procedure...
-        perms[0] = bytes2(0xffff); // ...with full permissions.
+        // Create permissions arguments for the procedures registry organ.
+        address[] memory permissionAddresses = new address[](1);
+        bytes2[] memory permissionValues = new bytes2[](1);
+        permissionAddresses[0] = _msgSender(); // Set the sender as default admin...
+        permissionValues[0] = bytes2(0xffff); // ...with all permissions.
 
-        procedures = createOrgan(procs, perms, cid, salt);
+        proceduresRegistry = createOrgan(
+            permissionAddresses,
+            permissionValues,
+            cid,
+            salt
+        );
     }
 
     function createOrgan(
-        address[] memory _procedures,
-        bytes2[] memory _permissions,
+        address[] memory _permissionAddresses,
+        bytes2[] memory _permissionValues,
         string memory cid,
         bytes32 salt
     ) public returns (address payable clone) {
-        require(_procedures.length == _permissions.length, 'LengthMismatch');
+        require(
+            _permissionAddresses.length == _permissionValues.length,
+            'LengthMismatch'
+        );
 
-        if (_procedures.length == 0) {
-            _procedures = new address[](1);
-            _permissions = new bytes2[](1);
-            _procedures[0] = _msgSender(); // Set the sender as default procedure...
-            _permissions[0] = bytes2(0xffff); // ...with full permissions.
+        // If no permissions are provided, set the sender as admin with all permissions.
+        if (_permissionAddresses.length == 0) {
+            _permissionAddresses = new address[](1);
+            _permissionValues = new bytes2[](1);
+            _permissionAddresses[0] = _msgSender();
+            _permissionValues[0] = bytes2(0xffff);
         }
 
         // Clone organ and initialize it.
         clone = payable(Clones.cloneDeterministic(organ, salt));
         Organ(clone).initialize(
-            _procedures,
-            _permissions,
+            _permissionAddresses,
+            _permissionValues,
             cid,
             trustedForwarder()
         );
@@ -87,8 +97,8 @@ contract OrganigramClient is ERC2771Recipient {
 
         for (uint256 i = 0; i < batch.length; i++) {
             clones[i] = createOrgan(
-                batch[i].procedures,
-                batch[i].permissions,
+                batch[i].permissionAddresses,
+                batch[i].permissionValues,
                 batch[i].cid,
                 batch[i].salt
             );
@@ -135,7 +145,8 @@ contract OrganigramClient is ERC2771Recipient {
             'Not a procedure.'
         );
         require(
-            Organ(procedures).getEntryIndexForAddress(procedureType) > 0,
+            Organ(proceduresRegistry).getEntryIndexForAddress(procedureType) >
+                0,
             'Procedure not found.'
         );
         procedure = payable(Clones.cloneDeterministic(procedureType, salt));
@@ -189,6 +200,6 @@ contract OrganigramClient is ERC2771Recipient {
                 'An entry in parameters is not a valid procedure.'
             );
         }
-        Organ(organ).addEntries(entries);
+        Organ(proceduresRegistry).addEntries(entries);
     }
 }

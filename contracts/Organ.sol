@@ -59,12 +59,12 @@ contract Organ is
     }
 
     function initialize(
-        address[] memory procedures,
-        bytes2[] memory permissions,
+        address[] memory permissionAddresses,
+        bytes2[] memory permissionValues,
         string memory cid,
         address forwarder
     ) external override initializer {
-        organData.init(procedures, permissions, cid);
+        organData.init(permissionAddresses, permissionValues, cid);
         _setTrustedForwarder(forwarder);
     }
 
@@ -178,27 +178,31 @@ contract Organ is
     }
 
     // @TODO : Should be plural.
-    function addProcedure(
-        address procedure,
-        bytes2 permissions
+    function addPermission(
+        address permissionAddress,
+        bytes2 permissionValue
     ) external override {
-        organData.addProcedure(procedure, permissions, _msgSender());
+        organData.addPermission(
+            permissionAddress,
+            permissionValue,
+            _msgSender()
+        );
     }
 
     // @TODO : Should be plural.
-    function removeProcedure(address procedure) external override {
-        organData.removeProcedure(procedure, _msgSender());
+    function removePermission(address permissionAddress) external override {
+        organData.removePermission(permissionAddress, _msgSender());
     }
 
-    function replaceProcedure(
-        address oldProcedure,
-        address newProcedure,
-        bytes2 permissions
+    function replacePermission(
+        address oldPermissionAddress,
+        address newPermissionAddress,
+        bytes2 newPermissionValue
     ) external override {
-        organData.replaceProcedure(
-            oldProcedure,
-            newProcedure,
-            permissions,
+        organData.replacePermission(
+            oldPermissionAddress,
+            newPermissionAddress,
+            newPermissionValue,
             _msgSender()
         );
     }
@@ -213,7 +217,7 @@ contract Organ is
         override
         returns (
             string memory cid,
-            uint256 proceduresLength,
+            uint256 permissionsLength,
             uint256 entriesLength,
             uint256 entriesCount,
             bytes4 interfaceId
@@ -221,7 +225,7 @@ contract Organ is
     {
         return (
             organData.cid,
-            organData.getProceduresLength(),
+            organData.getPermissionsLength(),
             organData.entries.length,
             organData.entriesCount,
             INTERFACE_ID
@@ -240,10 +244,10 @@ contract Organ is
         return organData.getEntry(index);
     }
 
-    function getProcedure(
+    function getPermission(
         uint256 index
     ) external view override returns (address addr, bytes2 perms) {
-        return organData.getProcedure(index);
+        return organData.getPermission(index);
     }
 
     function getPermissions(

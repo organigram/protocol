@@ -23,7 +23,7 @@ const config = {
   //   privateVerification: true
   // },
   networks: {
-    // dev: {
+    // sepolia: {
     //   url: 'http://127.0.0.1:8545',
     //   accounts: {
     //     mnemonic: process.env.MNEMONIC

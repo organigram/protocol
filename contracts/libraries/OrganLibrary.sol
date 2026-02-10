@@ -16,8 +16,8 @@ import '@openzeppelin/contracts/interfaces/IERC1155.sol';
 library OrganLibrary {
     using EnumerableSet for EnumerableSet.AddressSet;
     using CoreLibrary for CoreLibrary.Entry;
-    bytes2 public constant PERMISSION_ADD_PROCEDURES = 0x0001;
-    bytes2 public constant PERMISSION_REMOVE_PROCEDURES = 0x0002;
+    bytes2 public constant PERMISSION_ADD_PERMISSIONS = 0x0001;
+    bytes2 public constant PERMISSION_REMOVE_PERMISSIONS = 0x0002;
     bytes2 public constant PERMISSION_ADD_ENTRIES = 0x0004;
     bytes2 public constant PERMISSION_REMOVE_ENTRIES = 0x0008;
     bytes2 public constant PERMISSION_UPDATE_METADATA = 0x0010;
@@ -207,7 +207,7 @@ library OrganLibrary {
         OrganData storage self,
         address permissionAddress,
         address caller
-    ) public onlyPerm(self, PERMISSION_REMOVE_PROCEDURES, caller) {
+    ) public onlyPerm(self, PERMISSION_REMOVE_PERMISSIONS, caller) {
         // Check address is already there.
         require(
             self.permissionAddresses.contains(permissionAddress),
@@ -226,7 +226,7 @@ library OrganLibrary {
         address caller
     )
         public
-        onlyPerm(self, PERMISSION_ADD_PROCEDURES, caller)
+        onlyPerm(self, PERMISSION_ADD_PERMISSIONS, caller)
         returns (uint256 index)
     {
         // Check new address is not already there.
@@ -252,8 +252,8 @@ library OrganLibrary {
         address caller
     )
         public
-        onlyPerm(self, PERMISSION_REMOVE_PROCEDURES, caller)
-        onlyPerm(self, PERMISSION_ADD_PROCEDURES, caller)
+        onlyPerm(self, PERMISSION_REMOVE_PERMISSIONS, caller)
+        onlyPerm(self, PERMISSION_ADD_PERMISSIONS, caller)
     {
         // Check old address will be removable before adding.
         require(

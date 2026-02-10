@@ -68,7 +68,8 @@ export const deployProtocol = async (): Promise<ProtocolContracts> => {
   const { organigramClient } = await deployAndLoadContract(OrganigramClient, {
     parameters: {
       OrganigramClientModule: {
-        metaGasStationAddress: metaGasStation.address
+        metaGasStationAddress: metaGasStation.address,
+        cloneableOrgan: organ.address
       }
     }
   })
@@ -84,6 +85,10 @@ export const deployProtocol = async (): Promise<ProtocolContracts> => {
     proceduresRegistryAddress as `0x${string}`
   )
   console.info(`Procedures registry deployed at: ${proceduresRegistryAddress}`)
+
+  const cloneableOrganAddress = await organigramClient.read.organ()
+
+  console.info(`Cloneable Organ deployed at: ${cloneableOrganAddress}`)
 
   let entries: Array<{ addr: string; cid: string; inRegistry?: boolean }> = [
     {

@@ -288,7 +288,7 @@ library ProcedureLibrary {
                     }(self.proposals[proposalKey].operations[i].data);
                     require(
                         success,
-                        'Proposal not applied, underlying transaction reverted.'
+                        'Failed to apply proposal: the underlying transaction reverted.'
                     );
                 } else {
                     // solhint-disable-next-line avoid-low-level-calls
@@ -297,7 +297,7 @@ library ProcedureLibrary {
                     }(self.proposals[proposalKey].operations[i].data);
                     require(
                         success,
-                        'Proposal not applied, underlying transaction reverted.'
+                        'Failed to apply proposal: the underlying transaction reverted.'
                     );
                 }
                 self.proposals[proposalKey].operations[i].processed = true;

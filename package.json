@@ -19,10 +19,11 @@
     "build": "env-cmd --silent pnpm hardhat compile",
     "docs": "node scripts/docs.js",
     "test": "env-cmd --silent pnpm hardhat test",
-    "deploy:protocol": "env-cmd --silent tsx scripts/deploy.ts",
+    "deploy:protocol": "env-cmd --silent pnpm clean && tsx scripts/deploy.ts && pnpm format",
+    "format": "env-cmd --silent tsx scripts/format.ts",
     "anvil": "env-cmd --silent node scripts/anvil.js",
     "hardhat:node": "pnpm hardhat node",
-    "hardhat:clean": "env-cmd --silent pnpm hardhat clean && pnpm build"
+    "clean": "env-cmd --silent pnpm hardhat clean && pnpm build"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0"

@@ -1,13 +1,13 @@
 {
-  "CoreLibraryModule#CoreLibrary": "0xbe556458D3d3845b9263A2d26dE86D70aECD0BD2",
-  "OrganLibraryModule#OrganLibrary": "0x156d75A1d198c49A9085d289403CE41da45fA48d",
-  "ProcedureLibraryModule#ProcedureLibrary": "0x4c59Bc6c9DF262e2bD43C2f45f2C7AE5A4378AA1",
-  "AssetModule#Asset": "0xfEAA270F5b3681d5abA4B3a84f110C5d6bF27777",
-  "OrganModule#Organ": "0xe651344Feeba2A02ba155CEE0FAFbBc271849C93",
-  "ProcedureModule#ERC20VoteProcedure": "0x2A43fbe25821835b216F9b8D9970289D871D05A9",
-  "ProcedureModule#NominationProcedure": "0xE4DEfC92126f86Bc6b10A8C3929265dfA140D4e4",
-  "ProcedureModule#VoteProcedure": "0x545d024ed16992Df50ce079107B836fC88479853",
-  "MetaGasStation#ERC2771Recipient": "0x4a2Dd8361A068C0DE246D8B31187a1F6189F91B4",
-  "MetaGasStation#MetaGasStation": "0x37537066A637698DC97735791751A0214BCF8783",
-  "OrganigramClientModule#OrganigramClient": "0x565792fA9c4677F7Bb96BBc3fcb468EDE91CE437"
+  "CoreLibraryModule#CoreLibrary": "0x984212098d916A5807B8a8a76184578C927E9234",
+  "OrganLibraryModule#OrganLibrary": "0x4d01d26f94d298F407098129143E688a2dB3880e",
+  "ProcedureLibraryModule#ProcedureLibrary": "0xEC8e05CD77Ff416ddc4f01e2242A9BD8153F3882",
+  "AssetModule#Asset": "0x6Ea4AcE371CE976bD66507ADFFC2770711264424",
+  "OrganModule#Organ": "0xBE63b2d08d981f549Eb8C79a3F482DDdcD2cDe2B",
+  "ProcedureModule#ERC20VoteProcedure": "0x930E8b2C74C568dB4f30fDf64B011Dc49582109b",
+  "ProcedureModule#NominationProcedure": "0x54aE589E95C388692ea1aa5CC2A7Ebe082c66345",
+  "ProcedureModule#VoteProcedure": "0xdAba35e9F5dF3bc7356Ffc9452c9621EDBaC986C",
+  "MetaGasStation#ERC2771Recipient": "0x8796ebF0cEc951d34B82c66AfF7948ce2fFB139f",
+  "MetaGasStation#MetaGasStation": "0xd12fCd082347408314e70F194965e1e2Ee6493bb",
+  "OrganigramClientModule#OrganigramClient": "0x64008ab28DaE2687bcCD2852e0eE297903189487"
 }

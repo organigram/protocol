@@ -205,6 +205,23 @@ export interface IOrgan$Type {
           "type": "string"
         },
         {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "cid",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CoreLibrary.Entry[]",
+          "name": "entries",
+          "type": "tuple[]"
+        },
+        {
           "internalType": "address",
           "name": "trustedForwarder",
           "type": "address"

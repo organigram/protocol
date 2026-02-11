@@ -62,9 +62,10 @@ contract Organ is
         address[] memory permissionAddresses,
         bytes2[] memory permissionValues,
         string memory cid,
+        CoreLibrary.Entry[] memory entries,
         address forwarder
     ) external override initializer {
-        organData.init(permissionAddresses, permissionValues, cid);
+        organData.init(permissionAddresses, permissionValues, cid, entries);
         _setTrustedForwarder(forwarder);
     }
 

@@ -26,6 +26,7 @@ contract OrganigramClient is ERC2771Recipient {
         address[] permissionAddresses;
         bytes2[] permissionValues;
         string cid;
+        CoreLibrary.Entry[] entries;
         bytes32 salt;
     }
     struct DeployProcedureArgs {
@@ -48,13 +49,17 @@ contract OrganigramClient is ERC2771Recipient {
         // Create permissions arguments for the procedures registry organ.
         address[] memory permissionAddresses = new address[](1);
         bytes2[] memory permissionValues = new bytes2[](1);
+
         permissionAddresses[0] = _msgSender(); // Set the sender as default admin...
         permissionValues[0] = bytes2(0xffff); // ...with all permissions.
+
+        CoreLibrary.Entry[] memory emptyEntries = new CoreLibrary.Entry[](0);
 
         proceduresRegistry = deployOrgan(
             permissionAddresses,
             permissionValues,
             cid,
+            emptyEntries,
             salt
         );
     }
@@ -63,6 +68,7 @@ contract OrganigramClient is ERC2771Recipient {
         address[] memory _permissionAddresses,
         bytes2[] memory _permissionValues,
         string memory cid,
+        CoreLibrary.Entry[] memory entries,
         bytes32 salt
     ) public returns (address payable clone) {
         require(
@@ -84,6 +90,7 @@ contract OrganigramClient is ERC2771Recipient {
             _permissionAddresses,
             _permissionValues,
             cid,
+            entries,
             trustedForwarder()
         );
         emit organDeployed(clone);
@@ -100,6 +107,7 @@ contract OrganigramClient is ERC2771Recipient {
                 batch[i].permissionAddresses,
                 batch[i].permissionValues,
                 batch[i].cid,
+                batch[i].entries,
                 batch[i].salt
             );
         }

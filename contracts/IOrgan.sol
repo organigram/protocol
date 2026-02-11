@@ -9,6 +9,7 @@ interface IOrgan {
         address[] memory procedures,
         bytes2[] memory permissions,
         string memory cid,
+        CoreLibrary.Entry[] memory entries,
         address trustedForwarder
     ) external;
 

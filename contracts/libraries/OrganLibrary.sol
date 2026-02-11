@@ -91,40 +91,47 @@ library OrganLibrary {
     }
 
     /*
-        Constructor. Takes an optional array of { address, permissionValue } and sets the permissions in the organ:
+        Constructor.
     */
     function init(
         OrganData storage self,
         address[] memory _permissionAddresses,
         bytes2[] memory _permissionValues,
-        string memory cid // address caller
+        string memory cid,
+        CoreLibrary.Entry[] memory entries
     ) public {
-        // Initializing with deployer as admin.
-        // address payable _admin = payable(
-        // defaultAdmin != address(0) ? defaultAdmin : caller
-        // );
+        // Initializing cid.
+        self.cid = cid;
 
-        // self.permissions[_admin] = 0xffff;
-        // self.permissionAddresses.add(_admin);
-        // For each address in permissionAddresses, set the permissions for that address.
+        // Reserve index O for empty Entry.
+        self.entries.push(CoreLibrary.Entry(address(0), string('')));
+
+        // Setting the permissions.
         if (_permissionAddresses.length != _permissionValues.length)
             revert LengthMismatch();
 
         for (uint256 i = 0; i < _permissionAddresses.length; i++) {
             address p = _permissionAddresses[i];
             if (p == address(0)) revert ZeroAddress();
-
-            // add() retourne false si déjà présent
             if (!self.permissionAddresses.add(p)) revert DuplicatePermission(p);
 
             self.permissions[p] = _permissionValues[i];
         }
 
-        // Initializing cid.
-        self.cid = cid;
-
-        // Reserve index O for empty Entry.
-        self.entries.push(CoreLibrary.Entry(address(0), string('')));
+        // Adding entries.
+        for (uint256 i = 0; i < entries.length; i++) {
+            // If the entry has an address, we check that the address has not been used before.
+            if (entries[i].addr != address(0)) {
+                require(
+                    self.addressIndexInEntries[entries[i].addr] == 0,
+                    'Duplicate record.'
+                );
+            }
+            self.entries.push(entries[i]);
+            if (entries[i].addr != address(0)) {
+                self.addressIndexInEntries[entries[i].addr] = self.entries.length - 1;
+            }
+        }
     }
 
     function updateCid(
@@ -265,7 +272,12 @@ library OrganLibrary {
 
         // Check if we are replacing a master with another, or updating permissions.
         if (oldPermissionAddress != newPermissionAddress) {
-            addPermission(self, newPermissionAddress, newPermissionValue, caller);
+            addPermission(
+                self,
+                newPermissionAddress,
+                newPermissionValue,
+                caller
+            );
             removePermission(self, oldPermissionAddress, caller);
         } else {
             // Update permissions.

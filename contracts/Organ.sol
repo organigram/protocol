@@ -10,7 +10,7 @@ import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import '@openzeppelin/contracts/interfaces/IERC721.sol';
 import '@openzeppelin/contracts/interfaces/IERC777.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
-import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
+import {Initializable as InitializableStatic} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/interfaces/IERC777Recipient.sol';
 import '@openzeppelin/contracts/interfaces/IERC777Sender.sol';
 import '@openzeppelin/contracts/interfaces/IERC721Receiver.sol';
@@ -23,7 +23,7 @@ import '@openzeppelin/contracts/interfaces/IERC1155Receiver.sol';
 contract Organ is
     IOrgan,
     ERC165,
-    Initializable,
+    InitializableStatic,
     IERC777Recipient,
     IERC777Sender,
     IERC721Receiver,

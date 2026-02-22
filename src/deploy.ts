@@ -87,8 +87,10 @@ export const deployProtocol = async (): Promise<ProtocolContracts> => {
   console.info(`Procedures registry deployed at: ${proceduresRegistryAddress}`)
 
   const cloneableOrganAddress = await organigramClient.read.organ()
+  const cloneableAssetAddress = await organigramClient.read.asset()
 
   console.info(`Cloneable Organ deployed at: ${cloneableOrganAddress}`)
+  console.info(`Cloneable Asset deployed at: ${cloneableAssetAddress}`)
 
   let entries: Array<{ addr: string; cid: string; inRegistry?: boolean }> = [
     {

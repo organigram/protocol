@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import './Organ.sol';
 import './Asset.sol';
+import './IAsset.sol';
 import './MetaGasStation.sol';
 import './libraries/CoreLibrary.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol';
@@ -13,6 +14,7 @@ import '@openzeppelin/contracts/utils/Address.sol';
 contract OrganigramClient is ERC2771Recipient {
     using CoreLibrary for CoreLibrary.Entry;
     address payable public organ; // Cloneable organ implementation.
+    address payable public asset; // Cloneable asset implementation.
     address payable public proceduresRegistry; // Organ with the addresses of supported procedures implementations.
 
     event organDeployed(address payable organ);
@@ -34,7 +36,6 @@ contract OrganigramClient is ERC2771Recipient {
         bytes data;
         bytes32 salt;
     }
-
     struct DeployAssetArgs {
         string name;
         string symbol;
@@ -45,6 +46,7 @@ contract OrganigramClient is ERC2771Recipient {
     constructor(string memory cid, address trustedForwarder, bytes32 salt) {
         _setTrustedForwarder(trustedForwarder);
         organ = payable(address(new Organ()));
+        asset = payable(address(new Asset()));
 
         // Create permissions arguments for the procedures registry organ.
         address[] memory permissionAddresses = new address[](1);
@@ -120,8 +122,8 @@ contract OrganigramClient is ERC2771Recipient {
         uint256 initialSupply,
         bytes32 salt
     ) public returns (address payable clone) {
-        Asset asset = new Asset(name, symbol, initialSupply);
         clone = payable(Clones.cloneDeterministic(address(asset), salt));
+        IAsset(clone).initialize(name, symbol, _msgSender(), initialSupply);
 
         emit assetDeployed(clone);
         return clone;

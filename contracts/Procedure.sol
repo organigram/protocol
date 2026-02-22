@@ -5,14 +5,19 @@ pragma experimental ABIEncoderV2;
 import './libraries/ProcedureLibrary.sol';
 import './MetaGasStation.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
-import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
+import {Initializable as InitializableStatic} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 
 /*
     A procedure defines a set of operations compiled in a proposal.
     The procedure dictates the way the proposal can be applied.
 */
-contract Procedure is ERC165, Initializable, ReentrancyGuard, ERC2771Recipient {
+contract Procedure is
+    ERC165,
+    InitializableStatic,
+    ReentrancyGuard,
+    ERC2771Recipient
+{
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Operation;
     ProcedureLibrary.ProcedureData internal procedureData;

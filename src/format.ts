@@ -34,7 +34,12 @@ export const formatIgnitionDeployments = async () => {
       formatted.OrganigramClient as `0x${string}`
     )
     const CloneableOrgan = await organigramClient.read.organ()
-    deploymentsJson[networkId] = { ...formatted, CloneableOrgan }
+    const CloneableAsset = await organigramClient.read.asset()
+    deploymentsJson[networkId] = {
+      ...formatted,
+      CloneableOrgan,
+      CloneableAsset
+    }
   }
   // Write the formatted deployments to a new JSON file
   const outputFilePath = path.resolve(__dirname, '../deployments.json')

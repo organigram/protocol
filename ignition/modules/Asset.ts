@@ -1,7 +1,7 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules'
 
 const AssetModule = buildModule('AssetModule', m => {
-  const asset = m.contract('Asset', ['ExampleCoin', 'EXC', 1000000])
+  const asset = m.contract('Asset', [])
 
   return { asset }
 })

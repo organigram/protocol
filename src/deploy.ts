@@ -138,7 +138,7 @@ export const deployProtocol = async (): Promise<ProtocolContracts> => {
   }
 
   console.info()
-  console.info('Organigram Protocol deployed successfully! ✅🚀')
+  console.info('Organigram Protocol is deployed. ✅🚀')
   console.info()
 
   return {

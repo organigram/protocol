@@ -186,7 +186,7 @@ function parseOutputs ({ devDocs, method }) {
       ${e.message}
       `
     )
-    outputs = method.outputs // eslint-disable-line prefer-destructuring
+    outputs = method.outputs
   }
 
   return outputs

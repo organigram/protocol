@@ -11,6 +11,5 @@ if (!clientId) {
 spawnSync(
   'anvil',
   ['--fork-url', `https://11155111.rpc.thirdweb.com/${clientId}`],
-  ['--chain-id', '11155111'],
   { stdio: 'inherit' }
 )

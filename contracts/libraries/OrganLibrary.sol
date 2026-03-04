@@ -8,12 +8,15 @@ pragma experimental ABIEncoderV2;
 */
 
 import './CoreLibrary.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import '@openzeppelin/contracts/interfaces/IERC721.sol';
 import '@openzeppelin/contracts/interfaces/IERC777.sol';
 import '@openzeppelin/contracts/interfaces/IERC1155.sol';
 
 library OrganLibrary {
+    using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.AddressSet;
     using CoreLibrary for CoreLibrary.Entry;
     bytes2 public constant PERMISSION_ADD_PERMISSIONS = 0x0001;
@@ -149,13 +152,13 @@ library OrganLibrary {
     function transferCollectible(
         OrganData storage self,
         address token,
-        address from,
+        address caller,
         address to,
         uint256 tokenId
-    ) public onlyPerm(self, PERMISSION_WITHDRAW_COLLECTIBLES, from) {
+    ) public onlyPerm(self, PERMISSION_WITHDRAW_COLLECTIBLES, caller) {
         // @note Organ must be the owner, approved, or operator of ERC-721.
-        IERC721(token).safeTransferFrom(from, to, tokenId);
-        emit collectibleTransferred(token, to, tokenId);
+        IERC721(token).safeTransferFrom(address(this), to, tokenId);
+        emit collectibleTransferred(caller, to, tokenId);
     }
 
     function receiveCollectible(
@@ -170,13 +173,12 @@ library OrganLibrary {
     function transferCoins(
         OrganData storage self,
         address token,
-        address from,
+        address caller,
         address to,
         uint256 amount
-    ) public onlyPerm(self, PERMISSION_WITHDRAW_COINS, from) {
-        bytes memory data;
-        IERC777(token).send(to, amount, data);
-        emit coinsTransferred(token, from, to, amount);
+    ) public onlyPerm(self, PERMISSION_WITHDRAW_COINS, caller) {
+        IERC20(token).safeTransfer(to, amount);
+        emit coinsTransferred(caller, address(this), to, amount);
     }
 
     function receiveCoins(
@@ -192,11 +194,12 @@ library OrganLibrary {
     function transferEther(
         OrganData storage self,
         address payable to,
-        uint256 value,
+        uint256 amount,
         address from
-    ) public onlyPerm(self, PERMISSION_WITHDRAW_ETHER, from) {
-        to.transfer(value);
-        emit etherTransferred(from, to, value);
+    ) internal onlyPerm(self, PERMISSION_WITHDRAW_ETHER, from) {
+        (bool success, ) = to.call{value: amount}('');
+        require(success, 'Transfer failed.');
+        emit etherTransferred(from, to, amount);
     }
 
     function receiveEther(

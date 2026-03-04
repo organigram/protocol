@@ -31,7 +31,7 @@ const config = {
     //   chainId: 11155111
     // },
     sepolia: {
-      url: process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL,
+      url: process.env.RPC_URL,
       accounts: {
         mnemonic: process.env.MNEMONIC
       },

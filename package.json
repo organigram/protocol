@@ -46,5 +46,6 @@
     "mocha": "^10.7.0",
     "modules": "link:@nomicfoundation/hardhat-ignition/modules",
     "viem": "^2.18.2"
-  }
+  },
+  "gitHead": "c5cdc1e6588185086b0803170f1fa38ad958e2e0"
 }

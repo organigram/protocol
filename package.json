@@ -12,9 +12,6 @@
     "url": "ssh://git@github.com:organigram/organigram.git",
     "directory": "packages/protocol"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@organigram"
-  },
   "scripts": {
     "build": "env-cmd --silent pnpm hardhat compile",
     "docs": "node scripts/docs.js",

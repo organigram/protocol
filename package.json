@@ -12,6 +12,9 @@
     "url": "ssh://git@github.com:organigram/organigram.git",
     "directory": "packages/protocol"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "env-cmd --silent pnpm hardhat compile",
     "docs": "node scripts/docs.js",
@@ -44,5 +47,5 @@
     "modules": "link:@nomicfoundation/hardhat-ignition/modules",
     "viem": "^2.18.2"
   },
-  "gitHead": "c5cdc1e6588185086b0803170f1fa38ad958e2e0"
+  "gitHead": "5aeceb89fcac23a06b21969c01c8bfdd36cea896"
 }

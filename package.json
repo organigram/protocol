@@ -47,5 +47,5 @@
     "modules": "link:@nomicfoundation/hardhat-ignition/modules",
     "viem": "^2.18.2"
   },
-  "gitHead": "5aeceb89fcac23a06b21969c01c8bfdd36cea896"
+  "gitHead": "87e622ea7cfc77a1eed8d8644a1dbcd87c78cdf3"
 }

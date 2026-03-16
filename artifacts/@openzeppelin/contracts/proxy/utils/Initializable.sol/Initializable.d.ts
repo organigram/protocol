@@ -44,11 +44,24 @@ export interface Initializable$Type {
 
 declare module "@nomicfoundation/hardhat-viem/types" {
   export function deployContract(
+    contractName: "Initializable",
+    constructorArgs?: [],
+    config?: DeployContractConfig
+  ): Promise<GetContractReturnType<Initializable$Type["abi"]>>;
+  export function deployContract(
     contractName: "@openzeppelin/contracts/proxy/utils/Initializable.sol:Initializable",
     constructorArgs?: [],
     config?: DeployContractConfig
   ): Promise<GetContractReturnType<Initializable$Type["abi"]>>;
 
+  export function sendDeploymentTransaction(
+    contractName: "Initializable",
+    constructorArgs?: [],
+    config?: SendDeploymentTransactionConfig
+  ): Promise<{
+    contract: GetContractReturnType<Initializable$Type["abi"]>;
+    deploymentTransaction: GetTransactionReturnType;
+  }>;
   export function sendDeploymentTransaction(
     contractName: "@openzeppelin/contracts/proxy/utils/Initializable.sol:Initializable",
     constructorArgs?: [],
@@ -58,6 +71,11 @@ declare module "@nomicfoundation/hardhat-viem/types" {
     deploymentTransaction: GetTransactionReturnType;
   }>;
 
+  export function getContractAt(
+    contractName: "Initializable",
+    address: Address,
+    config?: GetContractAtConfig
+  ): Promise<GetContractReturnType<Initializable$Type["abi"]>>;
   export function getContractAt(
     contractName: "@openzeppelin/contracts/proxy/utils/Initializable.sol:Initializable",
     address: Address,

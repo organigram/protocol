@@ -33,10 +33,10 @@ contract ERC20VoteProcedure is VoteProcedure {
     /// @param _deciders The organ whose entries will be allowed to adopt or refect proposals.
     /// @param _withModeration Whether or not the procedure requires moderation.
     /// @param _trustedForwarder The trusted forwarder contract.
-    /// @param _tokenContract The ERC20 token contract representing the rights to vote.
     /// @param _quorumSize The minimum percentage of votes required to validate a election.
     /// @param _voteDuration Duration of vote in seconds.
     /// @param _majoritySize The minimum percentage of votes required to validate a election.
+    /// @param _tokenContract The ERC20 token contract representing the rights to vote.
     function initialize(
         string memory _metadata,
         address payable _proposers,
@@ -44,10 +44,10 @@ contract ERC20VoteProcedure is VoteProcedure {
         address payable _deciders,
         bool _withModeration,
         address _trustedForwarder,
-        address _tokenContract,
         uint32 _quorumSize,
         uint32 _voteDuration,
-        uint32 _majoritySize
+        uint32 _majoritySize,
+        address _tokenContract
     ) public virtual {
         super.initialize(
             _metadata,

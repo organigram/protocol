@@ -25,7 +25,9 @@ contract VoteProcedure is Procedure {
     /// @notice vote().
     bytes4 private constant _INTERFACE_VOTE = 0xc9d27afe;
     bytes32 private constant VOTE_TYPEHASH =
-        keccak256('Vote(uint256 proposalKey,bool approval,uint256 nonce,uint256 deadline)');
+        keccak256(
+            'Vote(uint256 proposalKey,bool approval,uint256 nonce,uint256 deadline)'
+        );
     mapping(uint256 => Election) internal elections;
     uint32 public quorumSize; // Minimum number of votes.
     uint32 public voteDuration; // Duration of vote in seconds.
@@ -114,11 +116,7 @@ contract VoteProcedure is Procedure {
         _vote(signer, proposalKey, approval);
     }
 
-    function _vote(
-        address voter,
-        uint256 proposalKey,
-        bool approval
-    ) internal {
+    function _vote(address voter, uint256 proposalKey, bool approval) internal {
         require(
             block.timestamp > elections[proposalKey].start,
             'Election not started.'
@@ -219,15 +217,13 @@ contract VoteProcedure is Procedure {
         super.blockProposal(proposalKey, reason);
     }
 
-    /// @notice A veto accepts arguments which defines a motivation as a IPFS multihash.
-    /// @dev Overrides Procedure.adoptProposal.
-    function adoptProposal(
-        uint256 proposalKey
-    ) public override onlyInOrgan(procedureData.moderators) {
+    /// @notice Finalize a vote once the election has ended.
+    /// @dev Anyone can trigger the settlement transaction once voting is over.
+    function applyProposal(uint256 proposalKey) public override nonReentrant {
         if (count(proposalKey)) {
-            super.adoptProposal(proposalKey);
+            super._adoptProposal(proposalKey);
         } else {
-            super.rejectProposal(proposalKey);
+            super._rejectProposal(proposalKey);
         }
     }
 

@@ -18,6 +18,7 @@ import '@openzeppelin/contracts/interfaces/IERC1155.sol';
 library OrganLibrary {
     using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.AddressSet;
+    using EnumerableSet for EnumerableSet.Bytes32Set;
     using CoreLibrary for CoreLibrary.Entry;
     bytes2 public constant PERMISSION_ADD_PERMISSIONS = 0x0001;
     bytes2 public constant PERMISSION_REMOVE_PERMISSIONS = 0x0002;
@@ -30,10 +31,35 @@ library OrganLibrary {
     bytes2 public constant PERMISSION_WITHDRAW_COINS = 0x0100;
     bytes2 public constant PERMISSION_DEPOSIT_COLLECTIBLES = 0x0200;
     bytes2 public constant PERMISSION_WITHDRAW_COLLECTIBLES = 0x0400;
+    bytes2 public constant PERMISSION_EXECUTE_WHITELISTED = 0x0800;
+    bytes2 public constant PERMISSION_MANAGE_EXECUTION_WHITELIST = 0x1000;
 
     /*
         Entries are sets of addresses, contracts or documents.
     */
+    enum ParamConstraintType {
+        NONE,
+        EXACT,
+        RANGE,
+        SELF,
+        WHITELISTED_ADDRESS
+    }
+
+    struct ParamConstraint {
+        uint8 index;
+        ParamConstraintType constraintType;
+        bytes32 minValue;
+        bytes32 maxValue;
+        bytes32 exactValue;
+    }
+
+    struct CallPolicy {
+        address target;
+        bytes4 selector;
+        bool enabled;
+        ParamConstraint[] constraints;
+    }
+
     struct OrganData {
         string cid;
         CoreLibrary.Entry[] entries;
@@ -41,6 +67,9 @@ library OrganLibrary {
         EnumerableSet.AddressSet permissionAddresses;
         mapping(address => bytes2) permissions;
         mapping(address => uint256) addressIndexInEntries;
+        EnumerableSet.Bytes32Set callPolicyKeys;
+        mapping(bytes32 => CallPolicy) callPolicies;
+        mapping(bytes32 => EnumerableSet.AddressSet) callPolicyWhitelistedAddresses;
     }
 
     /*
@@ -72,10 +101,26 @@ library OrganLibrary {
     event etherReceived(address from, uint256 amount);
     event entryAdded(address from, uint256 index, address addr, string cid);
     event entryRemoved(address from, uint256 index);
+    event callPolicySet(address indexed caller, address indexed target, bytes4 indexed selector);
+    event callPolicyRemoved(address indexed caller, address indexed target, bytes4 indexed selector);
+    event callPolicyWhitelistedAddressAdded(bytes32 indexed policyKey, address indexed candidate);
+    event callPolicyWhitelistedAddressRemoved(bytes32 indexed policyKey, address indexed candidate);
+    event whitelistedExecution(
+        address indexed caller,
+        address indexed target,
+        bytes4 indexed selector,
+        uint256 value
+    );
 
     error LengthMismatch();
     error ZeroAddress();
     error DuplicatePermission(address perm);
+    error InvalidTarget();
+    error InvalidSelector();
+    error CallPolicyNotFound(bytes32 policyKey);
+    error InvalidConstraintIndex(uint256 index);
+    error UnsupportedCallDataLength();
+    error ConstraintViolation(uint256 index);
 
     /*
         Modifier.
@@ -137,6 +182,98 @@ library OrganLibrary {
         }
     }
 
+
+    function _callPolicyKey(
+        address target,
+        bytes4 selector
+    ) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(target, selector));
+    }
+
+    function _clearCallPolicyStorage(
+        OrganData storage self,
+        bytes32 policyKey
+    ) internal {
+        delete self.callPolicies[policyKey].constraints;
+        uint256 length = self.callPolicyWhitelistedAddresses[policyKey].length();
+        for (uint256 i = length; i > 0; i--) {
+            address candidate = self.callPolicyWhitelistedAddresses[policyKey].at(i - 1);
+            self.callPolicyWhitelistedAddresses[policyKey].remove(candidate);
+            emit callPolicyWhitelistedAddressRemoved(policyKey, candidate);
+        }
+    }
+
+    function _readWord(
+        bytes calldata data,
+        uint256 index
+    ) internal pure returns (bytes32 word) {
+        uint256 start = 4 + index * 32;
+        if (data.length < start + 32) revert InvalidConstraintIndex(index);
+        assembly {
+            word := calldataload(add(data.offset, start))
+        }
+    }
+
+    function _asAddress(bytes32 word) internal pure returns (address) {
+        return address(uint160(uint256(word)));
+    }
+
+    function _selector(bytes calldata data) internal pure returns (bytes4 selector) {
+        if (data.length < 4) revert UnsupportedCallDataLength();
+        assembly {
+            selector := shr(224, calldataload(data.offset))
+        }
+    }
+
+    function _performCall(
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) internal returns (bytes memory result) {
+        (bool success, bytes memory callResult) = target.call{value: value}(data);
+        if (!success) {
+            assembly {
+                revert(add(callResult, 32), mload(callResult))
+            }
+        }
+        return callResult;
+    }
+
+    function _validateConstraint(
+        OrganData storage self,
+        bytes32 policyKey,
+        ParamConstraint storage constraint,
+        bytes calldata data
+    ) internal view {
+        if (constraint.constraintType == ParamConstraintType.NONE) {
+            return;
+        }
+
+        bytes32 word = _readWord(data, constraint.index);
+        if (constraint.constraintType == ParamConstraintType.EXACT) {
+            if (word != constraint.exactValue) revert ConstraintViolation(constraint.index);
+            return;
+        }
+        if (constraint.constraintType == ParamConstraintType.RANGE) {
+            uint256 value = uint256(word);
+            if (
+                value < uint256(constraint.minValue) ||
+                value > uint256(constraint.maxValue)
+            ) revert ConstraintViolation(constraint.index);
+            return;
+        }
+        if (constraint.constraintType == ParamConstraintType.SELF) {
+            if (_asAddress(word) != address(this)) revert ConstraintViolation(constraint.index);
+            return;
+        }
+        if (constraint.constraintType == ParamConstraintType.WHITELISTED_ADDRESS) {
+            if (!self.callPolicyWhitelistedAddresses[policyKey].contains(_asAddress(word))) {
+                revert ConstraintViolation(constraint.index);
+            }
+            return;
+        }
+    }
+
     function updateCid(
         OrganData storage self,
         string memory cid,
@@ -144,6 +281,68 @@ library OrganLibrary {
     ) public onlyPerm(self, PERMISSION_UPDATE_METADATA, caller) {
         self.cid = cid;
         emit cidUpdated(caller, cid);
+    }
+
+    function setCallPolicy(
+        OrganData storage self,
+        address target,
+        bytes4 selector,
+        ParamConstraint[] memory constraints,
+        address[] memory whitelistedAddresses,
+        address caller
+    ) public onlyPerm(self, PERMISSION_MANAGE_EXECUTION_WHITELIST, caller) {
+        if (target == address(0)) revert InvalidTarget();
+        if (selector == bytes4(0)) revert InvalidSelector();
+        bytes32 policyKey = _callPolicyKey(target, selector);
+        if (!self.callPolicyKeys.contains(policyKey)) {
+            self.callPolicyKeys.add(policyKey);
+        } else {
+            _clearCallPolicyStorage(self, policyKey);
+        }
+        CallPolicy storage policy = self.callPolicies[policyKey];
+        policy.target = target;
+        policy.selector = selector;
+        policy.enabled = true;
+        for (uint256 i = 0; i < constraints.length; i++) {
+            policy.constraints.push(constraints[i]);
+        }
+        for (uint256 i = 0; i < whitelistedAddresses.length; i++) {
+            self.callPolicyWhitelistedAddresses[policyKey].add(whitelistedAddresses[i]);
+            emit callPolicyWhitelistedAddressAdded(policyKey, whitelistedAddresses[i]);
+        }
+        emit callPolicySet(caller, target, selector);
+    }
+
+    function removeCallPolicy(
+        OrganData storage self,
+        address target,
+        bytes4 selector,
+        address caller
+    ) public onlyPerm(self, PERMISSION_MANAGE_EXECUTION_WHITELIST, caller) {
+        bytes32 policyKey = _callPolicyKey(target, selector);
+        if (!self.callPolicyKeys.contains(policyKey)) revert CallPolicyNotFound(policyKey);
+        _clearCallPolicyStorage(self, policyKey);
+        delete self.callPolicies[policyKey];
+        self.callPolicyKeys.remove(policyKey);
+        emit callPolicyRemoved(caller, target, selector);
+    }
+
+    function executeWhitelisted(
+        OrganData storage self,
+        address target,
+        uint256 value,
+        bytes calldata data,
+        address caller
+    ) public onlyPerm(self, PERMISSION_EXECUTE_WHITELISTED, caller) returns (bytes memory result) {
+        bytes4 selector = _selector(data);
+        bytes32 policyKey = _callPolicyKey(target, selector);
+        CallPolicy storage policy = self.callPolicies[policyKey];
+        if (!policy.enabled) revert CallPolicyNotFound(policyKey);
+        for (uint256 i = 0; i < policy.constraints.length; i++) {
+            _validateConstraint(self, policyKey, policy.constraints[i], data);
+        }
+        result = _performCall(target, value, data);
+        emit whitelistedExecution(caller, target, selector, value);
     }
 
     /*

@@ -32,6 +32,7 @@ contract Organ is
 {
     using CoreLibrary for CoreLibrary.Entry;
     using OrganLibrary for OrganLibrary.OrganData;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     // Organ data storage.
     OrganLibrary.OrganData internal organData;
@@ -208,6 +209,44 @@ contract Organ is
         );
     }
 
+    function setCallPolicy(
+        address target,
+        bytes4 selector,
+        IOrgan.ParamConstraintInput[] calldata constraints,
+        address[] calldata whitelistedAddresses
+    ) external override {
+        uint256 constraintsLength = constraints.length;
+        OrganLibrary.ParamConstraint[] memory converted = new OrganLibrary.ParamConstraint[](constraintsLength);
+        for (uint256 i = 0; i < constraintsLength; i++) {
+            converted[i] = OrganLibrary.ParamConstraint({
+                index: constraints[i].index,
+                constraintType: OrganLibrary.ParamConstraintType(uint8(constraints[i].constraintType)),
+                minValue: constraints[i].minValue,
+                maxValue: constraints[i].maxValue,
+                exactValue: constraints[i].exactValue
+            });
+        }
+        organData.setCallPolicy(
+            target,
+            selector,
+            converted,
+            whitelistedAddresses,
+            _msgSender()
+        );
+    }
+
+    function removeCallPolicy(address target, bytes4 selector) external override {
+        organData.removeCallPolicy(target, selector, _msgSender());
+    }
+
+    function executeWhitelisted(
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) external override returns (bytes memory result) {
+        return organData.executeWhitelisted(target, value, data, _msgSender());
+    }
+
     /*
         Accessors.
     */
@@ -255,5 +294,63 @@ contract Organ is
         address addr
     ) external view override returns (bytes2 perms) {
         return organData.permissions[addr];
+    }
+
+    function getCallPolicy(
+        address target,
+        bytes4 selector
+    )
+        external
+        view
+        override
+        returns (
+            bool enabled,
+            uint256 constraintsLength,
+            uint256 whitelistedAddressesLength
+        )
+    {
+        bytes32 policyKey = OrganLibrary._callPolicyKey(target, selector);
+        OrganLibrary.CallPolicy storage policy = organData.callPolicies[policyKey];
+        return (
+            policy.enabled,
+            policy.constraints.length,
+            organData.callPolicyWhitelistedAddresses[policyKey].length()
+        );
+    }
+
+    function getCallPolicyConstraint(
+        address target,
+        bytes4 selector,
+        uint256 index
+    )
+        external
+        view
+        override
+        returns (
+            uint8 paramIndex,
+            IOrgan.ParamConstraintType constraintType,
+            bytes32 minValue,
+            bytes32 maxValue,
+            bytes32 exactValue
+        )
+    {
+        bytes32 policyKey = OrganLibrary._callPolicyKey(target, selector);
+        OrganLibrary.ParamConstraint storage constraint = organData.callPolicies[policyKey].constraints[index];
+        return (
+            constraint.index,
+            IOrgan.ParamConstraintType(uint8(constraint.constraintType)),
+            constraint.minValue,
+            constraint.maxValue,
+            constraint.exactValue
+        );
+    }
+
+    function isCallPolicyWhitelistedAddress(
+        address target,
+        bytes4 selector,
+        address candidate
+    ) external view override returns (bool) {
+        bytes32 policyKey = OrganLibrary._callPolicyKey(target, selector);
+        return organData.callPolicyWhitelistedAddresses[policyKey].contains(candidate);
     }
 }

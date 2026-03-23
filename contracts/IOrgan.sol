@@ -5,6 +5,23 @@ pragma experimental ABIEncoderV2;
 import './libraries/CoreLibrary.sol';
 
 interface IOrgan {
+
+
+    enum ParamConstraintType {
+        NONE,
+        EXACT,
+        RANGE,
+        SELF,
+        WHITELISTED_ADDRESS
+    }
+
+    struct ParamConstraintInput {
+        uint8 index;
+        ParamConstraintType constraintType;
+        bytes32 minValue;
+        bytes32 maxValue;
+        bytes32 exactValue;
+    }
     function initialize(
         address[] memory procedures,
         bytes2[] memory permissions,
@@ -39,6 +56,21 @@ interface IOrgan {
         bytes2 newPermissionValue
     ) external;
 
+    function setCallPolicy(
+        address target,
+        bytes4 selector,
+        ParamConstraintInput[] calldata constraints,
+        address[] calldata whitelistedAddresses
+    ) external;
+
+    function removeCallPolicy(address target, bytes4 selector) external;
+
+    function executeWhitelisted(
+        address target,
+        uint256 value,
+        bytes calldata data
+    ) external returns (bytes memory result);
+
     function getOrgan()
         external
         view
@@ -63,4 +95,37 @@ interface IOrgan {
     ) external view returns (address addr, bytes2 perms);
 
     function getPermissions(address addr) external view returns (bytes2 perms);
+
+    function getCallPolicy(
+        address target,
+        bytes4 selector
+    )
+        external
+        view
+        returns (
+            bool enabled,
+            uint256 constraintsLength,
+            uint256 whitelistedAddressesLength
+        );
+
+    function getCallPolicyConstraint(
+        address target,
+        bytes4 selector,
+        uint256 index
+    )
+        external
+        view
+        returns (
+            uint8 paramIndex,
+            ParamConstraintType constraintType,
+            bytes32 minValue,
+            bytes32 maxValue,
+            bytes32 exactValue
+        );
+
+    function isCallPolicyWhitelistedAddress(
+        address target,
+        bytes4 selector,
+        address candidate
+    ) external view returns (bool);
 }

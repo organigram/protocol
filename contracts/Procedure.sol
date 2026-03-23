@@ -5,6 +5,8 @@ pragma experimental ABIEncoderV2;
 import './libraries/ProcedureLibrary.sol';
 import './MetaGasStation.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
+import '@openzeppelin/contracts/utils/cryptography/EIP712.sol';
 import {Initializable as InitializableStatic} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 
@@ -16,12 +18,17 @@ contract Procedure is
     ERC165,
     InitializableStatic,
     ReentrancyGuard,
-    ERC2771Recipient
+    ERC2771Recipient,
+    EIP712
 {
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Operation;
     ProcedureLibrary.ProcedureData internal procedureData;
     bytes4 public constant INTERFACE_ID = 0x71dbd330;
+    bytes32 internal constant OPERATION_TYPEHASH =
+        keccak256('Operation(uint256 index,address target,bytes data,uint256 value)');
+    bytes32 internal constant PROPOSAL_TYPEHASH =
+        keccak256('Proposal(string cid,bytes32 operationsHash,uint256 nonce,uint256 deadline)');
 
     /**
         Modifiers.
@@ -45,7 +52,7 @@ contract Procedure is
     /**
         Procedure constructor.
     */
-    constructor() {
+    constructor() EIP712('Organigram Procedure', '1') {
         _disableInitializers();
     }
 
@@ -96,7 +103,32 @@ contract Procedure is
         string memory cid,
         ProcedureLibrary.Operation[] memory operations
     ) public virtual returns (uint256 proposalKey) {
-        return procedureData.propose(cid, operations, _msgSender());
+        return _propose(cid, operations, _msgSender());
+    }
+
+    function proposeBySig(
+        string calldata cid,
+        ProcedureLibrary.Operation[] calldata operations,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) public virtual returns (uint256 proposalKey) {
+        bytes32 operationsHash = _hashOperations(operations);
+        address signer = _recoverTypedSigner(
+            keccak256(
+                abi.encode(
+                    PROPOSAL_TYPEHASH,
+                    keccak256(bytes(cid)),
+                    operationsHash,
+                    nonce,
+                    deadline
+                )
+            ),
+            nonce,
+            deadline,
+            signature
+        );
+        return _propose(cid, operations, signer);
     }
 
     /// @notice The procedure can override this method.
@@ -158,5 +190,54 @@ contract Procedure is
         uint256 proposalKey
     ) public view returns (ProcedureLibrary.Proposal memory) {
         return procedureData.proposals[proposalKey];
+    }
+
+    function getNonce(address account) public view returns (uint256) {
+        return procedureData.nonces[account];
+    }
+
+    function _propose(
+        string memory cid,
+        ProcedureLibrary.Operation[] memory operations,
+        address caller
+    ) internal virtual returns (uint256 proposalKey) {
+        return procedureData.propose(cid, operations, caller);
+    }
+
+    function _recoverTypedSigner(
+        bytes32 structHash,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) internal returns (address signer) {
+        require(deadline >= block.timestamp, 'Signature expired');
+        signer = ECDSA.recover(_hashTypedDataV4(structHash), signature);
+        require(procedureData.nonces[signer] == nonce, 'Invalid nonce');
+        procedureData.nonces[signer] = nonce + 1;
+    }
+
+    function _hashOperation(
+        ProcedureLibrary.Operation memory operation
+    ) internal pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    OPERATION_TYPEHASH,
+                    operation.index,
+                    operation.target,
+                    keccak256(operation.data),
+                    operation.value
+                )
+            );
+    }
+
+    function _hashOperations(
+        ProcedureLibrary.Operation[] calldata operations
+    ) internal pure returns (bytes32) {
+        bytes32[] memory operationHashes = new bytes32[](operations.length);
+        for (uint256 i = 0; i < operations.length; i++) {
+            operationHashes[i] = _hashOperation(operations[i]);
+        }
+        return keccak256(abi.encodePacked(operationHashes));
     }
 }

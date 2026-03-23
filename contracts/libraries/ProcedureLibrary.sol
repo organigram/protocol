@@ -22,6 +22,7 @@ library ProcedureLibrary {
         address payable moderators;
         address payable deciders;
         address payable admin;
+        mapping(address => uint256) nonces;
         mapping(uint256 => Proposal) proposals;
         uint256 proposalsLength;
         bool withModeration;

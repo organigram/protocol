@@ -24,6 +24,8 @@ contract VoteProcedure is Procedure {
     using ProcedureLibrary for ProcedureLibrary.Operation;
     /// @notice vote().
     bytes4 private constant _INTERFACE_VOTE = 0xc9d27afe;
+    bytes32 private constant VOTE_TYPEHASH =
+        keccak256('Vote(uint256 proposalKey,bool approval,uint256 nonce,uint256 deadline)');
     mapping(uint256 => Election) internal elections;
     uint32 public quorumSize; // Minimum number of votes.
     uint32 public voteDuration; // Duration of vote in seconds.
@@ -81,6 +83,42 @@ contract VoteProcedure is Procedure {
         uint256 proposalKey,
         bool approval
     ) public onlyInOrgan(procedureData.deciders) {
+        _vote(_msgSender(), proposalKey, approval);
+    }
+
+    function voteBySig(
+        uint256 proposalKey,
+        bool approval,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) public {
+        address signer = _recoverTypedSigner(
+            keccak256(
+                abi.encode(
+                    VOTE_TYPEHASH,
+                    proposalKey,
+                    approval,
+                    nonce,
+                    deadline
+                )
+            ),
+            nonce,
+            deadline,
+            signature
+        );
+        require(
+            ProcedureLibrary.isInOrgan(procedureData.deciders, signer),
+            'Not authorized'
+        );
+        _vote(signer, proposalKey, approval);
+    }
+
+    function _vote(
+        address voter,
+        uint256 proposalKey,
+        bool approval
+    ) internal {
         require(
             block.timestamp > elections[proposalKey].start,
             'Election not started.'
@@ -90,21 +128,23 @@ contract VoteProcedure is Procedure {
             'Election ended.'
         );
         require(
-            !elections[proposalKey].votes[_msgSender()].voted,
+            !elections[proposalKey].votes[voter].voted,
             'Duplicate record.'
         );
-        elections[proposalKey].votes[_msgSender()] = Vote({
+        elections[proposalKey].votes[voter] = Vote({
             voted: true,
             approved: approval
         });
-        elections[proposalKey].voters.push(_msgSender());
+        elections[proposalKey].voters.push(voter);
         elections[proposalKey].votesCount++;
     }
 
     /// @notice Count votes when election is ended.
     /// @dev @todo Handle delegation of Votes.
     /// @return approved True if the proposal is adopted.
-    function count(uint256 proposalKey) public view returns (bool approved) {
+    function count(
+        uint256 proposalKey
+    ) public view virtual returns (bool approved) {
         require(elections[proposalKey].start > 0, 'No election.');
         require(
             block.timestamp >= (elections[proposalKey].start + voteDuration),

@@ -9,6 +9,8 @@ import '../Procedure.sol';
 contract NominationProcedure is Procedure {
     /// @notice function signature for nominate().
     bytes4 private constant _INTERFACE_NOMINATION = 0xc5f28e49;
+    bytes32 private constant NOMINATION_TYPEHASH =
+        keccak256('Nomination(uint256 proposalKey,uint256 nonce,uint256 deadline)');
 
     /// @notice Register EIP165 interfaces for introspection.
     /// @param interfaceId The interface identifier.
@@ -26,6 +28,31 @@ contract NominationProcedure is Procedure {
     function nominate(
         uint256 proposalKey
     ) public onlyInOrgan(procedureData.deciders) {
+        _nominate(proposalKey, _msgSender());
+    }
+
+    function nominateBySig(
+        uint256 proposalKey,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) public {
+        address signer = _recoverTypedSigner(
+            keccak256(
+                abi.encode(NOMINATION_TYPEHASH, proposalKey, nonce, deadline)
+            ),
+            nonce,
+            deadline,
+            signature
+        );
+        _nominate(proposalKey, signer);
+    }
+
+    function _nominate(uint256 proposalKey, address signer) internal {
+        require(
+            ProcedureLibrary.isInOrgan(procedureData.deciders, signer),
+            'Not authorized'
+        );
         super.adoptProposal(proposalKey);
     }
 }

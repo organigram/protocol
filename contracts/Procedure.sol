@@ -26,9 +26,25 @@ contract Procedure is
     ProcedureLibrary.ProcedureData internal procedureData;
     bytes4 public constant INTERFACE_ID = 0x71dbd330;
     bytes32 internal constant OPERATION_TYPEHASH =
-        keccak256('Operation(uint256 index,address target,bytes data,uint256 value)');
+        keccak256(
+            'Operation(uint256 index,address target,bytes data,uint256 value)'
+        );
     bytes32 internal constant PROPOSAL_TYPEHASH =
-        keccak256('Proposal(string cid,bytes32 operationsHash,uint256 nonce,uint256 deadline)');
+        keccak256(
+            'Proposal(string cid,bytes32 operationsHash,uint256 nonce,uint256 deadline)'
+        );
+    bytes32 internal constant PRESENT_PROPOSAL_TYPEHASH =
+        keccak256(
+            'PresentProposal(uint256 proposalKey,uint256 nonce,uint256 deadline)'
+        );
+    bytes32 internal constant BLOCK_PROPOSAL_TYPEHASH =
+        keccak256(
+            'BlockProposal(uint256 proposalKey,string reason,uint256 nonce,uint256 deadline)'
+        );
+    bytes32 internal constant APPLY_PROPOSAL_TYPEHASH =
+        keccak256(
+            'ApplyProposal(uint256 proposalKey,uint256 nonce,uint256 deadline)'
+        );
 
     /**
         Modifiers.
@@ -103,7 +119,7 @@ contract Procedure is
         string memory cid,
         ProcedureLibrary.Operation[] memory operations
     ) public virtual returns (uint256 proposalKey) {
-        return _propose(cid, operations, _msgSender());
+        return procedureData.propose(cid, operations, _msgSender());
     }
 
     function proposeBySig(
@@ -128,7 +144,7 @@ contract Procedure is
             deadline,
             signature
         );
-        return _propose(cid, operations, signer);
+        return procedureData.propose(cid, operations, signer);
     }
 
     /// @notice The procedure can override this method.
@@ -139,23 +155,91 @@ contract Procedure is
         procedureData.blockProposal(proposalKey, reason, _msgSender());
     }
 
+    function blockProposalBySig(
+        uint256 proposalKey,
+        string calldata reason,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) public virtual {
+        address signer = _recoverTypedSigner(
+            keccak256(
+                abi.encode(
+                    BLOCK_PROPOSAL_TYPEHASH,
+                    proposalKey,
+                    keccak256(bytes(reason)),
+                    nonce,
+                    deadline
+                )
+            ),
+            nonce,
+            deadline,
+            signature
+        );
+        procedureData.blockProposal(proposalKey, reason, signer);
+    }
+
     /// @notice When moderation is enabled, moderators must accept the proposal.
     function presentProposal(uint256 proposalKey) public virtual {
         procedureData.presentProposal(proposalKey, _msgSender());
     }
 
-    /// @notice The procedure calls this method directly to adopt and apply proposal.
-    function adoptProposal(uint256 proposalKey) public virtual nonReentrant {
-        procedureData.adoptProposal(proposalKey);
+    function presentProposalBySig(
+        uint256 proposalKey,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) public virtual {
+        address signer = _recoverTypedSigner(
+            keccak256(
+                abi.encode(
+                    PRESENT_PROPOSAL_TYPEHASH,
+                    proposalKey,
+                    nonce,
+                    deadline
+                )
+            ),
+            nonce,
+            deadline,
+            signature
+        );
+        procedureData.presentProposal(proposalKey, signer);
     }
 
-    /// @notice The procedure calls this method directly to adopt and apply proposal.
-    function rejectProposal(uint256 proposalKey) public virtual nonReentrant {
-        procedureData.rejectProposal(proposalKey);
+    /// @notice The procedure calls this method directly to adopt and apply a proposal.
+    function _adoptProposal(uint256 proposalKey) internal virtual nonReentrant {
+        procedureData._adoptProposal(proposalKey);
+    }
+
+    /// @notice The procedure calls this method directly to reject a proposal.
+    function _rejectProposal(uint256 proposalKey) internal virtual nonReentrant {
+        procedureData._rejectProposal(proposalKey);
     }
 
     /// @notice Apply proposal.
     function applyProposal(uint256 proposalKey) public virtual nonReentrant {
+        procedureData.applyProposal(proposalKey);
+    }
+
+    function applyProposalBySig(
+        uint256 proposalKey,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) public virtual nonReentrant {
+        _recoverTypedSigner(
+            keccak256(
+                abi.encode(
+                    APPLY_PROPOSAL_TYPEHASH,
+                    proposalKey,
+                    nonce,
+                    deadline
+                )
+            ),
+            nonce,
+            deadline,
+            signature
+        );
         procedureData.applyProposal(proposalKey);
     }
 
@@ -194,14 +278,6 @@ contract Procedure is
 
     function getNonce(address account) public view returns (uint256) {
         return procedureData.nonces[account];
-    }
-
-    function _propose(
-        string memory cid,
-        ProcedureLibrary.Operation[] memory operations,
-        address caller
-    ) internal virtual returns (uint256 proposalKey) {
-        return procedureData.propose(cid, operations, caller);
     }
 
     function _recoverTypedSigner(

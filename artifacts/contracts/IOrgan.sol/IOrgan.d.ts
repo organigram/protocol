@@ -64,6 +64,118 @@ export interface IOrgan$Type {
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "executeWhitelisted",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "result",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "getCallPolicy",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "enabled",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "constraintsLength",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "whitelistedAddressesLength",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCallPolicyConstraint",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "paramIndex",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum IOrgan.ParamConstraintType",
+          "name": "constraintType",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "minValue",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "maxValue",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "exactValue",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "index",
           "type": "uint256"
@@ -235,6 +347,53 @@ export interface IOrgan$Type {
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "address",
+          "name": "candidate",
+          "type": "address"
+        }
+      ],
+      "name": "isCallPolicyWhitelistedAddress",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "removeCallPolicy",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256[]",
           "name": "indexes",
           "type": "uint256[]"
@@ -307,6 +466,61 @@ export interface IOrgan$Type {
         }
       ],
       "name": "replacePermission",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "target",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "index",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum IOrgan.ParamConstraintType",
+              "name": "constraintType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "minValue",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "maxValue",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "exactValue",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct IOrgan.ParamConstraintInput[]",
+          "name": "constraints",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "whitelistedAddresses",
+          "type": "address[]"
+        }
+      ],
+      "name": "setCallPolicy",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

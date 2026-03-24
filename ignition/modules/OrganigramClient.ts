@@ -8,8 +8,11 @@ const OrganigramClientModule = buildModule('OrganigramClientModule', m => {
     'metaGasStationAddress',
     '0x0000000000000000000000000000000000000000' // Default value if parameter is not provided
   )
-  const proceduresRegistrySalt = '0x' + crypto.randomBytes(32).toString('hex')
+  const proceduresRegistrySalt =
+    process.env.PROCEDURES_REGISTRY_SALT ||
+    '0x' + crypto.randomBytes(32).toString('hex')
 
+  console.info(`Using procedures registry salt: ${proceduresRegistrySalt}`)
   const organigramClient = m.contract(
     'OrganigramClient',
     ['', metaGasStationAddress, proceduresRegistrySalt],

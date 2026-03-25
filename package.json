@@ -16,34 +16,27 @@
     "access": "public"
   },
   "scripts": {
-    "build": "env-cmd --silent pnpm hardhat compile",
+    "build": "env-cmd --silent forge build",
     "docs": "node scripts/docs.js",
-    "test": "env-cmd --silent pnpm hardhat test",
-    "deploy:protocol": "env-cmd --silent pnpm clean && tsx scripts/deploy.ts && pnpm format",
+    "test": "env-cmd --silent forge test",
+    "deploy:protocol": "env-cmd --silent pnpm clean && pnpm build && tsx scripts/deploy.ts",
     "format": "env-cmd --silent tsx scripts/format.ts",
     "anvil": "env-cmd --silent node scripts/anvil.js",
-    "hardhat:node": "pnpm hardhat node",
-    "clean": "env-cmd --silent pnpm hardhat clean && pnpm build"
+    "clean": "rm -rf out cache_forge broadcast"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0",
     "@openzeppelin/contracts-upgradeable": "^5.4.0"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-chai-matchers": "^2.0.7",
-    "@nomicfoundation/hardhat-ignition": "^0.15.5",
-    "@nomicfoundation/hardhat-ignition-viem": "^0.15.6",
-    "@nomicfoundation/hardhat-viem": "^2.0.5",
     "@openzeppelin/test-environment": "^0.1.9",
-    "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^5.0.0",
     "@types/jest": "^29.5.12",
+    "@types/node": "^20.19.37",
     "bs58": "^6.0.0",
     "chai": "^4.3.4",
     "ganache": "^7.9.2",
-    "hardhat": "^2.22.9",
     "mocha": "^10.7.0",
-    "modules": "link:@nomicfoundation/hardhat-ignition/modules",
     "viem": "^2.18.2"
   },
   "gitHead": "5aeceb89fcac23a06b21969c01c8bfdd36cea896"

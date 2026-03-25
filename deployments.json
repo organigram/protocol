@@ -1,16 +1,13 @@
 {
   "11155111": {
-    "CoreLibrary": "0xa48551723a3589A7f23f73bd3a76F373b40de849",
-    "OrganLibrary": "0x4931a58F21deB19aD9F26c6ce0Bfeb87fAecf68E",
-    "ProcedureLibrary": "0x71459fC5105b4841c338D20CAC82bCDD65dAD600",
-    "Asset": "0x2938EA4DA019303E837138E90AA4046b2FE134EA",
-    "Organ": "0xEC8c93C9D36cA4D1419Dd4C923B55eC035A6A078",
-    "ERC20VoteProcedure": "0x7aD5671ee5fB93AD3D7Bf349D8be053a0BcaeFC8",
-    "NominationProcedure": "0xC44C76A1bE1F76059578A8F885220b6FD4dBCC9a",
-    "VoteProcedure": "0xb53a912154833976d2041C93906377338DCc54a2",
-    "MetaGasStation": "0xDE4dc4015f5F632856ef3FF9D73eb6BA6AEFe873",
-    "OrganigramClient": "0x9c3d9a5674aC34b89916F80Ecc1A3cEd23Ef0203",
-    "CloneableOrgan": "0x0eE38E93616dd538a8952B9DEf830fAaEdB35300",
-    "CloneableAsset": "0xF144db4FE65B73D89E7344Bd617aa99F9ad80f47"
+    "MetaGasStation": "0x1534fe91833e7e176dc78a69924d70ce92a80a18",
+    "Asset": "0x0ece582a46c2c9f8434e2c78a26671a330008e73",
+    "Organ": "0xd504dc1551636ffec79c4781f1c49a2af96400a1",
+    "NominationProcedure": "0xec127c2c3dec2d16af32e801ca23e1852b8147c8",
+    "VoteProcedure": "0x439470f78a388a25752f3d8c17b9d3cc4ff46dcd",
+    "ERC20VoteProcedure": "0x375e37e86f07e56640f88d13c83a58a8ff046cb4",
+    "OrganigramClient": "0x7fd8fe451e2f5b3135067caa073749bdeb278d9b",
+    "CloneableOrgan": "0x0b64B1D161feDcbA0Ef5B8aAcB8b07B47AA73768",
+    "CloneableAsset": "0x7bA2C906A1678FF2452eEd6C65C162728C5230B7"
   }
 }

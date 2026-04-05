@@ -17,8 +17,6 @@ Install the NPM package with:
 ```bash
 # npm:
 npm install @organigram/protocol
-# yarn:
-yarn add @organigram/protocol
 # pnpm: 
 pnpm add @organigram/protocol
 ```

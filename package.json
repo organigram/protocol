@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "env-cmd --silent forge build",
-    "docs": "env-cmd --silent tsx scripts/docs.ts",
+    "docs:generate": "env-cmd --silent tsx scripts/docs.ts",
     "test": "env-cmd --silent forge test",
     "deploy:protocol": "env-cmd --silent pnpm clean && pnpm build && tsx scripts/deploy.ts",
     "format": "env-cmd --silent tsx scripts/format.ts",

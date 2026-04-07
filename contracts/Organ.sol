@@ -59,6 +59,7 @@ contract Organ is
             super.supportsInterface(interfaceId);
     }
 
+    /// @inheritdoc IOrgan
     function initialize(
         address[] memory permissionAddresses,
         bytes2[] memory permissionValues,
@@ -154,6 +155,7 @@ contract Organ is
         return this.onERC1155BatchReceived.selector;
     }
 
+    /// @inheritdoc IOrgan
     function updateCid(string calldata cid) external override {
         organData.updateCid(cid, _msgSender());
     }
@@ -162,16 +164,19 @@ contract Organ is
         API for Procedure contract.
     */
 
+    /// @inheritdoc IOrgan
     function addEntries(
         CoreLibrary.Entry[] memory entries
     ) external override returns (uint256[] memory indexes) {
         return organData.addEntries(entries, _msgSender());
     }
 
+    /// @inheritdoc IOrgan
     function removeEntries(uint256[] memory indexes) external override {
         organData.removeEntries(indexes, _msgSender());
     }
 
+    /// @inheritdoc IOrgan
     function replaceEntry(
         uint256 index,
         CoreLibrary.Entry memory entry
@@ -180,6 +185,7 @@ contract Organ is
     }
 
     // @TODO : Should be plural.
+    /// @inheritdoc IOrgan
     function addPermission(
         address permissionAddress,
         bytes2 permissionValue
@@ -192,10 +198,12 @@ contract Organ is
     }
 
     // @TODO : Should be plural.
+    /// @inheritdoc IOrgan
     function removePermission(address permissionAddress) external override {
         organData.removePermission(permissionAddress, _msgSender());
     }
 
+    /// @inheritdoc IOrgan
     function replacePermission(
         address oldPermissionAddress,
         address newPermissionAddress,
@@ -209,6 +217,7 @@ contract Organ is
         );
     }
 
+    /// @inheritdoc IOrgan
     function setCallPolicy(
         address target,
         bytes4 selector,
@@ -235,10 +244,12 @@ contract Organ is
         );
     }
 
+    /// @inheritdoc IOrgan
     function removeCallPolicy(address target, bytes4 selector) external override {
         organData.removeCallPolicy(target, selector, _msgSender());
     }
 
+    /// @inheritdoc IOrgan
     function executeWhitelisted(
         address target,
         uint256 value,
@@ -251,6 +262,7 @@ contract Organ is
         Accessors.
     */
 
+    /// @inheritdoc IOrgan
     function getOrgan()
         external
         view
@@ -272,30 +284,35 @@ contract Organ is
         );
     }
 
+    /// @inheritdoc IOrgan
     function getEntryIndexForAddress(
         address addr
     ) external view override returns (uint256 index) {
         return organData.addressIndexInEntries[addr];
     }
 
+    /// @inheritdoc IOrgan
     function getEntry(
         uint256 index
     ) external view override returns (CoreLibrary.Entry memory entry) {
         return organData.getEntry(index);
     }
 
+    /// @inheritdoc IOrgan
     function getPermission(
         uint256 index
     ) external view override returns (address addr, bytes2 perms) {
         return organData.getPermission(index);
     }
 
+    /// @inheritdoc IOrgan
     function getPermissions(
         address addr
     ) external view override returns (bytes2 perms) {
         return organData.permissions[addr];
     }
 
+    /// @inheritdoc IOrgan
     function getCallPolicy(
         address target,
         bytes4 selector
@@ -318,6 +335,7 @@ contract Organ is
         );
     }
 
+    /// @inheritdoc IOrgan
     function getCallPolicyConstraint(
         address target,
         bytes4 selector,
@@ -345,6 +363,7 @@ contract Organ is
         );
     }
 
+    /// @inheritdoc IOrgan
     function isCallPolicyWhitelistedAddress(
         address target,
         bytes4 selector,

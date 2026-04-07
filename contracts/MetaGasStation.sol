@@ -16,12 +16,17 @@ abstract contract ERC2771Recipient is Context {
         _trustedForwarder = forwarder;
     }
 
+    /// @notice Return whether an address is the trusted ERC-2771 forwarder.
+    /// @param forwarder The forwarder address to test.
+    /// @return True if `forwarder` is trusted by this contract.
     function isTrustedForwarder(
         address forwarder
     ) public view virtual returns (bool) {
         return forwarder == _trustedForwarder;
     }
 
+    /// @notice Return the trusted ERC-2771 forwarder used by this contract.
+    /// @return The forwarder allowed to relay signed calls on behalf of users.
     function trustedForwarder() public view virtual returns (address) {
         return _trustedForwarder;
     }

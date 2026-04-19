@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
 import './Organ.sol';
@@ -43,6 +43,10 @@ contract OrganigramClient is ERC2771Recipient {
         bytes32 salt;
     }
 
+    /// @notice Deploy the client contract together with default organ and asset implementations.
+    /// @param cid Metadata CID assigned to the internal procedures registry organ.
+    /// @param trustedForwarder ERC-2771 forwarder trusted by freshly deployed clones.
+    /// @param salt Deterministic salt used to deploy the procedures registry organ.
     constructor(string memory cid, address trustedForwarder, bytes32 salt) {
         _setTrustedForwarder(trustedForwarder);
         organ = payable(address(new Organ()));
@@ -66,6 +70,13 @@ contract OrganigramClient is ERC2771Recipient {
         );
     }
 
+    /// @notice Deploy a single organ clone and initialize it.
+    /// @param _permissionAddresses Addresses receiving permissions on the organ.
+    /// @param _permissionValues Permission bitmasks aligned with `_permissionAddresses`.
+    /// @param cid Metadata CID assigned to the deployed organ.
+    /// @param entries Initial entries stored on the organ.
+    /// @param salt Deterministic clone salt.
+    /// @return clone Address of the deployed organ clone.
     function deployOrgan(
         address[] memory _permissionAddresses,
         bytes2[] memory _permissionValues,
@@ -99,6 +110,9 @@ contract OrganigramClient is ERC2771Recipient {
         return clone;
     }
 
+    /// @notice Deploy several organ clones in one call.
+    /// @param batch Organ deployment payloads.
+    /// @return clones Addresses of the deployed organ clones.
     function deployOrgans(
         DeployOrganArgs[] memory batch
     ) public returns (address payable[] memory clones) {
@@ -116,6 +130,12 @@ contract OrganigramClient is ERC2771Recipient {
         return clones;
     }
 
+    /// @notice Deploy a single asset clone and initialize it as an ERC-20 token.
+    /// @param name Token name.
+    /// @param symbol Token symbol.
+    /// @param initialSupply Initial token supply minted to the caller.
+    /// @param salt Deterministic clone salt.
+    /// @return clone Address of the deployed asset clone.
     function deployAsset(
         string memory name,
         string memory symbol,
@@ -129,6 +149,9 @@ contract OrganigramClient is ERC2771Recipient {
         return clone;
     }
 
+    /// @notice Deploy several asset clones in one call.
+    /// @param batch Asset deployment payloads.
+    /// @return clones Addresses of the deployed asset clones.
     function deployAssets(
         DeployAssetArgs[] memory batch
     ) public returns (address payable[] memory clones) {
@@ -145,6 +168,11 @@ contract OrganigramClient is ERC2771Recipient {
         return clones;
     }
 
+    /// @notice Deploy one procedure clone from a registered procedure implementation.
+    /// @param procedureType Registered procedure implementation to clone.
+    /// @param data Optional initialization calldata executed immediately after deployment.
+    /// @param salt Deterministic clone salt.
+    /// @return procedure Address of the deployed procedure clone.
     function deployProcedure(
         address payable procedureType,
         bytes memory data,
@@ -169,6 +197,9 @@ contract OrganigramClient is ERC2771Recipient {
         return procedure;
     }
 
+    /// @notice Deploy several procedure clones in one call.
+    /// @param batch Procedure deployment payloads.
+    /// @return created Addresses of the deployed procedure clones.
     function deployProcedures(
         DeployProcedureArgs[] memory batch
     ) public returns (address payable[] memory created) {
@@ -184,6 +215,13 @@ contract OrganigramClient is ERC2771Recipient {
         return created;
     }
 
+    /// @notice Deploy a complete organigram in one transaction.
+    /// @param organBatch Organ deployment payloads.
+    /// @param assetBatch Asset deployment payloads.
+    /// @param procedureBatch Procedure deployment payloads.
+    /// @return organsDeployed Addresses of the deployed organs.
+    /// @return assetsDeployed Addresses of the deployed assets.
+    /// @return proceduresDeployed Addresses of the deployed procedures.
     function deployOrganigram(
         DeployOrganArgs[] memory organBatch,
         DeployAssetArgs[] memory assetBatch,
@@ -202,6 +240,8 @@ contract OrganigramClient is ERC2771Recipient {
         return (organsDeployed, assetsDeployed, proceduresDeployed);
     }
 
+    /// @notice Register supported procedure implementations in the procedures registry.
+    /// @param entries Registry entries that point to valid procedure implementations.
     function registerProcedures(CoreLibrary.Entry[] memory entries) external {
         // Only valid procedures
         for (uint256 i; i < entries.length; ++i) {

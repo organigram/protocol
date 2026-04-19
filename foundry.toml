@@ -1,0 +1,18 @@
+[profile.default]
+src = "contracts"
+out = "abi"
+script = "script"
+test = "test"
+libs = ["node_modules", "lib"]
+cache_path = "cache_forge"
+solc = "scripts/solc.sh"
+auto_detect_solc = false
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 10
+
+[fmt]
+line_length = 100
+
+[rpc_endpoints]
+sepolia = "${RPC_URL}"

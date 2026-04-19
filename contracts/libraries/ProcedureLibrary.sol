@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
 import '../IOrgan.sol';
@@ -22,6 +22,7 @@ library ProcedureLibrary {
         address payable moderators;
         address payable deciders;
         address payable admin;
+        mapping(address => uint256) nonces;
         mapping(uint256 => Proposal) proposals;
         uint256 proposalsLength;
         bool withModeration;
@@ -242,7 +243,7 @@ library ProcedureLibrary {
     /// @notice Adopt proposal and attempt to apply it.
     /// @dev Should only be called once by parent contract.
     /// @param proposalKey of proposal.
-    function adoptProposal(
+    function _adoptProposal(
         ProcedureData storage self,
         uint256 proposalKey
     ) internal onlyPresentedProposal(self, proposalKey) {
@@ -250,10 +251,10 @@ library ProcedureLibrary {
         applyProposal(self, proposalKey);
     }
 
-    /// @notice Adopt proposal and attempt to apply it.
+    /// @notice Reject proposal and mark it as applied.
     /// @dev Should only be called once by parent contract.
     /// @param proposalKey of proposal.
-    function rejectProposal(
+    function _rejectProposal(
         ProcedureData storage self,
         uint256 proposalKey
     ) internal onlyPresentedProposal(self, proposalKey) {

@@ -29,14 +29,7 @@
     "@openzeppelin/contracts-upgradeable": "^5.4.0"
   },
   "devDependencies": {
-    "@openzeppelin/test-environment": "^0.1.9",
-    "@types/chai": "^5.0.0",
-    "@types/jest": "^29.5.12",
     "@types/node": "^20.19.37",
-    "bs58": "^6.0.0",
-    "chai": "^4.3.4",
-    "ganache": "^7.9.2",
-    "mocha": "^10.7.0",
     "viem": "^2.18.2"
   },
   "gitHead": "5aeceb89fcac23a06b21969c01c8bfdd36cea896"

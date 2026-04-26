@@ -11,7 +11,7 @@ const resolveSignerArgs = (): string[] => {
   }
 
   if (process.env.MNEMONIC) {
-    return ['--mnemonic', process.env.MNEMONIC]
+    return ['--mnemonics', process.env.MNEMONIC]
   }
 
   return []

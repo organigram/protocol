@@ -8,6 +8,7 @@ const BROADCAST_DIR = path.join(
   'broadcast',
   'DeployProtocol.s.sol'
 )
+const ARTIFACTS_DIR = path.join(PROTOCOL_DIR, 'abi')
 const OUT_FILE = path.join(PROTOCOL_DIR, 'deployments.json')
 
 const readJson = <T>(filePath: string): T =>
@@ -25,8 +26,7 @@ type BroadcastFile = {
 
 const getAbi = (contractName: string) => {
   const artifactPath = path.join(
-    PROTOCOL_DIR,
-    'out',
+    ARTIFACTS_DIR,
     `${contractName}.sol`,
     `${contractName}.json`
   )
@@ -127,7 +127,9 @@ export const formatFoundryDeployments = async () => {
   console.info(`Saved deployment file: ${OUT_FILE}`)
 }
 
-formatFoundryDeployments().catch(error => {
-  console.error(error)
-  process.exitCode = 1
-})
+if (require.main === module) {
+  formatFoundryDeployments().catch(error => {
+    console.error(error)
+    process.exitCode = 1
+  })
+}

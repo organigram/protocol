@@ -13,9 +13,10 @@ import '@openzeppelin/contracts/utils/Address.sol';
 
 contract OrganigramClient is ERC2771Recipient {
     using CoreLibrary for CoreLibrary.Entry;
-    address payable public organ; // Cloneable organ implementation.
-    address payable public asset; // Cloneable asset implementation.
-    address payable public proceduresRegistry; // Organ with the addresses of supported procedures implementations.
+    address payable public immutable organ; // Cloneable organ implementation.
+    address payable public immutable asset; // Cloneable asset implementation.
+    address payable public immutable proceduresRegistry; // Organ with the addresses of supported procedures implementations.
+    address public immutable owner;
 
     event organDeployed(address payable organ);
     event assetDeployed(address payable asset);
@@ -49,15 +50,18 @@ contract OrganigramClient is ERC2771Recipient {
     /// @param salt Deterministic salt used to deploy the procedures registry organ.
     constructor(string memory cid, address trustedForwarder, bytes32 salt) {
         _setTrustedForwarder(trustedForwarder);
+        owner = _msgSender();
         organ = payable(address(new Organ()));
         asset = payable(address(new Asset()));
 
         // Create permissions arguments for the procedures registry organ.
-        address[] memory permissionAddresses = new address[](1);
-        bytes2[] memory permissionValues = new bytes2[](1);
+        address[] memory permissionAddresses = new address[](2);
+        bytes2[] memory permissionValues = new bytes2[](2);
 
-        permissionAddresses[0] = _msgSender(); // Set the sender as default admin...
+        permissionAddresses[0] = owner; // Set the sender as default admin...
         permissionValues[0] = bytes2(0xffff); // ...with all permissions.
+        permissionAddresses[1] = address(this); // Allow controlled registry updates via registerProcedures().
+        permissionValues[1] = bytes2(0x0004); // PERMISSION_ADD_ENTRIES.
 
         CoreLibrary.Entry[] memory emptyEntries = new CoreLibrary.Entry[](0);
 
@@ -178,6 +182,7 @@ contract OrganigramClient is ERC2771Recipient {
         bytes memory data,
         bytes32 salt
     ) public returns (address payable procedure) {
+        require(data.length > 0, 'Missing initialization data.');
         require(
             ERC165Checker.supportsInterface(procedureType, 0x71dbd330),
             'Not a procedure.'
@@ -189,11 +194,8 @@ contract OrganigramClient is ERC2771Recipient {
         );
         procedure = payable(Clones.cloneDeterministic(procedureType, salt));
         emit procedureDeployed(procedureType, procedure);
-        // NB: The initialize method will need to be called immediately
-        // if not through the data parameter.
-        if (data.length > 0) {
-            Address.functionCall(procedure, data);
-        }
+        bytes memory initReturnData = Address.functionCall(procedure, data);
+        require(initReturnData.length == 0, 'Unexpected initialization result.');
         return procedure;
     }
 
@@ -243,6 +245,7 @@ contract OrganigramClient is ERC2771Recipient {
     /// @notice Register supported procedure implementations in the procedures registry.
     /// @param entries Registry entries that point to valid procedure implementations.
     function registerProcedures(CoreLibrary.Entry[] memory entries) external {
+        require(_msgSender() == owner, 'Not authorized.');
         // Only valid procedures
         for (uint256 i; i < entries.length; ++i) {
             require(
@@ -250,6 +253,7 @@ contract OrganigramClient is ERC2771Recipient {
                 'An entry in parameters is not a valid procedure.'
             );
         }
-        Organ(proceduresRegistry).addEntries(entries);
+        uint256[] memory indexes = Organ(proceduresRegistry).addEntries(entries);
+        require(indexes.length == entries.length, 'Registry update failed.');
     }
 }

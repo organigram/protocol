@@ -6,6 +6,7 @@ import './libraries/CoreLibrary.sol';
 import './libraries/OrganLibrary.sol';
 import './MetaGasStation.sol';
 import './IOrgan.sol';
+import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import '@openzeppelin/contracts/interfaces/IERC721.sol';
 import '@openzeppelin/contracts/interfaces/IERC777.sol';
@@ -28,6 +29,7 @@ contract Organ is
     IERC777Sender,
     IERC721Receiver,
     IERC1155Receiver,
+    ReentrancyGuard,
     ERC2771Recipient
 {
     using CoreLibrary for CoreLibrary.Entry;
@@ -77,8 +79,7 @@ contract Organ is
         organData.receiveEther(msg.value, _msgSender());
     }
 
-    // @todo : Protect ether transfers against re-entrancy attacks.
-    function transfer(address payable to, uint256 value) public {
+    function transferEther(address payable to, uint256 value) public nonReentrant {
         organData.transferEther(to, value, _msgSender());
     }
 
@@ -110,7 +111,7 @@ contract Organ is
         address,
         address to,
         uint256 amount
-    ) external {
+    ) external nonReentrant {
         organData.transferCoins(token, _msgSender(), to, amount);
     }
 
@@ -119,7 +120,7 @@ contract Organ is
         address,
         address to,
         uint256 tokenId
-    ) external {
+    ) external nonReentrant {
         organData.transferCollectible(token, _msgSender(), to, tokenId);
     }
 
@@ -254,7 +255,7 @@ contract Organ is
         address target,
         uint256 value,
         bytes calldata data
-    ) external override returns (bytes memory result) {
+    ) external override nonReentrant returns (bytes memory result) {
         return organData.executeWhitelisted(target, value, data, _msgSender());
     }
 
@@ -302,7 +303,8 @@ contract Organ is
     function getPermission(
         uint256 index
     ) external view override returns (address addr, bytes2 perms) {
-        return organData.getPermission(index);
+        (addr, perms) = organData.getPermission(index);
+        return (addr, perms);
     }
 
     /// @inheritdoc IOrgan

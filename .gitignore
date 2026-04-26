@@ -1,9 +1,13 @@
 node_modules
 .env
+/.venv
 
 # Foundry files
 /cache_forge
+/cache_slither
+/cache_slither_cache
 /broadcast
+/abi/*.t.sol/
 
 # solidity-coverage files
 /coverage

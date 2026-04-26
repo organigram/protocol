@@ -121,6 +121,8 @@ library OrganLibrary {
     error InvalidConstraintIndex(uint256 index);
     error UnsupportedCallDataLength();
     error ConstraintViolation(uint256 index);
+    error InvalidEntryIndex(uint256 index);
+    error InvalidEntry();
 
     /*
         Modifier.
@@ -168,6 +170,7 @@ library OrganLibrary {
 
         // Adding entries.
         for (uint256 i = 0; i < entries.length; i++) {
+            _validateEntry(entries[i]);
             // If the entry has an address, we check that the address has not been used before.
             if (entries[i].addr != address(0)) {
                 require(
@@ -179,6 +182,7 @@ library OrganLibrary {
             if (entries[i].addr != address(0)) {
                 self.addressIndexInEntries[entries[i].addr] = self.entries.length - 1;
             }
+            self.entriesCount++;
         }
     }
 
@@ -198,7 +202,8 @@ library OrganLibrary {
         uint256 length = self.callPolicyWhitelistedAddresses[policyKey].length();
         for (uint256 i = length; i > 0; i--) {
             address candidate = self.callPolicyWhitelistedAddresses[policyKey].at(i - 1);
-            self.callPolicyWhitelistedAddresses[policyKey].remove(candidate);
+            bool removed = self.callPolicyWhitelistedAddresses[policyKey].remove(candidate);
+            assert(removed);
             emit callPolicyWhitelistedAddressRemoved(policyKey, candidate);
         }
     }
@@ -225,11 +230,25 @@ library OrganLibrary {
         }
     }
 
+    function _entryExists(
+        OrganData storage self,
+        uint256 index
+    ) internal view returns (bool) {
+        if (index == 0 || index >= self.entries.length) return false;
+        CoreLibrary.Entry storage entry = self.entries[index];
+        return entry.addr != address(0) || bytes(entry.cid).length != 0;
+    }
+
+    function _validateEntry(CoreLibrary.Entry memory entry) internal pure {
+        if (entry.addr == address(0) && bytes(entry.cid).length == 0) revert InvalidEntry();
+    }
+
     function _performCall(
         address target,
         uint256 value,
         bytes calldata data
     ) internal returns (bytes memory result) {
+        // slither-disable-next-line arbitrary-send-eth
         (bool success, bytes memory callResult) = target.call{value: value}(data);
         if (!success) {
             assembly {
@@ -295,7 +314,8 @@ library OrganLibrary {
         if (selector == bytes4(0)) revert InvalidSelector();
         bytes32 policyKey = _callPolicyKey(target, selector);
         if (!self.callPolicyKeys.contains(policyKey)) {
-            self.callPolicyKeys.add(policyKey);
+            bool added = self.callPolicyKeys.add(policyKey);
+            assert(added);
         } else {
             _clearCallPolicyStorage(self, policyKey);
         }
@@ -307,8 +327,9 @@ library OrganLibrary {
             policy.constraints.push(constraints[i]);
         }
         for (uint256 i = 0; i < whitelistedAddresses.length; i++) {
-            self.callPolicyWhitelistedAddresses[policyKey].add(whitelistedAddresses[i]);
-            emit callPolicyWhitelistedAddressAdded(policyKey, whitelistedAddresses[i]);
+            if (self.callPolicyWhitelistedAddresses[policyKey].add(whitelistedAddresses[i])) {
+                emit callPolicyWhitelistedAddressAdded(policyKey, whitelistedAddresses[i]);
+            }
         }
         emit callPolicySet(caller, target, selector);
     }
@@ -323,7 +344,8 @@ library OrganLibrary {
         if (!self.callPolicyKeys.contains(policyKey)) revert CallPolicyNotFound(policyKey);
         _clearCallPolicyStorage(self, policyKey);
         delete self.callPolicies[policyKey];
-        self.callPolicyKeys.remove(policyKey);
+        bool removed = self.callPolicyKeys.remove(policyKey);
+        assert(removed);
         emit callPolicyRemoved(caller, target, selector);
     }
 
@@ -423,7 +445,8 @@ library OrganLibrary {
             'Record not found.'
         );
         // Remove from Procedures set.
-        self.permissionAddresses.remove(permissionAddress);
+        bool removed = self.permissionAddresses.remove(permissionAddress);
+        assert(removed);
         self.permissions[permissionAddress] = bytes2(0);
         emit permissionRemoved(caller, permissionAddress);
     }
@@ -436,8 +459,8 @@ library OrganLibrary {
     )
         public
         onlyPerm(self, PERMISSION_ADD_PERMISSIONS, caller)
-        returns (uint256 index)
     {
+        if (permissionAddress == address(0)) revert ZeroAddress();
         // Check new address is not already there.
         require(
             !self.permissionAddresses.contains(permissionAddress),
@@ -447,10 +470,10 @@ library OrganLibrary {
         require(permissionValue != 0x0000, 'Wrong permissions set.');
 
         // Store permissions.
-        self.permissionAddresses.add(permissionAddress);
+        bool added = self.permissionAddresses.add(permissionAddress);
+        assert(added);
         self.permissions[permissionAddress] = permissionValue;
         emit permissionAdded(caller, permissionAddress, permissionValue);
-        return index;
     }
 
     function replacePermission(
@@ -471,6 +494,7 @@ library OrganLibrary {
         );
         // Check new address has permissions.
         require(newPermissionValue > 0, 'Wrong permissions set.');
+        if (newPermissionAddress == address(0)) revert ZeroAddress();
 
         // Check if we are replacing a master with another, or updating permissions.
         if (oldPermissionAddress != newPermissionAddress) {
@@ -507,6 +531,7 @@ library OrganLibrary {
         indexes = new uint256[](entries.length);
 
         for (uint256 i = 0; i < entries.length; i++) {
+            _validateEntry(entries[i]);
             // If the entry has an address, we check that the address has not been used before.
             if (entries[i].addr != address(0)) {
                 require(
@@ -518,7 +543,9 @@ library OrganLibrary {
             self.entries.push(entries[i]);
             // Registering entry position relative to its address.
             indexes[i] = self.entries.length - 1;
-            self.addressIndexInEntries[entries[i].addr] = indexes[i];
+            if (entries[i].addr != address(0)) {
+                self.addressIndexInEntries[entries[i].addr] = indexes[i];
+            }
             // Incrementing entries counter.
             self.entriesCount++;
             emit entryAdded(
@@ -539,6 +566,7 @@ library OrganLibrary {
         address caller
     ) public onlyPerm(self, PERMISSION_REMOVE_ENTRIES, caller) {
         for (uint256 i = 0; i < indexes.length; i++) {
+            if (!_entryExists(self, indexes[i])) revert InvalidEntryIndex(indexes[i]);
             address addr = self.entries[indexes[i]].addr;
             delete self.entries[indexes[i]];
             self.entriesCount--;
@@ -559,19 +587,29 @@ library OrganLibrary {
         onlyPerm(self, PERMISSION_REMOVE_ENTRIES, caller)
         onlyPerm(self, PERMISSION_ADD_ENTRIES, caller)
     {
-        // Check that the replacing address is not registered.
+        if (!_entryExists(self, index)) revert InvalidEntryIndex(index);
+        _validateEntry(entry);
+
+        address previousAddress = self.entries[index].addr;
+
+        // Check that the replacing address is not already registered elsewhere.
         if (entry.addr != address(0)) {
             require(
-                self.addressIndexInEntries[entry.addr] > 0,
-                'Record not found.'
+                self.addressIndexInEntries[entry.addr] == 0 ||
+                    self.addressIndexInEntries[entry.addr] == index,
+                'Duplicate record.'
             );
         }
-        self.addressIndexInEntries[self.entries[index].addr] = 0;
+        if (previousAddress != address(0)) {
+            self.addressIndexInEntries[previousAddress] = 0;
+        }
         emit entryRemoved(caller, index);
 
         self.entries[index] = entry;
 
-        self.addressIndexInEntries[entry.addr] = index;
+        if (entry.addr != address(0)) {
+            self.addressIndexInEntries[entry.addr] = index;
+        }
         emit entryAdded(caller, index, entry.addr, entry.cid);
     }
 

@@ -3,13 +3,13 @@ pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
 import './Vote.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/interfaces/IERC5805.sol';
 
 /// @title ERC20 Vote Procedure.
 /// @notice An ERC20 Vote Procedure will execute operations based on the decision of a vote. The voter's relative weight in the vote depends on the amount of tokens they own of a certain asset.
 contract ERC20VoteProcedure is VoteProcedure {
-    /// @notice tokenContract is an ERC20 token contract representing the rights to vote.
-    IERC20 public tokenContract;
+    /// @notice tokenContract is an ERC20Votes-compatible token representing the rights to vote.
+    IERC5805 public tokenContract;
 
     /// @notice Prevent using the non-ERC20 initializer inherited from VoteProcedure.
     function initialize(
@@ -49,6 +49,7 @@ contract ERC20VoteProcedure is VoteProcedure {
         uint32 _majoritySize,
         address _tokenContract
     ) public virtual {
+        require(_tokenContract.code.length > 0, 'Invalid token contract.');
         super.initialize(
             _metadata,
             _proposers,
@@ -60,8 +61,16 @@ contract ERC20VoteProcedure is VoteProcedure {
             _voteDuration,
             _majoritySize
         );
-        // @todo : Check if tokenContract implements ERC20.
-        tokenContract = IERC20(_tokenContract);
+        tokenContract = IERC5805(_tokenContract);
+        uint48 currentClock = tokenContract.clock();
+        currentClock;
+    }
+
+    function _startElection(uint256 proposalKey) internal override {
+        super._startElection(proposalKey);
+        uint48 currentClock = tokenContract.clock();
+        require(currentClock > 0, 'Invalid token clock.');
+        elections[proposalKey].snapshot = currentClock - 1;
     }
 
     /// @notice Count votes after election has ended.
@@ -75,40 +84,27 @@ contract ERC20VoteProcedure is VoteProcedure {
             block.timestamp >= (elections[proposalKey].start + voteDuration),
             'Election not ended'
         );
-        if (procedureData.deciders != address(0)) {
-            (, , , uint256 decidersCount, ) = IOrgan(procedureData.deciders)
-                .getOrgan();
-            require(
-                elections[proposalKey].votesCount >
-                    ((quorumSize * decidersCount) / 100000),
-                'Quorum has not been reached'
-            );
-        }
-        uint256 approvals;
-        uint256 objections;
+        uint48 snapshot = elections[proposalKey].snapshot;
+        uint256 approvals = 0;
+        uint256 objections = 0;
         for (uint256 i = 0; i < elections[proposalKey].voters.length; i++) {
-            if (
-                elections[proposalKey]
-                    .votes[elections[proposalKey].voters[i]]
-                    .voted
-            ) {
-                if (
-                    elections[proposalKey]
-                        .votes[elections[proposalKey].voters[i]]
-                        .approved
-                ) {
-                    approvals += tokenContract.balanceOf(
-                        elections[proposalKey].voters[i]
-                    );
+            address voter = elections[proposalKey].voters[i];
+            if (elections[proposalKey].votes[voter].voted) {
+                uint256 weight = tokenContract.getPastVotes(voter, snapshot);
+                if (elections[proposalKey].votes[voter].approved) {
+                    approvals += weight;
                 } else {
-                    objections += tokenContract.balanceOf(
-                        elections[proposalKey].voters[i]
-                    );
+                    objections += weight;
                 }
             }
         }
-        require((approvals + objections) > 0, 'No vote');
+        uint256 votesCast = approvals + objections;
+        require(votesCast > 0, 'No vote');
+        require(
+            votesCast >= ((quorumSize * tokenContract.getPastTotalSupply(snapshot)) / 100000),
+            'Quorum has not been reached'
+        );
         return (approvals >
-            (((approvals + objections) * majoritySize) / 100000));
+            ((votesCast * majoritySize) / 100000));
     }
 }

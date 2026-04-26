@@ -12,6 +12,7 @@ struct Vote {
 struct Election {
     // Map voters' addresses to votes.
     uint256 start;
+    uint48 snapshot;
     mapping(address => Vote) votes;
     address[] voters;
     uint256 votesCount;
@@ -74,6 +75,9 @@ contract VoteProcedure is Procedure {
             _withModeration,
             _trustedForwarder
         );
+        require(_voteDuration > 0, 'Invalid vote duration.');
+        require(_quorumSize <= 100000, 'Invalid quorum size.');
+        require(_majoritySize > 0 && _majoritySize <= 100000, 'Invalid majority size.');
         // Register EIP165 interface for introspection.
         quorumSize = _quorumSize;
         voteDuration = _voteDuration;
@@ -137,6 +141,10 @@ contract VoteProcedure is Procedure {
         elections[proposalKey].votesCount++;
     }
 
+    function _startElection(uint256 proposalKey) internal virtual {
+        elections[proposalKey].start = block.timestamp;
+    }
+
     /// @notice Count votes when election is ended.
     /// @dev @todo Handle delegation of Votes.
     /// @return approved True if the proposal is adopted.
@@ -148,15 +156,14 @@ contract VoteProcedure is Procedure {
             block.timestamp >= (elections[proposalKey].start + voteDuration),
             'Election not ended.'
         );
-        (, , , uint256 decidersCount, ) = IOrgan(procedureData.deciders)
-            .getOrgan();
+        uint256 decidersCount = _getOrganEntriesCount(procedureData.deciders);
         if (
             elections[proposalKey].votesCount <
             ((quorumSize * decidersCount) / 100000)
         ) {
             return false;
         }
-        uint256 approvals;
+        uint256 approvals = 0;
         for (uint256 i = 0; i < elections[proposalKey].voters.length; i++) {
             if (
                 elections[proposalKey]
@@ -173,6 +180,23 @@ contract VoteProcedure is Procedure {
         require(elections[proposalKey].votesCount > 0, 'No vote');
         return (approvals >
             ((elections[proposalKey].votesCount * majoritySize) / 100000));
+    }
+
+    function _getOrganEntriesCount(
+        address payable organAddress
+    ) internal view returns (uint256 entriesCount) {
+        (
+            string memory cid,
+            uint256 permissionsLength,
+            uint256 entriesLength,
+            uint256 activeEntriesCount,
+            bytes4 interfaceId
+        ) = IOrgan(organAddress).getOrgan();
+        cid;
+        permissionsLength;
+        entriesLength;
+        interfaceId;
+        return activeEntriesCount;
     }
 
     /**
@@ -193,7 +217,7 @@ contract VoteProcedure is Procedure {
     {
         proposalKey = super.propose(_cid, _operations);
         if (procedureData.proposals[proposalKey].presented) {
-            elections[proposalKey].start = block.timestamp;
+            _startElection(proposalKey);
         }
         return proposalKey;
     }
@@ -204,7 +228,7 @@ contract VoteProcedure is Procedure {
         uint256 proposalKey
     ) public override onlyInOrgan(procedureData.moderators) {
         super.presentProposal(proposalKey);
-        elections[proposalKey].start = block.timestamp;
+        _startElection(proposalKey);
     }
 
     /// @notice A veto accepts arguments which defines a motivation as a IPFS multihash.
@@ -213,7 +237,7 @@ contract VoteProcedure is Procedure {
         uint256 proposalKey,
         string calldata reason
     ) public override onlyInOrgan(procedureData.moderators) {
-        require(elections[proposalKey].start != 0, 'Election started.');
+        require(elections[proposalKey].start == 0, 'Election already started.');
         super.blockProposal(proposalKey, reason);
     }
 

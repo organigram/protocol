@@ -217,6 +217,7 @@ library ProcedureLibrary {
         string memory reason,
         address caller
     ) public onlyInOrgan(self.moderators, caller) {
+        require(self.withModeration, 'Moderation not enabled.');
         require(!self.proposals[proposalKey].blocked, 'Already blocked.');
         require(!self.proposals[proposalKey].applied, 'Already applied.');
         self.proposals[proposalKey].blocked = true;
@@ -275,11 +276,13 @@ library ProcedureLibrary {
             ++i
         ) {
             if (!self.proposals[proposalKey].operations[i].processed) {
+                self.proposals[proposalKey].operations[i].processed = true;
                 if (
                     self.proposals[proposalKey].operations[i].target !=
                     address(0)
                 ) {
                     // solhint-disable-next-line avoid-low-level-calls
+                    // slither-disable-next-line arbitrary-send-eth
                     (bool success, ) = self
                         .proposals[proposalKey]
                         .operations[i]
@@ -293,7 +296,7 @@ library ProcedureLibrary {
                     );
                 } else {
                     // solhint-disable-next-line avoid-low-level-calls
-                    (bool success, ) = address(msg.sender).call{
+                    (bool success, ) = address(this).call{
                         value: self.proposals[proposalKey].operations[i].value
                     }(self.proposals[proposalKey].operations[i].data);
                     require(
@@ -301,7 +304,6 @@ library ProcedureLibrary {
                         'Failed to apply proposal: the underlying transaction reverted.'
                     );
                 }
-                self.proposals[proposalKey].operations[i].processed = true;
             }
         }
         self.proposals[proposalKey].applied = true;

@@ -1,43 +1,118 @@
 import { formatFoundryDeployments } from './format'
+import {
+  getDeploymentTargets,
+  type DeploymentTarget
+} from './deploymentTargets'
 
 import { spawnSync } from 'child_process'
 import path from 'path'
+import { createPublicClient, http } from 'viem'
 
 const PROTOCOL_DIR = path.resolve(__dirname, '..')
 
-const resolveSignerArgs = (): string[] => {
-  if (process.env.PRIVATE_KEY) {
-    return ['--private-key', process.env.PRIVATE_KEY]
-  }
-
-  if (process.env.MNEMONIC) {
-    return ['--mnemonics', process.env.MNEMONIC]
-  }
-
-  return []
+type DeployProtocolResult = {
+  deploymentTargets: DeploymentTarget[]
+  rpcUrlsByChainId: Record<string, string>
 }
 
-export const deployProtocol = async () => {
-  const signerArgs = resolveSignerArgs()
-  const hasRpc = Boolean(process.env.RPC_URL)
+type DeployProtocolOptions = {
+  networks: string[]
+  resume: boolean
+}
 
+const parseDeployProtocolOptions = (
+  args: string[] = process.argv.slice(2)
+): DeployProtocolOptions => ({
+  networks: args.filter(arg => arg !== '--resume'),
+  resume: args.includes('--resume')
+})
+
+const getEnvValue = (key: string): string | undefined => {
+  const value = process.env[key]?.trim()
+  return value == null || value === '' ? undefined : value
+}
+
+const resolveSignerArgs = (): string[] => {
+  const mnemonic = getEnvValue('MNEMONIC')
+  if (mnemonic != null) {
+    return ['--mnemonics', mnemonic]
+  }
+
+  throw new Error('MNEMONIC is required to deploy the protocol.')
+}
+
+const getForgeArgs = (
+  target: DeploymentTarget,
+  signerArgs: string[],
+  resume: boolean
+): string[] => {
   const args = [
     'script',
     'script/DeployProtocol.s.sol:DeployProtocolScript',
-    '--slow'
+    '--slow',
+    '--rpc-url',
+    target.rpcUrl,
+    '--broadcast',
+    ...signerArgs
   ]
 
-  if (hasRpc) {
-    args.push('--rpc-url', process.env.RPC_URL as string)
+  if (resume) {
+    args.push('--resume')
   }
 
-  if (signerArgs.length > 0 && hasRpc) {
-    args.push('--broadcast', ...signerArgs)
-  } else {
-    console.warn(
-      'RPC_URL or deployer credentials were not provided. Running a local simulation only.'
+  return args
+}
+
+const readChainId = async (target: DeploymentTarget): Promise<string> => {
+  try {
+    const client = createPublicClient({ transport: http(target.rpcUrl) })
+    return (await client.getChainId()).toString()
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error(
+      `Could not read chain id for deployment target "${target.name}": ${message}`
     )
   }
+}
+
+const getDeploymentPlan = async (
+  networks: string[]
+): Promise<DeploymentTarget[]> => {
+  const targets = getDeploymentTargets(networks)
+  const seenChainIds = new Map<string, string>()
+
+  for (const target of targets) {
+    const actualChainId = await readChainId(target)
+    if (target.chainId !== actualChainId) {
+      throw new Error(
+        `Deployment target "${target.name}" was configured as chain ${target.chainId}, but its RPC URL points to chain ${actualChainId}.`
+      )
+    }
+
+    const previousTarget = seenChainIds.get(target.chainId)
+    if (previousTarget != null) {
+      throw new Error(
+        `Deployment targets "${previousTarget}" and "${target.name}" both resolve to chain ${target.chainId}.`
+      )
+    }
+    seenChainIds.set(target.chainId, target.name)
+  }
+
+  return targets
+}
+
+const deployTarget = (
+  target: DeploymentTarget,
+  signerArgs: string[],
+  resume: boolean
+): void => {
+  const args = getForgeArgs(target, signerArgs, resume)
+  const label = `${target.name} (chain ${target.chainId})`
+  const action = resume
+    ? 'Resuming Organigram Protocol deployment'
+    : 'Deploying Organigram Protocol'
+
+  console.info(`${action} to ${label}.`)
 
   const result = spawnSync('forge', args, {
     cwd: PROTOCOL_DIR,
@@ -52,20 +127,26 @@ export const deployProtocol = async () => {
   if (result.status !== 0) {
     throw new Error(`forge script failed with exit code ${result.status}`)
   }
-  return true
+}
+
+export const deployProtocol = async (
+  options: DeployProtocolOptions = parseDeployProtocolOptions()
+): Promise<DeployProtocolResult> => {
+  const signerArgs = resolveSignerArgs()
+  const deploymentTargets = await getDeploymentPlan(options.networks)
+  const rpcUrlsByChainId: Record<string, string> = {}
+
+  for (const target of deploymentTargets) {
+    deployTarget(target, signerArgs, options.resume)
+    rpcUrlsByChainId[target.chainId] = target.rpcUrl
+  }
+
+  return { deploymentTargets, rpcUrlsByChainId }
 }
 
 ;(async () => {
-  const didBroadcast = await deployProtocol()
-
-  if (!didBroadcast) {
-    console.info(
-      'Skipping deployments.json formatting because no broadcast was performed.'
-    )
-    return
-  }
-
-  await formatFoundryDeployments()
+  const { deploymentTargets, rpcUrlsByChainId } = await deployProtocol()
+  await formatFoundryDeployments({ deploymentTargets, rpcUrlsByChainId })
 })().catch((error) => {
   console.error(error)
   process.exitCode = 1

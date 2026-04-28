@@ -94,12 +94,38 @@ Start a Sepolia fork for local development with Anvil:
 pnpm anvil
 ```
 
+### Compile contracts
+
+Compile the contracts with:
+
+```bash
+pnpm build
+```
+
 ### Deploy contracts
 
-- Compile contracts: `pnpm build`
-- Deploy script: `pnpm deploy:protocol`
+Deploy protocol contracts to a list of networks:
 
+```bash
+pnpm deploy:protocol <comma-separated list of network names or chain ids>
+```
+
+Requires a `.env` with `MNEMONIC` and `NEXT_PUBLIC_THIRDWEB_CLIENT_ID`. The deployer account must have enough funds on each target network to cover deployment costs.
+
+For example:
+
+```bash
+pnpm deploy:protocol mainnet,base,11155111
+```
+
+To deploy to the local Anvil fork:
+
+```bash
+pnpm deploy:protocol anvil
+```
+
+The deployment script will also accept an optional `--resume` flag to resume the last run if the deployment has failed.
 
 ## Contributing
 
-We are looking for Solidity developers and testers to keep our contracts secure and up-to-date. Please create issues in our Github page, fork and create Pull-Requests.
+We are looking for Solidity developers and testers to keep our contracts secure and up-to-date. Please create issues in our Github page, fork and create Pull-Requests, or contact us on our [Discord](https://discord.com/invite/gU3g9W4tbt) or at [hello@organigram.ai](mailto:hello@organigram.ai).

@@ -13,6 +13,3 @@ optimizer_runs = 10
 
 [fmt]
 line_length = 100
-
-[rpc_endpoints]
-sepolia = "${RPC_URL}"

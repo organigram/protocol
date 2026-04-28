@@ -20,10 +20,9 @@
     "docs:generate": "env-cmd --silent tsx scripts/docs.ts",
     "test": "env-cmd --silent forge test --offline",
     "analyze:slither": "FOUNDRY_OUT=cache_slither FOUNDRY_CACHE_PATH=cache_slither_cache VIRTUAL_ENV=.venv .venv/bin/slither . --foundry-out-directory cache_slither --filter-paths \"abi|cache_forge|cache_slither|node_modules|test\" --exclude-dependencies --exclude-low --exclude-informational",
-    "deploy:protocol": "env-cmd --silent pnpm clean && pnpm build && tsx scripts/deploy.ts",
+    "deploy:protocol": "env-cmd --silent tsx scripts/deploy.ts",
     "format": "env-cmd --silent tsx scripts/format.ts",
-    "anvil": "env-cmd --silent node scripts/anvil.js",
-    "clean": "rm -rf out cache_forge cache_slither cache_slither_cache broadcast"
+    "anvil": "env-cmd --silent node scripts/anvil.js"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0",

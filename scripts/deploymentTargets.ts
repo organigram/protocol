@@ -60,6 +60,24 @@ const getThirdwebRpcUrl = (
 const isAnvilTarget = (targetName: string): boolean =>
   normalizeLookupKey(targetName) === ANVIL_TARGET_NAME
 
+const getEnvKeySuffix = (value: string): string =>
+  normalizeLookupKey(value).toUpperCase()
+
+const getConfiguredRpcUrl = (
+  targetName: string,
+  chainId: string,
+  env: NodeJS.ProcessEnv
+): string | undefined => {
+  const candidates = [
+    `RPC_URL_${getEnvKeySuffix(chainId)}`,
+    `RPC_URL_${getEnvKeySuffix(targetName)}`
+  ]
+
+  return candidates
+    .map(key => env[key]?.trim())
+    .find(value => value != null && value !== '')
+}
+
 export const getDeploymentTargets = (
   networks: string | string[],
   env: NodeJS.ProcessEnv = process.env
@@ -101,7 +119,8 @@ export const getDeploymentTargets = (
     return {
       name,
       chainId,
-      rpcUrl: getThirdwebRpcUrl(chainId, env)
+      rpcUrl:
+        getConfiguredRpcUrl(name, chainId, env) ?? getThirdwebRpcUrl(chainId, env)
     }
   })
 }

@@ -124,6 +124,8 @@ To deploy to the local Anvil fork:
 pnpm deploy:protocol anvil
 ```
 
+By default, network RPC URLs are built from Thirdweb. You can override a specific network with `RPC_URL_<chain id>`, or `RPC_URL_<network name>`, for example `RPC_URL_11155111`.
+
 The deployment script will also accept an optional `--resume` flag to resume the last run if the deployment has failed.
 
 ## Contributing

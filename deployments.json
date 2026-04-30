@@ -1,4 +1,136 @@
 {
+  "1": {
+    "MetaGasStation": "0x965a4589772b6b6d688c0c9b87e98089470f3fb1",
+    "Asset": "0x93517e453c101d7957a245687788d635bf94e843",
+    "Organ": "0xb61a63893b10c051ae3ab63117bf27eab06e967c",
+    "NominationProcedure": "0xd04d51068dbaba090824cda37fd6fb5cd77cc45b",
+    "VoteProcedure": "0x76226d1c10499db608f6c9d2079862ac208f83b4",
+    "ERC20VoteProcedure": "0x41d28ef5972d570a5bd551deb56df4958bfdabcc",
+    "OrganigramClient": "0x46b2b5c6a0ce9c3953f25219d34b74f6858b0a27",
+    "CloneableOrgan": "0xD716674c927A774d550a606AC4Fcb48A51eC1555",
+    "CloneableAsset": "0x0c10d620a295d450903d33E63a7b2F89B3F89cE2"
+  },
+  "10": {
+    "MetaGasStation": "0x7ca4fb3551fa4220872f279878055e088787bfe8",
+    "Asset": "0x965a4589772b6b6d688c0c9b87e98089470f3fb1",
+    "Organ": "0x93517e453c101d7957a245687788d635bf94e843",
+    "NominationProcedure": "0xb61a63893b10c051ae3ab63117bf27eab06e967c",
+    "VoteProcedure": "0xd04d51068dbaba090824cda37fd6fb5cd77cc45b",
+    "ERC20VoteProcedure": "0x76226d1c10499db608f6c9d2079862ac208f83b4",
+    "OrganigramClient": "0x41d28ef5972d570a5bd551deb56df4958bfdabcc",
+    "CloneableOrgan": "0x4921D2c87a34D58E8e5CDaeDF3cF540F28d28AE2",
+    "CloneableAsset": "0x0460Cd2801eD3211CD2b8bcee92373adbA9F83CC"
+  },
+  "56": {
+    "MetaGasStation": "0x7ca4fb3551fa4220872f279878055e088787bfe8",
+    "Asset": "0x965a4589772b6b6d688c0c9b87e98089470f3fb1",
+    "Organ": "0x93517e453c101d7957a245687788d635bf94e843",
+    "NominationProcedure": "0xb61a63893b10c051ae3ab63117bf27eab06e967c",
+    "VoteProcedure": "0xd04d51068dbaba090824cda37fd6fb5cd77cc45b",
+    "ERC20VoteProcedure": "0x76226d1c10499db608f6c9d2079862ac208f83b4",
+    "OrganigramClient": "0x41d28ef5972d570a5bd551deb56df4958bfdabcc",
+    "CloneableOrgan": "0x4921D2c87a34D58E8e5CDaeDF3cF540F28d28AE2",
+    "CloneableAsset": "0x0460Cd2801eD3211CD2b8bcee92373adbA9F83CC"
+  },
+  "97": {
+    "MetaGasStation": "0x2b850becf0d9f3344f191130afe659c34b9abd60",
+    "Asset": "0xc1ea13ec9d2a06b385d6e46a1de3bc60eeb83a63",
+    "Organ": "0xa4916235ada11380f6345015fd43fb31bae81c8b",
+    "NominationProcedure": "0x593ed1a2258f25f101abff6a8c0643948fd0f7da",
+    "VoteProcedure": "0x74b8137d4b980595a2308fe75cde4a61848ca06d",
+    "ERC20VoteProcedure": "0x88c92366099ed5c272452a5d192e929579073326",
+    "OrganigramClient": "0x9a8d6997c3a463fc36481e15c0428b90d8df1031",
+    "CloneableOrgan": "0x26C92B37e79fAab01EDCD2Ca6e8b0E2246001E86",
+    "CloneableAsset": "0xD1E578827559478F6bEe954adE4c638D26B8E19f"
+  },
+  "137": {
+    "MetaGasStation": "0x7ca4fb3551fa4220872f279878055e088787bfe8",
+    "Asset": "0x965a4589772b6b6d688c0c9b87e98089470f3fb1",
+    "Organ": "0x93517e453c101d7957a245687788d635bf94e843",
+    "NominationProcedure": "0xb61a63893b10c051ae3ab63117bf27eab06e967c",
+    "VoteProcedure": "0xd04d51068dbaba090824cda37fd6fb5cd77cc45b",
+    "ERC20VoteProcedure": "0x76226d1c10499db608f6c9d2079862ac208f83b4",
+    "OrganigramClient": "0x41d28ef5972d570a5bd551deb56df4958bfdabcc",
+    "CloneableOrgan": "0x4921D2c87a34D58E8e5CDaeDF3cF540F28d28AE2",
+    "CloneableAsset": "0x0460Cd2801eD3211CD2b8bcee92373adbA9F83CC"
+  },
+  "8453": {
+    "MetaGasStation": "0x7ca4fb3551fa4220872f279878055e088787bfe8",
+    "Asset": "0x965a4589772b6b6d688c0c9b87e98089470f3fb1",
+    "Organ": "0x93517e453c101d7957a245687788d635bf94e843",
+    "NominationProcedure": "0xb61a63893b10c051ae3ab63117bf27eab06e967c",
+    "VoteProcedure": "0xd04d51068dbaba090824cda37fd6fb5cd77cc45b",
+    "ERC20VoteProcedure": "0x76226d1c10499db608f6c9d2079862ac208f83b4",
+    "OrganigramClient": "0x41d28ef5972d570a5bd551deb56df4958bfdabcc",
+    "CloneableOrgan": "0x4921D2c87a34D58E8e5CDaeDF3cF540F28d28AE2",
+    "CloneableAsset": "0x0460Cd2801eD3211CD2b8bcee92373adbA9F83CC"
+  },
+  "31337": {
+    "MetaGasStation": "0xbfd12fc102e29bba315bc76ec28000f1d42bb5b9",
+    "Asset": "0x22e1d0b53682a627a60dc8798cd1bbc0d1034180",
+    "Organ": "0x85360b09aba81e52cb8a7abf05feed33cbdc9282",
+    "NominationProcedure": "0xc51338b8ceea876b90a1f5eb30d7ceb69aa7db10",
+    "VoteProcedure": "0xfdd0694e77f46d6c0f33f73dd9a5fd13e20669d4",
+    "ERC20VoteProcedure": "0x3ba27579a17fd7743ff40d6f0f69d9e4c5d37b6a",
+    "OrganigramClient": "0x08f124d17f483d8981c719f0a1adf32258de7fea",
+    "CloneableOrgan": "0x1FF5d71D5daf38F88d3db589238f751149863782",
+    "CloneableAsset": "0xe839D45a301F12F0951AE499d99B538A263372C1"
+  },
+  "42161": {
+    "MetaGasStation": "0x7ca4fb3551fa4220872f279878055e088787bfe8",
+    "Asset": "0x965a4589772b6b6d688c0c9b87e98089470f3fb1",
+    "Organ": "0x93517e453c101d7957a245687788d635bf94e843",
+    "NominationProcedure": "0xb61a63893b10c051ae3ab63117bf27eab06e967c",
+    "VoteProcedure": "0xd04d51068dbaba090824cda37fd6fb5cd77cc45b",
+    "ERC20VoteProcedure": "0x76226d1c10499db608f6c9d2079862ac208f83b4",
+    "OrganigramClient": "0x41d28ef5972d570a5bd551deb56df4958bfdabcc",
+    "CloneableOrgan": "0x4921D2c87a34D58E8e5CDaeDF3cF540F28d28AE2",
+    "CloneableAsset": "0x0460Cd2801eD3211CD2b8bcee92373adbA9F83CC"
+  },
+  "43113": {
+    "MetaGasStation": "0x2b850becf0d9f3344f191130afe659c34b9abd60",
+    "Asset": "0xc1ea13ec9d2a06b385d6e46a1de3bc60eeb83a63",
+    "Organ": "0xa4916235ada11380f6345015fd43fb31bae81c8b",
+    "NominationProcedure": "0x593ed1a2258f25f101abff6a8c0643948fd0f7da",
+    "VoteProcedure": "0x74b8137d4b980595a2308fe75cde4a61848ca06d",
+    "ERC20VoteProcedure": "0x88c92366099ed5c272452a5d192e929579073326",
+    "OrganigramClient": "0x9a8d6997c3a463fc36481e15c0428b90d8df1031",
+    "CloneableOrgan": "0x26C92B37e79fAab01EDCD2Ca6e8b0E2246001E86",
+    "CloneableAsset": "0xD1E578827559478F6bEe954adE4c638D26B8E19f"
+  },
+  "43114": {
+    "MetaGasStation": "0x7ca4fb3551fa4220872f279878055e088787bfe8",
+    "Asset": "0x965a4589772b6b6d688c0c9b87e98089470f3fb1",
+    "Organ": "0x93517e453c101d7957a245687788d635bf94e843",
+    "NominationProcedure": "0xb61a63893b10c051ae3ab63117bf27eab06e967c",
+    "VoteProcedure": "0xd04d51068dbaba090824cda37fd6fb5cd77cc45b",
+    "ERC20VoteProcedure": "0x76226d1c10499db608f6c9d2079862ac208f83b4",
+    "OrganigramClient": "0x41d28ef5972d570a5bd551deb56df4958bfdabcc",
+    "CloneableOrgan": "0x4921D2c87a34D58E8e5CDaeDF3cF540F28d28AE2",
+    "CloneableAsset": "0x0460Cd2801eD3211CD2b8bcee92373adbA9F83CC"
+  },
+  "84532": {
+    "MetaGasStation": "0x2b850becf0d9f3344f191130afe659c34b9abd60",
+    "Asset": "0xc1ea13ec9d2a06b385d6e46a1de3bc60eeb83a63",
+    "Organ": "0xa4916235ada11380f6345015fd43fb31bae81c8b",
+    "NominationProcedure": "0x593ed1a2258f25f101abff6a8c0643948fd0f7da",
+    "VoteProcedure": "0x74b8137d4b980595a2308fe75cde4a61848ca06d",
+    "ERC20VoteProcedure": "0x88c92366099ed5c272452a5d192e929579073326",
+    "OrganigramClient": "0x9a8d6997c3a463fc36481e15c0428b90d8df1031",
+    "CloneableOrgan": "0x26C92B37e79fAab01EDCD2Ca6e8b0E2246001E86",
+    "CloneableAsset": "0xD1E578827559478F6bEe954adE4c638D26B8E19f"
+  },
+  "421614": {
+    "MetaGasStation": "0x2b850becf0d9f3344f191130afe659c34b9abd60",
+    "Asset": "0xc1ea13ec9d2a06b385d6e46a1de3bc60eeb83a63",
+    "Organ": "0xa4916235ada11380f6345015fd43fb31bae81c8b",
+    "NominationProcedure": "0x593ed1a2258f25f101abff6a8c0643948fd0f7da",
+    "VoteProcedure": "0x74b8137d4b980595a2308fe75cde4a61848ca06d",
+    "ERC20VoteProcedure": "0x88c92366099ed5c272452a5d192e929579073326",
+    "OrganigramClient": "0x9a8d6997c3a463fc36481e15c0428b90d8df1031",
+    "CloneableOrgan": "0x26C92B37e79fAab01EDCD2Ca6e8b0E2246001E86",
+    "CloneableAsset": "0xD1E578827559478F6bEe954adE4c638D26B8E19f"
+  },
   "11155111": {
     "MetaGasStation": "0x1534fe91833e7e176dc78a69924d70ce92a80a18",
     "Asset": "0x0ece582a46c2c9f8434e2c78a26671a330008e73",
@@ -9,5 +141,16 @@
     "OrganigramClient": "0x7fd8fe451e2f5b3135067caa073749bdeb278d9b",
     "CloneableOrgan": "0x0b64B1D161feDcbA0Ef5B8aAcB8b07B47AA73768",
     "CloneableAsset": "0x7bA2C906A1678FF2452eEd6C65C162728C5230B7"
+  },
+  "11155420": {
+    "MetaGasStation": "0x2b850becf0d9f3344f191130afe659c34b9abd60",
+    "Asset": "0xc1ea13ec9d2a06b385d6e46a1de3bc60eeb83a63",
+    "Organ": "0xa4916235ada11380f6345015fd43fb31bae81c8b",
+    "NominationProcedure": "0x593ed1a2258f25f101abff6a8c0643948fd0f7da",
+    "VoteProcedure": "0x74b8137d4b980595a2308fe75cde4a61848ca06d",
+    "ERC20VoteProcedure": "0x88c92366099ed5c272452a5d192e929579073326",
+    "OrganigramClient": "0x9a8d6997c3a463fc36481e15c0428b90d8df1031",
+    "CloneableOrgan": "0x26C92B37e79fAab01EDCD2Ca6e8b0E2246001E86",
+    "CloneableAsset": "0xD1E578827559478F6bEe954adE4c638D26B8E19f"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@organigram/protocol",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Smart contract framework for building incorruptible organizations",
   "author": "Organigram (https://organigram.ai)",
   "contributors": [

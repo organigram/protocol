@@ -72,7 +72,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const DOCS_OUTPUT_PATH = path.resolve(
   __dirname,
-  '../../../stack/assets/docs/reference/solidity.mdx'
+  '../../docs/mdx/reference/solidity.mdx'
 )
 
 const INCLUDED_CONTRACTS = new Set<string>([

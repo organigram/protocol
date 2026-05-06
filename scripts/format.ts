@@ -14,6 +14,8 @@ const BROADCAST_DIR = path.join(
 )
 const ARTIFACTS_DIR = path.join(PROTOCOL_DIR, 'abi')
 const OUT_FILE = path.join(PROTOCOL_DIR, 'deployments.json')
+const LOCAL_OUT_FILE = path.join(PROTOCOL_DIR, 'deployments.local.json')
+const ANVIL_CHAIN_ID = '31337'
 const RPC_PROPAGATION_TIMEOUT_MS = 120_000
 const RPC_PROPAGATION_RETRY_DELAY_MS = 2_000
 
@@ -110,6 +112,19 @@ const resolveRpcUrlForChain = (
 
 const readExistingDeployments = (): DeploymentsJson =>
   fs.existsSync(OUT_FILE) ? readJson<DeploymentsJson>(OUT_FILE) : {}
+
+const readExistingLocalDeployments = (): DeploymentsJson =>
+  fs.existsSync(LOCAL_OUT_FILE)
+    ? readJson<DeploymentsJson>(LOCAL_OUT_FILE)
+    : {}
+
+const omitChainId = (
+  deployments: DeploymentsJson,
+  chainIdToOmit: string
+): DeploymentsJson =>
+  Object.fromEntries(
+    Object.entries(deployments).filter(([chainId]) => chainId !== chainIdToOmit)
+  )
 
 const sortDeploymentsByChainId = (
   deployments: DeploymentsJson
@@ -249,9 +264,24 @@ export const formatFoundryDeployments = async (
     )
   }
 
+  const anvilDeployment = currentDeployments[ANVIL_CHAIN_ID]
+  if (anvilDeployment != null) {
+    const localDeploymentsJson = sortDeploymentsByChainId({
+      ...readExistingLocalDeployments(),
+      [ANVIL_CHAIN_ID]: anvilDeployment
+    })
+    fs.writeFileSync(
+      LOCAL_OUT_FILE,
+      JSON.stringify(localDeploymentsJson, null, 2),
+      'utf-8'
+    )
+    console.info(`Saved local deployment file: ${LOCAL_OUT_FILE}`)
+  }
+
+  const publicDeployments = omitChainId(currentDeployments, ANVIL_CHAIN_ID)
   const deploymentsJson = sortDeploymentsByChainId({
-    ...readExistingDeployments(),
-    ...currentDeployments
+    ...omitChainId(readExistingDeployments(), ANVIL_CHAIN_ID),
+    ...publicDeployments
   })
 
   fs.writeFileSync(OUT_FILE, JSON.stringify(deploymentsJson, null, 2), 'utf-8')

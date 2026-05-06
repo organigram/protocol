@@ -8,6 +8,7 @@ node_modules
 /cache_slither_cache
 /broadcast
 /abi/*.t.sol/
+deployments.local.json
 
 # solidity-coverage files
 /coverage

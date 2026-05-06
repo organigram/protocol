@@ -65,17 +65,6 @@
     "CloneableOrgan": "0x4921D2c87a34D58E8e5CDaeDF3cF540F28d28AE2",
     "CloneableAsset": "0x0460Cd2801eD3211CD2b8bcee92373adbA9F83CC"
   },
-  "31337": {
-    "MetaGasStation": "0xbfd12fc102e29bba315bc76ec28000f1d42bb5b9",
-    "Asset": "0x22e1d0b53682a627a60dc8798cd1bbc0d1034180",
-    "Organ": "0x85360b09aba81e52cb8a7abf05feed33cbdc9282",
-    "NominationProcedure": "0xc51338b8ceea876b90a1f5eb30d7ceb69aa7db10",
-    "VoteProcedure": "0xfdd0694e77f46d6c0f33f73dd9a5fd13e20669d4",
-    "ERC20VoteProcedure": "0x3ba27579a17fd7743ff40d6f0f69d9e4c5d37b6a",
-    "OrganigramClient": "0x08f124d17f483d8981c719f0a1adf32258de7fea",
-    "CloneableOrgan": "0x1FF5d71D5daf38F88d3db589238f751149863782",
-    "CloneableAsset": "0xe839D45a301F12F0951AE499d99B538A263372C1"
-  },
   "42161": {
     "MetaGasStation": "0x7ca4fb3551fa4220872f279878055e088787bfe8",
     "Asset": "0x965a4589772b6b6d688c0c9b87e98089470f3fb1",

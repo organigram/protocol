@@ -5,20 +5,38 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [0.1.3](https://github.com/organigram/organigram/compare/v0.1.2...v0.1.3) (2026-05-04)
 
-**Note:** Version bump only for package @organigram/protocol
-
-
-
-
+- Improved protocol security:
+    - Harden the core contracts with stronger validation and reentrancy protection.
+    - Add vote snapshots and broader multi-network deployment support.
+    - Add security-focused checks and tests around the protocol.
+- 13 new supported networks
+- Multi-network deploy script
+- Remove unused dependencies
 
 ## [0.1.2](https://github.com/organigram/organigram/compare/v0.1.1...v0.1.2) (2026-04-20)
 
-**Note:** Version bump only for package @organigram/protocol
+- New organ capabilities:
+    - Verify EIP-712 signatures for gasless transactions
+    - executeWhitelisted() to execute arbitrary transaction
+- Performance improvements:
+    - switched from ethers to viem
+    - switched from hardhat to foundry
+
 
 ## [0.1.1](https://github.com/organigram/organigram/compare/v0.1.0...v0.1.1) (2026-03-15)
 
-**Note:** Version bump only for package @organigram/protocol
+### Improvements
+
+- Release-only bump.
+
+## [0.1.0](https://github.com/organigram/organigram/compare/v0.0.1...v0.1.0) (2026-03-05)
+
+- Single-transaction deployments
+- Deterministic addresses
+- Replaced OpenGSN by custom relayer
+- Updated packages structure
 
 ## 0.0.1 (2021-08-29)
 
-**Note:** Version bump only for package @organigram/protocol
+- First smart-contract framework for organs, procedures, voting, assets, and deployment helpers.
+- Establish the protocol foundation used by the app and SDKs.

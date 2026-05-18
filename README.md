@@ -1,6 +1,6 @@
 # Organigram Protocol
 
-The Organigram Protocol is a Solidity framework for building modular incorruptible governance systems on Ethereum.
+The Organigram Protocol is a Solidity framework for building incorruptible governance systems on Ethereum.
 
 By assembling three simple concepts, it allows for the automated execution of any business rules in a decentralized and auditable manner:
 

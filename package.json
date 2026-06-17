@@ -1,11 +1,8 @@
 {
   "name": "@organigram/protocol",
   "version": "0.1.4",
-  "description": "Smart contract framework for building incorruptible organizations",
+  "description": "Smart contract framework for building incorruptible organizations.",
   "author": "Organigram (https://organigram.ai)",
-  "contributors": [
-    "alex <alex@organigr.am> (https://github.com/alxmhe)"
-  ],
   "license": "MIT",
   "repository": {
     "type": "git",

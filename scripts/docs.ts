@@ -396,7 +396,7 @@ The official Solidity documentation for the contracts and types used in the ${co
 
 ## @organigram/protocol
 
-Solidity smart contracts for the [Organigram protocol](/docs/protocol).
+Solidity smart contracts for the [Organigram Protocol](/docs/protocol).
 
 ### Install
 

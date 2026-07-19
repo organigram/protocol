@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "env-cmd --silent forge build --skip ./test/**",
-    "docs:generate": "env-cmd --silent tsx scripts/docs.ts",
+    "docs:generate": "env-cmd --silent tsx ../docs/scripts/generateSolidityReference.ts",
     "test": "env-cmd --silent forge test --offline",
     "analyze:slither": "FOUNDRY_OUT=cache_slither FOUNDRY_CACHE_PATH=cache_slither_cache VIRTUAL_ENV=.venv .venv/bin/slither . --foundry-out-directory cache_slither --filter-paths \"abi|cache_forge|cache_slither|node_modules|test\" --exclude-dependencies --exclude-low --exclude-informational",
     "deploy:protocol": "env-cmd --silent tsx scripts/deploy.ts",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.37",
-    "viem": "^2.18.2"
+    "viem": "2.55.2"
   },
   "gitHead": "5aeceb89fcac23a06b21969c01c8bfdd36cea896"
 }

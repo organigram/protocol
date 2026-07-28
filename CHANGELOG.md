@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.9](https://github.com/organigram/protocol/compare/v0.1.8...v0.1.9) (2026-07-28)
+
+**Note:** Version bump only for package @organigram/protocol
+
+
+
+
+
 ## [0.1.7](https://github.com/organigram/protocol/compare/v0.1.6...v0.1.7) (2026-07-27)
 
 **Note:** Version bump only for package @organigram/protocol

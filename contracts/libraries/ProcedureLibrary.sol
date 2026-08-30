@@ -28,6 +28,9 @@ library ProcedureLibrary {
         bool withModeration;
         address forwarder;
         address caller;
+        bool isApplyingProposal;
+        uint256 applyingProposalKey;
+        address applyingProposalCreator;
     }
 
     struct Proposal {
@@ -186,6 +189,15 @@ library ProcedureLibrary {
         Operation[] memory operations,
         address caller
     ) public onlyInOrgan(self.proposers, caller) returns (uint256 proposalKey) {
+        return proposeUnchecked(self, cid, operations, caller);
+    }
+
+    function proposeUnchecked(
+        ProcedureData storage self,
+        string memory cid,
+        Operation[] memory operations,
+        address caller
+    ) internal returns (uint256 proposalKey) {
         proposalKey = self.proposalsLength++;
         self.proposals[proposalKey].creator = payable(caller);
         self.proposals[proposalKey].cid = cid;
@@ -217,6 +229,15 @@ library ProcedureLibrary {
         string memory reason,
         address caller
     ) public onlyInOrgan(self.moderators, caller) {
+        blockProposalUnchecked(self, proposalKey, reason, caller);
+    }
+
+    function blockProposalUnchecked(
+        ProcedureData storage self,
+        uint256 proposalKey,
+        string memory reason,
+        address caller
+    ) internal {
         require(self.withModeration, 'Moderation not enabled.');
         require(!self.proposals[proposalKey].blocked, 'Already blocked.');
         require(!self.proposals[proposalKey].applied, 'Already applied.');
@@ -236,9 +257,17 @@ library ProcedureLibrary {
         onlyInOrgan(self.moderators, caller)
         onlyNewProposal(self, proposalKey)
     {
+        presentProposalUnchecked(self, proposalKey, caller);
+    }
+
+    function presentProposalUnchecked(
+        ProcedureData storage self,
+        uint256 proposalKey,
+        address caller
+    ) internal onlyNewProposal(self, proposalKey) {
         require(self.withModeration, 'Moderation not enabled.');
         self.proposals[proposalKey].presented = true;
-        emit ProposalPresented(msg.sender, proposalKey);
+        emit ProposalPresented(caller, proposalKey);
     }
 
     /// @notice Adopt proposal and attempt to apply it.
@@ -269,6 +298,10 @@ library ProcedureLibrary {
         ProcedureData storage self,
         uint256 proposalKey
     ) public onlyAdoptedProposal(self, proposalKey) {
+        self.isApplyingProposal = true;
+        self.applyingProposalKey = proposalKey;
+        self.applyingProposalCreator = self.proposals[proposalKey].creator;
+
         // Process operations.
         for (
             uint256 i = 0;
@@ -307,6 +340,9 @@ library ProcedureLibrary {
             }
         }
         self.proposals[proposalKey].applied = true;
+        self.isApplyingProposal = false;
+        self.applyingProposalKey = 0;
+        self.applyingProposalCreator = address(0);
         emit ProposalApplied(proposalKey);
     }
 }

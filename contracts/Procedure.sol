@@ -4,6 +4,10 @@ pragma experimental ABIEncoderV2;
 
 import './libraries/ProcedureLibrary.sol';
 import './MetaGasStation.sol';
+import './IProposalOperationValidator.sol';
+import './IEquityToken.sol';
+import './IOrgan.sol';
+import './libraries/CoreLibrary.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
 import '@openzeppelin/contracts/utils/cryptography/EIP712.sol';
@@ -19,7 +23,8 @@ contract Procedure is
     InitializableStatic,
     ReentrancyGuard,
     ERC2771Recipient,
-    EIP712
+    EIP712,
+    IProposalOperationValidator
 {
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Operation;
@@ -45,6 +50,7 @@ contract Procedure is
         keccak256(
             'ApplyProposal(uint256 proposalKey,uint256 nonce,uint256 deadline)'
         );
+    bool private equitySettlementInProgress;
 
     /**
         Modifiers.
@@ -119,6 +125,7 @@ contract Procedure is
         string memory cid,
         ProcedureLibrary.Operation[] memory operations
     ) public virtual returns (uint256 proposalKey) {
+        _validateOwnerBoundOperations(operations, _msgSender());
         return procedureData.propose(cid, operations, _msgSender());
     }
 
@@ -144,6 +151,7 @@ contract Procedure is
             deadline,
             signature
         );
+        _validateOwnerBoundOperations(operations, signer);
         return procedureData.propose(cid, operations, signer);
     }
 
@@ -211,8 +219,19 @@ contract Procedure is
         procedureData._adoptProposal(proposalKey);
     }
 
+    /// @dev Settlement helper for derived procedures that already hold the
+    /// reentrancy lock in their public entry point.
+    function _applyAdoptedProposal(uint256 proposalKey) internal {
+        procedureData._adoptProposal(proposalKey);
+    }
+
     /// @notice The procedure calls this method directly to reject a proposal.
     function _rejectProposal(uint256 proposalKey) internal virtual nonReentrant {
+        procedureData._rejectProposal(proposalKey);
+    }
+
+    /// @dev Rejection counterpart for a derived procedure holding the lock.
+    function _applyRejectedProposal(uint256 proposalKey) internal {
         procedureData._rejectProposal(proposalKey);
     }
 
@@ -278,6 +297,130 @@ contract Procedure is
 
     function getNonce(address account) public view returns (uint256) {
         return procedureData.nonces[account];
+    }
+
+    /// @notice Lets an operation target safely identify the proposal currently being applied.
+    function getExecutionContext()
+        external
+        view
+        returns (bool isApplying, uint256 proposalKey, address proposalCreator)
+    {
+        return (
+            procedureData.isApplyingProposal,
+            procedureData.applyingProposalKey,
+            procedureData.applyingProposalCreator
+        );
+    }
+
+    /// @notice Whether this procedure is between the token transfer and the register write.
+    /// @dev EquityToken uses this marker to reject a direct token operation.
+    function isSettlingEquityTransfer() external view returns (bool) {
+        return equitySettlementInProgress;
+    }
+
+    /// @notice Settles an equity transfer and records it in an organ register.
+    /// @dev This may only be reached through a self-targeted proposal operation.
+    function settleEquityTransfer(
+        address asset,
+        address payable movementRegister,
+        address recipient,
+        uint256 amount,
+        string calldata movementCid
+    ) external {
+        require(msg.sender == address(this), 'Only executable proposal.');
+        require(
+            procedureData.isApplyingProposal,
+            'Transfer must be applied by a proposal.'
+        );
+        require(movementRegister.code.length > 0, 'Movement register required.');
+
+        equitySettlementInProgress = true;
+        IEquityToken(asset).settleTransfer(recipient, amount);
+        equitySettlementInProgress = false;
+
+        CoreLibrary.Entry[] memory entries = new CoreLibrary.Entry[](1);
+        entries[0] = CoreLibrary.Entry(address(0), movementCid);
+        IOrgan(movementRegister).addEntries(entries);
+    }
+
+    /// @inheritdoc IProposalOperationValidator
+    function isOwnerBoundProposalOperation(
+        bytes calldata operationData
+    ) external pure override returns (bool) {
+        return
+            operationData.length >= 4
+                && bytes4(operationData[:4])
+                    == this.settleEquityTransfer.selector;
+    }
+
+    /// @inheritdoc IProposalOperationValidator
+    function validateProposalCreator(
+        address creator,
+        bytes calldata operationData
+    ) external view override {
+        require(
+            operationData.length >= 4
+                && bytes4(operationData[:4])
+                    == this.settleEquityTransfer.selector,
+            'Unsupported owner-bound operation.'
+        );
+        (
+            address asset,
+            address payable movementRegister,
+            address recipient,
+            uint256 amount,
+            string memory movementCid
+        ) = abi.decode(
+                operationData[4:],
+                (address, address, address, uint256, string)
+            );
+        require(movementRegister.code.length > 0, 'Movement register required.');
+        require(
+            IEquityToken(asset).isTransferProcedure(address(this)),
+            'Not transfer procedure.'
+        );
+        IEquityToken(asset).validateTransfer(
+            creator,
+            recipient,
+            amount,
+            movementCid
+        );
+    }
+
+    function _validateOwnerBoundOperations(
+        ProcedureLibrary.Operation[] memory operations,
+        address creator
+    ) internal view {
+        for (uint256 i = 0; i < operations.length; ++i) {
+            address target = operations[i].target == address(0)
+                ? address(this)
+                : operations[i].target;
+            if (target.code.length == 0) continue;
+
+            (bool supportsValidation, bytes memory supportResult) = target.staticcall(
+                abi.encodeWithSelector(
+                    IProposalOperationValidator.isOwnerBoundProposalOperation.selector,
+                    operations[i].data
+                )
+            );
+            if (
+                !supportsValidation || supportResult.length != 32
+                    || !abi.decode(supportResult, (bool))
+            ) continue;
+
+            (bool isValid, bytes memory validationResult) = target.staticcall(
+                abi.encodeWithSelector(
+                    IProposalOperationValidator.validateProposalCreator.selector,
+                    creator,
+                    operations[i].data
+                )
+            );
+            if (!isValid) {
+                assembly {
+                    revert(add(validationResult, 0x20), mload(validationResult))
+                }
+            }
+        }
     }
 
     function _recoverTypedSigner(

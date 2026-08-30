@@ -5,6 +5,7 @@ pragma experimental ABIEncoderV2;
 import './Organ.sol';
 import './Asset.sol';
 import './IAsset.sol';
+import './EquityToken.sol';
 import './MetaGasStation.sol';
 import './libraries/CoreLibrary.sol';
 import '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol';
@@ -15,6 +16,7 @@ contract OrganigramClient is ERC2771Recipient {
     using CoreLibrary for CoreLibrary.Entry;
     address payable public immutable organ; // Cloneable organ implementation.
     address payable public immutable asset; // Cloneable asset implementation.
+    address payable public immutable equityToken; // Cloneable equity implementation.
     address payable public immutable proceduresRegistry; // Organ with the addresses of supported procedures implementations.
     address public immutable owner;
 
@@ -42,6 +44,8 @@ contract OrganigramClient is ERC2771Recipient {
         string symbol;
         uint256 initialSupply;
         bytes32 salt;
+        bool isEquity;
+        address transferProcedure;
     }
 
     /// @notice Deploy the client contract together with default organ and asset implementations.
@@ -53,6 +57,7 @@ contract OrganigramClient is ERC2771Recipient {
         owner = _msgSender();
         organ = payable(address(new Organ()));
         asset = payable(address(new Asset()));
+        equityToken = payable(address(new EquityToken()));
 
         // Create permissions arguments for the procedures registry organ.
         address[] memory permissionAddresses = new address[](2);
@@ -162,12 +167,27 @@ contract OrganigramClient is ERC2771Recipient {
         clones = new address payable[](batch.length);
 
         for (uint256 i = 0; i < batch.length; i++) {
-            clones[i] = deployAsset(
-                batch[i].name,
-                batch[i].symbol,
-                batch[i].initialSupply,
-                batch[i].salt
-            );
+            if (batch[i].isEquity) {
+                require(batch[i].transferProcedure != address(0), 'Transfer procedure required.');
+                clones[i] = payable(
+                    Clones.cloneDeterministic(address(equityToken), batch[i].salt)
+                );
+                EquityToken(clones[i]).initialize(
+                    batch[i].name,
+                    batch[i].symbol,
+                    _msgSender(),
+                    batch[i].initialSupply,
+                    batch[i].transferProcedure
+                );
+                emit assetDeployed(clones[i]);
+            } else {
+                clones[i] = deployAsset(
+                    batch[i].name,
+                    batch[i].symbol,
+                    batch[i].initialSupply,
+                    batch[i].salt
+                );
+            }
         }
         return clones;
     }

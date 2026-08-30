@@ -247,11 +247,17 @@ export const formatFoundryDeployments = async (
       `OrganigramClient.asset() on chain ${chainId}`,
       async () => (await organigramClient.read.asset()) as `0x${string}`
     )
+    const cloneableEquityToken = await readWithRpcPropagationRetry(
+      `OrganigramClient.equityToken() on chain ${chainId}`,
+      async () =>
+        (await organigramClient.read.equityToken()) as `0x${string}`
+    )
 
     currentDeployments[chainId] = {
       ...deployedContracts,
       CloneableOrgan: cloneableOrgan,
-      CloneableAsset: cloneableAsset
+      CloneableAsset: cloneableAsset,
+      EquityToken: cloneableEquityToken
     }
   }
 

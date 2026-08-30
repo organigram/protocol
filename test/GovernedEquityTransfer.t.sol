@@ -209,7 +209,7 @@ contract GovernedEquityTransferTest {
             address(0)
         );
         token.initialize(
-            "Registered shares", "SHR", ALICE, 100, address(procedure)
+            "Equity", "EQT", ALICE, 100, address(procedure)
         );
     }
 

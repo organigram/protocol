@@ -77,7 +77,10 @@ contract VoteProcedure is Procedure {
         );
         require(_voteDuration > 0, 'Invalid vote duration.');
         require(_quorumSize <= 100000, 'Invalid quorum size.');
-        require(_majoritySize > 0 && _majoritySize <= 100000, 'Invalid majority size.');
+        require(
+            _majoritySize > 0 && _majoritySize <= 100000,
+            'Invalid majority size.'
+        );
         // Register EIP165 interface for introspection.
         quorumSize = _quorumSize;
         voteDuration = _voteDuration;
@@ -85,10 +88,8 @@ contract VoteProcedure is Procedure {
     }
 
     /// @notice Create a election.
-    function vote(
-        uint256 proposalKey,
-        bool approval
-    ) public onlyInOrgan(procedureData.deciders) {
+    function vote(uint256 proposalKey, bool approval) public {
+        require(_canVote(_msgSender(), proposalKey), 'Not authorized');
         _vote(_msgSender(), proposalKey, approval);
     }
 
@@ -113,10 +114,7 @@ contract VoteProcedure is Procedure {
             deadline,
             signature
         );
-        require(
-            ProcedureLibrary.isInOrgan(procedureData.deciders, signer),
-            'Not authorized'
-        );
+        require(_canVote(signer, proposalKey), 'Not authorized');
         _vote(signer, proposalKey, approval);
     }
 
@@ -143,6 +141,23 @@ contract VoteProcedure is Procedure {
 
     function _startElection(uint256 proposalKey) internal virtual {
         elections[proposalKey].start = block.timestamp;
+    }
+
+    function _canPropose(address account) internal view virtual returns (bool) {
+        return ProcedureLibrary.isInOrgan(procedureData.proposers, account);
+    }
+
+    function _canModerate(
+        address account
+    ) internal view virtual returns (bool) {
+        return ProcedureLibrary.isInOrgan(procedureData.moderators, account);
+    }
+
+    function _canVote(
+        address account,
+        uint256
+    ) internal view virtual returns (bool) {
+        return ProcedureLibrary.isInOrgan(procedureData.deciders, account);
     }
 
     /// @notice Count votes when election is ended.
@@ -209,13 +224,15 @@ contract VoteProcedure is Procedure {
     function propose(
         string memory _cid,
         ProcedureLibrary.Operation[] memory _operations
-    )
-        public
-        override
-        onlyInOrgan(procedureData.proposers)
-        returns (uint256 proposalKey)
-    {
-        proposalKey = super.propose(_cid, _operations);
+    ) public override returns (uint256 proposalKey) {
+        require(_canPropose(_msgSender()), 'Not authorized');
+        _validateOwnerBoundOperations(_operations, _msgSender());
+        proposalKey = ProcedureLibrary.proposeUnchecked(
+            procedureData,
+            _cid,
+            _operations,
+            _msgSender()
+        );
         if (procedureData.proposals[proposalKey].presented) {
             _startElection(proposalKey);
         }
@@ -224,10 +241,13 @@ contract VoteProcedure is Procedure {
 
     /// @notice Present a proposal.
     /// @dev Overrides Procedure.
-    function presentProposal(
-        uint256 proposalKey
-    ) public override onlyInOrgan(procedureData.moderators) {
-        super.presentProposal(proposalKey);
+    function presentProposal(uint256 proposalKey) public override {
+        require(_canModerate(_msgSender()), 'Not authorized');
+        ProcedureLibrary.presentProposalUnchecked(
+            procedureData,
+            proposalKey,
+            _msgSender()
+        );
         _startElection(proposalKey);
     }
 
@@ -236,18 +256,27 @@ contract VoteProcedure is Procedure {
     function blockProposal(
         uint256 proposalKey,
         string calldata reason
-    ) public override onlyInOrgan(procedureData.moderators) {
+    ) public override {
+        require(_canModerate(_msgSender()), 'Not authorized');
         require(elections[proposalKey].start == 0, 'Election already started.');
-        super.blockProposal(proposalKey, reason);
+        ProcedureLibrary.blockProposalUnchecked(
+            procedureData,
+            proposalKey,
+            reason,
+            _msgSender()
+        );
     }
 
     /// @notice Finalize a vote once the election has ended.
     /// @dev Anyone can trigger the settlement transaction once voting is over.
     function applyProposal(uint256 proposalKey) public override nonReentrant {
         if (count(proposalKey)) {
-            super._adoptProposal(proposalKey);
+            // This function already holds the reentrancy lock. Calling the
+            // guarded helper on Procedure would attempt to acquire it a
+            // second time and always revert before the proposal operation.
+            super._applyAdoptedProposal(proposalKey);
         } else {
-            super._rejectProposal(proposalKey);
+            super._applyRejectedProposal(proposalKey);
         }
     }
 

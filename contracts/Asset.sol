@@ -25,6 +25,11 @@ contract Asset is IAsset, InitializableUpgradeable, ERC20Upgradeable, ERC20Votes
         uint256 value
     ) internal override(ERC20Upgradeable, ERC20VotesUpgradeable) {
         super._update(from, to, value);
+        // Voting rights follow the token by default. Holders can still call
+        // `delegate` later to appoint another representative.
+        if (to != address(0) && delegates(to) == address(0)) {
+            _delegate(to, to);
+        }
     }
 
     // Prevent anyone from initializing the implementation itself.

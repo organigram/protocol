@@ -329,7 +329,7 @@ contract Procedure is
     /// @dev This may only be reached through a self-targeted proposal operation.
     function settleEquityTransfer(
         address asset,
-        address payable movementRegister,
+        address payable equityTransferRegister,
         address recipient,
         uint256 amount,
         string calldata movementCid
@@ -340,8 +340,8 @@ contract Procedure is
             'Transfer must be applied by a proposal.'
         );
         require(
-            movementRegister.code.length > 0,
-            'Movement register required.'
+            equityTransferRegister.code.length > 0,
+            'Equity transfer register required.'
         );
 
         equitySettlementInProgress = true;
@@ -350,7 +350,7 @@ contract Procedure is
 
         CoreLibrary.Entry[] memory entries = new CoreLibrary.Entry[](1);
         entries[0] = CoreLibrary.Entry(address(0), movementCid);
-        IOrgan(movementRegister).addEntries(entries);
+        IOrgan(equityTransferRegister).addEntries(entries);
     }
 
     /// @inheritdoc IProposalOperationValidator
@@ -374,7 +374,7 @@ contract Procedure is
         );
         (
             address asset,
-            address payable movementRegister,
+            address payable equityTransferRegister,
             address recipient,
             uint256 amount,
             string memory movementCid
@@ -383,8 +383,8 @@ contract Procedure is
                 (address, address, address, uint256, string)
             );
         require(
-            movementRegister.code.length > 0,
-            'Movement register required.'
+            equityTransferRegister.code.length > 0,
+            'Equity transfer register required.'
         );
         require(
             IEquityToken(asset).isTransferProcedure(address(this)),

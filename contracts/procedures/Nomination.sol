@@ -2,7 +2,8 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import '../Procedure.sol';
+import {Procedure} from '../Procedure.sol';
+import {ProcedureLibrary} from '../libraries/ProcedureLibrary.sol';
 
 /// @title Nomination Procedure
 /// @notice A nomination executes an operation if the nominator is in the nominaters organ.

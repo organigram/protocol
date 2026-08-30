@@ -2,23 +2,23 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import './Organ.sol';
-import './Asset.sol';
-import './IAsset.sol';
-import './EquityToken.sol';
-import './MetaGasStation.sol';
-import './libraries/CoreLibrary.sol';
-import '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol';
-import '@openzeppelin/contracts/proxy/Clones.sol';
-import '@openzeppelin/contracts/utils/Address.sol';
+import {Organ} from './Organ.sol';
+import {Asset} from './Asset.sol';
+import {IAsset} from './IAsset.sol';
+import {EquityToken} from './EquityToken.sol';
+import {ERC2771Recipient} from './MetaGasStation.sol';
+import {CoreLibrary} from './libraries/CoreLibrary.sol';
+import {ERC165Checker} from '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol';
+import {Clones} from '@openzeppelin/contracts/proxy/Clones.sol';
+import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
 contract OrganigramClient is ERC2771Recipient {
     using CoreLibrary for CoreLibrary.Entry;
-    address payable public immutable organ; // Cloneable organ implementation.
-    address payable public immutable asset; // Cloneable asset implementation.
-    address payable public immutable equityToken; // Cloneable equity implementation.
-    address payable public immutable proceduresRegistry; // Organ with the addresses of supported procedures implementations.
-    address public immutable owner;
+    address payable private immutable ORGAN; // Cloneable organ implementation.
+    address payable private immutable ASSET; // Cloneable asset implementation.
+    address payable private immutable EQUITY_TOKEN; // Cloneable equity implementation.
+    address payable private immutable PROCEDURES_REGISTRY; // Organ with the addresses of supported procedures implementations.
+    address private immutable OWNER;
 
     event organDeployed(address payable organ);
     event assetDeployed(address payable asset);
@@ -26,6 +26,26 @@ contract OrganigramClient is ERC2771Recipient {
         address payable procedureType,
         address payable procedure
     );
+
+    function organ() external view returns (address payable) {
+        return ORGAN;
+    }
+
+    function asset() external view returns (address payable) {
+        return ASSET;
+    }
+
+    function equityToken() external view returns (address payable) {
+        return EQUITY_TOKEN;
+    }
+
+    function proceduresRegistry() external view returns (address payable) {
+        return PROCEDURES_REGISTRY;
+    }
+
+    function owner() external view returns (address) {
+        return OWNER;
+    }
 
     struct DeployOrganArgs {
         address[] permissionAddresses;
@@ -54,23 +74,23 @@ contract OrganigramClient is ERC2771Recipient {
     /// @param salt Deterministic salt used to deploy the procedures registry organ.
     constructor(string memory cid, address trustedForwarder, bytes32 salt) {
         _setTrustedForwarder(trustedForwarder);
-        owner = _msgSender();
-        organ = payable(address(new Organ()));
-        asset = payable(address(new Asset()));
-        equityToken = payable(address(new EquityToken()));
+        OWNER = _msgSender();
+        ORGAN = payable(address(new Organ()));
+        ASSET = payable(address(new Asset()));
+        EQUITY_TOKEN = payable(address(new EquityToken()));
 
         // Create permissions arguments for the procedures registry organ.
         address[] memory permissionAddresses = new address[](2);
         bytes2[] memory permissionValues = new bytes2[](2);
 
-        permissionAddresses[0] = owner; // Set the sender as default admin...
+        permissionAddresses[0] = OWNER; // Set the sender as default admin...
         permissionValues[0] = bytes2(0xffff); // ...with all permissions.
         permissionAddresses[1] = address(this); // Allow controlled registry updates via registerProcedures().
         permissionValues[1] = bytes2(0x0004); // PERMISSION_ADD_ENTRIES.
 
         CoreLibrary.Entry[] memory emptyEntries = new CoreLibrary.Entry[](0);
 
-        proceduresRegistry = deployOrgan(
+        PROCEDURES_REGISTRY = deployOrgan(
             permissionAddresses,
             permissionValues,
             cid,
@@ -107,7 +127,7 @@ contract OrganigramClient is ERC2771Recipient {
         }
 
         // Clone organ and initialize it.
-        clone = payable(Clones.cloneDeterministic(organ, salt));
+        clone = payable(Clones.cloneDeterministic(ORGAN, salt));
         Organ(clone).initialize(
             _permissionAddresses,
             _permissionValues,
@@ -151,7 +171,7 @@ contract OrganigramClient is ERC2771Recipient {
         uint256 initialSupply,
         bytes32 salt
     ) public returns (address payable clone) {
-        clone = payable(Clones.cloneDeterministic(address(asset), salt));
+        clone = payable(Clones.cloneDeterministic(address(ASSET), salt));
         IAsset(clone).initialize(name, symbol, _msgSender(), initialSupply);
 
         emit assetDeployed(clone);
@@ -168,9 +188,15 @@ contract OrganigramClient is ERC2771Recipient {
 
         for (uint256 i = 0; i < batch.length; i++) {
             if (batch[i].isEquity) {
-                require(batch[i].transferProcedure != address(0), 'Transfer procedure required.');
+                require(
+                    batch[i].transferProcedure != address(0),
+                    'Transfer procedure required.'
+                );
                 clones[i] = payable(
-                    Clones.cloneDeterministic(address(equityToken), batch[i].salt)
+                    Clones.cloneDeterministic(
+                        address(EQUITY_TOKEN),
+                        batch[i].salt
+                    )
                 );
                 EquityToken(clones[i]).initialize(
                     batch[i].name,
@@ -208,14 +234,17 @@ contract OrganigramClient is ERC2771Recipient {
             'Not a procedure.'
         );
         require(
-            Organ(proceduresRegistry).getEntryIndexForAddress(procedureType) >
+            Organ(PROCEDURES_REGISTRY).getEntryIndexForAddress(procedureType) >
                 0,
             'Procedure not found.'
         );
         procedure = payable(Clones.cloneDeterministic(procedureType, salt));
         emit procedureDeployed(procedureType, procedure);
         bytes memory initReturnData = Address.functionCall(procedure, data);
-        require(initReturnData.length == 0, 'Unexpected initialization result.');
+        require(
+            initReturnData.length == 0,
+            'Unexpected initialization result.'
+        );
         return procedure;
     }
 
@@ -265,7 +294,7 @@ contract OrganigramClient is ERC2771Recipient {
     /// @notice Register supported procedure implementations in the procedures registry.
     /// @param entries Registry entries that point to valid procedure implementations.
     function registerProcedures(CoreLibrary.Entry[] memory entries) external {
-        require(_msgSender() == owner, 'Not authorized.');
+        require(_msgSender() == OWNER, 'Not authorized.');
         // Only valid procedures
         for (uint256 i; i < entries.length; ++i) {
             require(
@@ -273,7 +302,9 @@ contract OrganigramClient is ERC2771Recipient {
                 'An entry in parameters is not a valid procedure.'
             );
         }
-        uint256[] memory indexes = Organ(proceduresRegistry).addEntries(entries);
+        uint256[] memory indexes = Organ(PROCEDURES_REGISTRY).addEntries(
+            entries
+        );
         require(indexes.length == entries.length, 'Registry update failed.');
     }
 }

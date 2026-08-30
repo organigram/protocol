@@ -2,9 +2,9 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import './Vote.sol';
-import '@openzeppelin/contracts/interfaces/IERC20.sol';
-import '@openzeppelin/contracts/interfaces/IERC5805.sol';
+import {VoteProcedure} from './Vote.sol';
+import {IERC20} from '@openzeppelin/contracts/interfaces/IERC20.sol';
+import {IERC5805} from '@openzeppelin/contracts/interfaces/IERC5805.sol';
 
 /// @title ERC20 Vote Procedure.
 /// @notice An ERC20 Vote Procedure will execute operations based on the decision of a vote. The voter's relative weight in the vote depends on the amount of tokens they own of a certain asset.

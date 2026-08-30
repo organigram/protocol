@@ -2,20 +2,19 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import './libraries/CoreLibrary.sol';
-import './libraries/OrganLibrary.sol';
-import './MetaGasStation.sol';
-import './IOrgan.sol';
-import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
-import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import '@openzeppelin/contracts/interfaces/IERC721.sol';
-import '@openzeppelin/contracts/interfaces/IERC777.sol';
-import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+import {CoreLibrary} from './libraries/CoreLibrary.sol';
+import {OrganLibrary} from './libraries/OrganLibrary.sol';
+import {ERC2771Recipient} from './MetaGasStation.sol';
+import {IOrgan} from './IOrgan.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {ERC165} from '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+import {IERC165} from '@openzeppelin/contracts/utils/introspection/IERC165.sol';
 import {Initializable as InitializableStatic} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
-import '@openzeppelin/contracts/interfaces/IERC777Recipient.sol';
-import '@openzeppelin/contracts/interfaces/IERC777Sender.sol';
-import '@openzeppelin/contracts/interfaces/IERC721Receiver.sol';
-import '@openzeppelin/contracts/interfaces/IERC1155Receiver.sol';
+import {IERC777Recipient} from '@openzeppelin/contracts/interfaces/IERC777Recipient.sol';
+import {IERC777Sender} from '@openzeppelin/contracts/interfaces/IERC777Sender.sol';
+import {IERC721Receiver} from '@openzeppelin/contracts/interfaces/IERC721Receiver.sol';
+import {IERC1155Receiver} from '@openzeppelin/contracts/interfaces/IERC1155Receiver.sol';
 
 /// @title Organ contract
 /// @author Organigram.ai
@@ -79,7 +78,10 @@ contract Organ is
         organData.receiveEther(msg.value, _msgSender());
     }
 
-    function transferEther(address payable to, uint256 value) public nonReentrant {
+    function transferEther(
+        address payable to,
+        uint256 value
+    ) public nonReentrant {
         organData.transferEther(to, value, _msgSender());
     }
 
@@ -226,11 +228,16 @@ contract Organ is
         address[] calldata whitelistedAddresses
     ) external override {
         uint256 constraintsLength = constraints.length;
-        OrganLibrary.ParamConstraint[] memory converted = new OrganLibrary.ParamConstraint[](constraintsLength);
+        OrganLibrary.ParamConstraint[]
+            memory converted = new OrganLibrary.ParamConstraint[](
+                constraintsLength
+            );
         for (uint256 i = 0; i < constraintsLength; i++) {
             converted[i] = OrganLibrary.ParamConstraint({
                 index: constraints[i].index,
-                constraintType: OrganLibrary.ParamConstraintType(uint8(constraints[i].constraintType)),
+                constraintType: OrganLibrary.ParamConstraintType(
+                    uint8(constraints[i].constraintType)
+                ),
                 minValue: constraints[i].minValue,
                 maxValue: constraints[i].maxValue,
                 exactValue: constraints[i].exactValue
@@ -246,7 +253,10 @@ contract Organ is
     }
 
     /// @inheritdoc IOrgan
-    function removeCallPolicy(address target, bytes4 selector) external override {
+    function removeCallPolicy(
+        address target,
+        bytes4 selector
+    ) external override {
         organData.removeCallPolicy(target, selector, _msgSender());
     }
 
@@ -329,7 +339,9 @@ contract Organ is
         )
     {
         bytes32 policyKey = OrganLibrary._callPolicyKey(target, selector);
-        OrganLibrary.CallPolicy storage policy = organData.callPolicies[policyKey];
+        OrganLibrary.CallPolicy storage policy = organData.callPolicies[
+            policyKey
+        ];
         return (
             policy.enabled,
             policy.constraints.length,
@@ -355,7 +367,9 @@ contract Organ is
         )
     {
         bytes32 policyKey = OrganLibrary._callPolicyKey(target, selector);
-        OrganLibrary.ParamConstraint storage constraint = organData.callPolicies[policyKey].constraints[index];
+        OrganLibrary.ParamConstraint storage constraint = organData
+            .callPolicies[policyKey]
+            .constraints[index];
         return (
             constraint.index,
             IOrgan.ParamConstraintType(uint8(constraint.constraintType)),
@@ -372,6 +386,9 @@ contract Organ is
         address candidate
     ) external view override returns (bool) {
         bytes32 policyKey = OrganLibrary._callPolicyKey(target, selector);
-        return organData.callPolicyWhitelistedAddresses[policyKey].contains(candidate);
+        return
+            organData.callPolicyWhitelistedAddresses[policyKey].contains(
+                candidate
+            );
     }
 }

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
-import {Initializable as InitializableUpgradeable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import "./IProcedureExecutionContext.sol";
+import {ERC20Upgradeable} from '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
+import {ERC20VotesUpgradeable} from '@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol';
+import {Initializable as InitializableUpgradeable} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
+import {IProcedureExecutionContext} from './IProcedureExecutionContext.sol';
 
 /// @notice ERC-20 representation of equity settled by an approved procedure.
 contract EquityToken is
@@ -12,8 +12,10 @@ contract EquityToken is
     ERC20Upgradeable,
     ERC20VotesUpgradeable
 {
-    bytes32 public constant TRANSFER_PROCEDURE_ROLE = keccak256("TRANSFER_PROCEDURE_ROLE");
-    bytes32 public constant ADMIN_PROCEDURE_ROLE = keccak256("ADMIN_PROCEDURE_ROLE");
+    bytes32 public constant TRANSFER_PROCEDURE_ROLE =
+        keccak256('TRANSFER_PROCEDURE_ROLE');
+    bytes32 public constant ADMIN_PROCEDURE_ROLE =
+        keccak256('ADMIN_PROCEDURE_ROLE');
 
     mapping(bytes32 => mapping(address => bool)) private procedures;
     mapping(bytes32 => uint256) private procedureCounts;
@@ -25,10 +27,15 @@ contract EquityToken is
     );
 
     modifier onlyAuthorizedProcedure(bytes32 role) {
-        require(procedures[role][msg.sender], "Not authorized procedure.");
-        (bool isApplying,,) = IProcedureExecutionContext(msg.sender).getExecutionContext();
-        require(isApplying, "Procedure is not applying a proposal.");
+        _requireAuthorizedProcedure(role);
         _;
+    }
+
+    function _requireAuthorizedProcedure(bytes32 role) private view {
+        require(procedures[role][msg.sender], 'Not authorized procedure.');
+        (bool isApplying, , ) = IProcedureExecutionContext(msg.sender)
+            .getExecutionContext();
+        require(isApplying, 'Procedure is not applying a proposal.');
     }
 
     function initialize(
@@ -38,11 +45,14 @@ contract EquityToken is
         uint256 initialSupply_,
         address transferProcedure_
     ) external initializer {
-        require(initialHolder_ != address(0), "Initial holder required.");
-        require(transferProcedure_ != address(0), "Transfer procedure required.");
+        require(initialHolder_ != address(0), 'Initial holder required.');
+        require(
+            transferProcedure_ != address(0),
+            'Transfer procedure required.'
+        );
 
         __ERC20_init(name_, symbol_);
-        __EIP712_init(name_, "1");
+        __EIP712_init(name_, '1');
         __ERC20Votes_init();
 
         _setProcedureAuthorization(
@@ -68,14 +78,15 @@ contract EquityToken is
         address recipient,
         uint256 amount
     ) external onlyAuthorizedProcedure(TRANSFER_PROCEDURE_ROLE) {
-        (bool isApplying,, address seller) = IProcedureExecutionContext(msg.sender).getExecutionContext();
-        require(isApplying, "Transfer must be applied by a proposal.");
+        (bool isApplying, , address seller) = IProcedureExecutionContext(
+            msg.sender
+        ).getExecutionContext();
+        require(isApplying, 'Transfer must be applied by a proposal.');
         require(
-            IProcedureExecutionContext(msg.sender)
-                .isSettlingEquityTransfer(),
-            "Transfer must include a movement record."
+            IProcedureExecutionContext(msg.sender).isSettlingEquityTransfer(),
+            'Transfer must include a movement record.'
         );
-        _validateTransfer(seller, recipient, amount, "movement");
+        _validateTransfer(seller, recipient, amount, 'movement');
 
         _transfer(seller, recipient, amount);
     }
@@ -88,12 +99,15 @@ contract EquityToken is
     ) external onlyAuthorizedProcedure(ADMIN_PROCEDURE_ROLE) {
         require(
             role == TRANSFER_PROCEDURE_ROLE || role == ADMIN_PROCEDURE_ROLE,
-            "Unknown procedure role."
+            'Unknown procedure role.'
         );
-        require(procedure != address(0), "Procedure required.");
+        require(procedure != address(0), 'Procedure required.');
 
         if (!authorized && procedures[role][procedure]) {
-            require(procedureCounts[role] > 1, "At least one procedure required.");
+            require(
+                procedureCounts[role] > 1,
+                'At least one procedure required.'
+            );
         }
         _setProcedureAuthorization(role, procedure, authorized);
     }
@@ -115,7 +129,9 @@ contract EquityToken is
         return procedures[role][procedure];
     }
 
-    function isTransferProcedure(address procedure) external view returns (bool) {
+    function isTransferProcedure(
+        address procedure
+    ) external view returns (bool) {
         return procedures[TRANSFER_PROCEDURE_ROLE][procedure];
     }
 
@@ -142,26 +158,30 @@ contract EquityToken is
         uint256 amount,
         string memory movementCid
     ) private view {
-        require(seller != address(0), "Seller required.");
-        require(recipient != address(0) && recipient != seller, "Valid recipient required.");
-        require(amount != 0, "Amount required.");
-        require(bytes(movementCid).length != 0, "Movement record required.");
-        require(balanceOf(seller) >= amount, "Insufficient equity units.");
+        require(seller != address(0), 'Seller required.');
+        require(
+            recipient != address(0) && recipient != seller,
+            'Valid recipient required.'
+        );
+        require(amount != 0, 'Amount required.');
+        require(bytes(movementCid).length != 0, 'Movement record required.');
+        require(balanceOf(seller) >= amount, 'Insufficient equity units.');
     }
 
-    function _update(address from, address to, uint256 value)
-        internal
-        override(ERC20Upgradeable, ERC20VotesUpgradeable)
-    {
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    ) internal override(ERC20Upgradeable, ERC20VotesUpgradeable) {
         if (from != address(0) && to != address(0)) {
             require(
                 procedures[TRANSFER_PROCEDURE_ROLE][msg.sender],
-                "Transfers must be settled by an authorized procedure."
+                'Transfers must be settled by an authorized procedure.'
             );
             require(
                 IProcedureExecutionContext(msg.sender)
                     .isSettlingEquityTransfer(),
-                "Transfer must include a movement record."
+                'Transfer must include a movement record.'
             );
         }
         super._update(from, to, value);

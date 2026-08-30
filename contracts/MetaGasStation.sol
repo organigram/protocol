@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import '@openzeppelin/contracts/utils/Context.sol';
-import '@openzeppelin/contracts/metatx/ERC2771Forwarder.sol';
+import {Context} from '@openzeppelin/contracts/utils/Context.sol';
+import {ERC2771Forwarder} from '@openzeppelin/contracts/metatx/ERC2771Forwarder.sol';
 
 contract MetaGasStation is ERC2771Forwarder {
     constructor(string memory name) ERC2771Forwarder(name) {}

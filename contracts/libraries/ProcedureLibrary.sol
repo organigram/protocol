@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import '../IOrgan.sol';
+import {IOrgan} from '../IOrgan.sol';
 
 /*
     Organigram Protocol - Procedure library.
@@ -56,18 +56,12 @@ library ProcedureLibrary {
         Modifiers.
     */
     modifier onlyInOrgan(address payable organAddress, address sender) {
-        require(isInOrgan(organAddress, sender), 'Not authorized.');
+        _requireInOrgan(organAddress, sender);
         _;
     }
 
     modifier onlyNewProposal(ProcedureData storage self, uint256 proposalKey) {
-        require(
-            !self.proposals[proposalKey].presented &&
-                !self.proposals[proposalKey].adopted &&
-                !self.proposals[proposalKey].applied &&
-                !self.proposals[proposalKey].blocked,
-            'Not authorized'
-        );
+        _requireNewProposal(self, proposalKey);
         _;
     }
 
@@ -75,12 +69,7 @@ library ProcedureLibrary {
         ProcedureData storage self,
         uint256 proposalKey
     ) {
-        require(
-            self.proposals[proposalKey].adopted &&
-                !self.proposals[proposalKey].applied &&
-                !self.proposals[proposalKey].blocked,
-            'Not authorized'
-        );
+        _requireAdoptedProposal(self, proposalKey);
         _;
     }
 
@@ -88,6 +77,46 @@ library ProcedureLibrary {
         ProcedureData storage self,
         uint256 proposalKey
     ) {
+        _requirePresentedProposal(self, proposalKey);
+        _;
+    }
+
+    function _requireInOrgan(
+        address payable organAddress,
+        address sender
+    ) private view {
+        require(isInOrgan(organAddress, sender), 'Not authorized.');
+    }
+
+    function _requireNewProposal(
+        ProcedureData storage self,
+        uint256 proposalKey
+    ) private view {
+        require(
+            !self.proposals[proposalKey].presented &&
+                !self.proposals[proposalKey].adopted &&
+                !self.proposals[proposalKey].applied &&
+                !self.proposals[proposalKey].blocked,
+            'Not authorized'
+        );
+    }
+
+    function _requireAdoptedProposal(
+        ProcedureData storage self,
+        uint256 proposalKey
+    ) private view {
+        require(
+            self.proposals[proposalKey].adopted &&
+                !self.proposals[proposalKey].applied &&
+                !self.proposals[proposalKey].blocked,
+            'Not authorized'
+        );
+    }
+
+    function _requirePresentedProposal(
+        ProcedureData storage self,
+        uint256 proposalKey
+    ) private view {
         require(
             self.proposals[proposalKey].presented &&
                 !self.proposals[proposalKey].adopted &&
@@ -95,7 +124,6 @@ library ProcedureLibrary {
                 !self.proposals[proposalKey].blocked,
             'Not authorized'
         );
-        _;
     }
 
     /**

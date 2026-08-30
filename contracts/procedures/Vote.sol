@@ -2,7 +2,9 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import '../Procedure.sol';
+import {Procedure} from '../Procedure.sol';
+import {ProcedureLibrary} from '../libraries/ProcedureLibrary.sol';
+import {IOrgan} from '../IOrgan.sol';
 
 struct Vote {
     bool voted;

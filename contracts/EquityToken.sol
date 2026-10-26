@@ -19,11 +19,22 @@ contract EquityToken is
 
     mapping(bytes32 => mapping(address => bool)) private procedures;
     mapping(bytes32 => uint256) private procedureCounts;
+    bool private settlingTransfer;
 
     event ProcedureAuthorizationUpdated(
         bytes32 indexed role,
         address indexed procedure,
         bool authorized
+    );
+
+    /// @notice Movement record of a settled transfer, from which the register of share movements is built.
+    event MovementSettled(
+        address indexed procedure,
+        uint256 indexed proposalKey,
+        address indexed seller,
+        address recipient,
+        uint256 amount,
+        string movementCid
     );
 
     modifier onlyAuthorizedProcedure(bytes32 role) {
@@ -72,23 +83,28 @@ contract EquityToken is
         return 0;
     }
 
-    /// @notice Settles a transfer initiated by an authorized procedure.
-    /// @dev The calling procedure writes the matching movement record immediately afterwards.
+    /// @notice Settles a transfer of the applying proposal's creator and records the movement.
     function settleTransfer(
         address recipient,
-        uint256 amount
+        uint256 amount,
+        string calldata movementCid
     ) external onlyAuthorizedProcedure(TRANSFER_PROCEDURE_ROLE) {
-        (bool isApplying, , address seller) = IProcedureExecutionContext(
+        (, uint256 proposalKey, address seller) = IProcedureExecutionContext(
             msg.sender
         ).getExecutionContext();
-        require(isApplying, 'Transfer must be applied by a proposal.');
-        require(
-            IProcedureExecutionContext(msg.sender).isSettlingEquityTransfer(),
-            'Transfer must include a movement record.'
-        );
-        _validateTransfer(seller, recipient, amount, 'movement');
+        _validateTransfer(seller, recipient, amount, movementCid);
 
+        settlingTransfer = true;
         _transfer(seller, recipient, amount);
+        settlingTransfer = false;
+        emit MovementSettled(
+            msg.sender,
+            proposalKey,
+            seller,
+            recipient,
+            amount,
+            movementCid
+        );
     }
 
     /// @notice Grant or revoke a transfer or administration procedure through governance.
@@ -175,13 +191,8 @@ contract EquityToken is
     ) internal override(ERC20Upgradeable, ERC20VotesUpgradeable) {
         if (from != address(0) && to != address(0)) {
             require(
-                procedures[TRANSFER_PROCEDURE_ROLE][msg.sender],
+                settlingTransfer,
                 'Transfers must be settled by an authorized procedure.'
-            );
-            require(
-                IProcedureExecutionContext(msg.sender)
-                    .isSettlingEquityTransfer(),
-                'Transfer must include a movement record.'
             );
         }
         super._update(from, to, value);

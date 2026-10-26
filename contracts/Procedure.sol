@@ -48,7 +48,6 @@ contract Procedure is
         keccak256(
             'ApplyProposal(uint256 proposalKey,uint256 nonce,uint256 deadline)'
         );
-    bool private equitySettlementInProgress;
 
     /**
         Modifiers.
@@ -317,13 +316,7 @@ contract Procedure is
         );
     }
 
-    /// @notice Whether this procedure is between the token transfer and the register write.
-    /// @dev EquityToken uses this marker to reject a direct token operation.
-    function isSettlingEquityTransfer() external view returns (bool) {
-        return equitySettlementInProgress;
-    }
-
-    /// @notice Transfers equity through this procedure.
+    /// @notice Transfers the proposal creator's equity; the token emits the movement record.
     function transferEquity(
         address asset,
         address recipient,
@@ -331,18 +324,7 @@ contract Procedure is
         string calldata movementCid
     ) external {
         require(msg.sender == address(this), 'Only executable proposal.');
-        require(
-            procedureData.isApplyingProposal,
-            'Transfer must be applied by a proposal.'
-        );
-        require(
-            bytes(movementCid).length > 0,
-            'Transfer must include a movement record.'
-        );
-
-        equitySettlementInProgress = true;
-        IEquityToken(asset).settleTransfer(recipient, amount);
-        equitySettlementInProgress = false;
+        IEquityToken(asset).settleTransfer(recipient, amount, movementCid);
     }
 
     /// @inheritdoc IProposalOperationValidator

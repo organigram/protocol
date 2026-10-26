@@ -7,7 +7,4 @@ interface IProcedureExecutionContext {
         external
         view
         returns (bool isApplying, uint256 proposalKey, address proposalCreator);
-
-    /// @notice Whether the procedure is in the atomic equity-transfer settlement path.
-    function isSettlingEquityTransfer() external view returns (bool);
 }

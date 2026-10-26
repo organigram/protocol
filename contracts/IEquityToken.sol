@@ -3,7 +3,11 @@ pragma solidity ^0.8.24;
 
 /// @notice Minimal interface used by procedures that settle equity transfers.
 interface IEquityToken {
-    function settleTransfer(address recipient, uint256 amount) external;
+    function settleTransfer(
+        address recipient,
+        uint256 amount,
+        string calldata movementCid
+    ) external;
 
     function validateTransfer(
         address seller,

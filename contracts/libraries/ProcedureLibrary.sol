@@ -344,26 +344,20 @@ library ProcedureLibrary {
                 ) {
                     // solhint-disable-next-line avoid-low-level-calls
                     // slither-disable-next-line arbitrary-send-eth
-                    (bool success, ) = self
+                    (bool success, bytes memory revertData) = self
                         .proposals[proposalKey]
                         .operations[i]
                         .target
                         .call{
                         value: self.proposals[proposalKey].operations[i].value
                     }(self.proposals[proposalKey].operations[i].data);
-                    require(
-                        success,
-                        'Failed to apply proposal: the underlying transaction reverted.'
-                    );
+                    if (!success) _revertOperationFailure(revertData);
                 } else {
                     // solhint-disable-next-line avoid-low-level-calls
-                    (bool success, ) = address(this).call{
+                    (bool success, bytes memory revertData) = address(this).call{
                         value: self.proposals[proposalKey].operations[i].value
                     }(self.proposals[proposalKey].operations[i].data);
-                    require(
-                        success,
-                        'Failed to apply proposal: the underlying transaction reverted.'
-                    );
+                    if (!success) _revertOperationFailure(revertData);
                 }
             }
         }
@@ -372,5 +366,15 @@ library ProcedureLibrary {
         self.applyingProposalKey = 0;
         self.applyingProposalCreator = address(0);
         emit ProposalApplied(proposalKey);
+    }
+
+    /// @dev Preserve the error reported by the failed proposal operation.
+    function _revertOperationFailure(bytes memory revertData) private pure {
+        if (revertData.length == 0) {
+            revert('Failed to apply proposal: the underlying transaction reverted.');
+        }
+        assembly {
+            revert(add(revertData, 0x20), mload(revertData))
+        }
     }
 }

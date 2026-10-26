@@ -34,6 +34,14 @@ contract NominationProcedure is Procedure {
         super._adoptProposal(proposalKey);
     }
 
+    /// @notice Reject a nomination without applying its proposal operations.
+    /// @param proposalKey The proposal to reject.
+    function reject(
+        uint256 proposalKey
+    ) public onlyInOrgan(procedureData.deciders) {
+        super._rejectProposal(proposalKey);
+    }
+
     function nominateBySig(
         uint256 proposalKey,
         uint256 nonce,

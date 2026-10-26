@@ -21,7 +21,7 @@ contract GovernedEquityTransferTest {
     address private constant BOB = address(0xB0B);
     address private constant CAROL = address(0xCA201);
 
-    function testHolderProposesAndChairmanSettlesAndRegistersAtomically() public {
+    function testHolderProposesAndChairmanTransfersAndRegistersAtomically() public {
         (EquityToken token, Organ registry, NominationProcedure procedure) = _deploySystem(true);
 
         ProcedureLibrary.Operation[] memory operations = _transferOperations(
@@ -39,6 +39,90 @@ contract GovernedEquityTransferTest {
         require(token.balanceOf(BOB) == 5, "Buyer was not credited.");
         (,, uint256 entriesLength, uint256 entriesCount,) = registry.getOrgan();
         require(entriesLength == 2 && entriesCount == 1, "Movement was not registered.");
+    }
+
+    function testChairmanCanRejectTransferWithoutModeration() public {
+        (EquityToken token, Organ registry, NominationProcedure procedure) = _deploySystem(true);
+        ProcedureLibrary.Operation[] memory operations = _transferOperations(
+            procedure, token, registry, BOB, 5, "encrypted-cid"
+        );
+        vm.prank(ALICE);
+        uint256 proposalKey = procedure.propose("transfer-proposal", operations);
+
+        vm.prank(CAROL);
+        procedure.reject(proposalKey);
+
+        require(token.balanceOf(ALICE) == 100, "Rejected transfer debited the seller.");
+        require(token.balanceOf(BOB) == 0, "Rejected transfer credited the buyer.");
+        (,,, uint256 entriesCount,) = registry.getOrgan();
+        require(entriesCount == 0, "Rejected transfer wrote the register.");
+    }
+
+    function testTransferDoesNotRequireASeparateRegisterOperation() public {
+        (EquityToken token, Organ registry, NominationProcedure procedure) = _deploySystem(true);
+        ProcedureLibrary.Operation[] memory operations = new ProcedureLibrary.Operation[](1);
+        operations[0] = ProcedureLibrary.Operation({
+            index: 0,
+            target: payable(address(0)),
+            data: abi.encodeWithSelector(
+                procedure.transferEquity.selector,
+                address(token),
+                BOB,
+                5,
+                "encrypted-cid"
+            ),
+            value: 0,
+            processed: false
+        });
+        vm.prank(ALICE);
+        uint256 proposalKey = procedure.propose("transfer-proposal", operations);
+        vm.prank(CAROL);
+        procedure.nominate(proposalKey);
+
+        require(token.balanceOf(ALICE) == 95, "Seller was not debited.");
+        require(token.balanceOf(BOB) == 5, "Buyer was not credited.");
+        (,, uint256 entriesLength, uint256 entriesCount,) = registry.getOrgan();
+        require(entriesLength == 1 && entriesCount == 0, "Transfer unexpectedly wrote an organ entry.");
+    }
+
+    function testTransferRequiresAnEncryptedMovementRecord() public {
+        (EquityToken token,, NominationProcedure procedure) = _deploySystem(true);
+        ProcedureLibrary.Operation[] memory operations = new ProcedureLibrary.Operation[](1);
+        operations[0] = ProcedureLibrary.Operation({
+            index: 0,
+            target: payable(address(0)),
+            data: abi.encodeWithSelector(
+                procedure.transferEquity.selector,
+                address(token),
+                BOB,
+                5,
+                ""
+            ),
+            value: 0,
+            processed: false
+        });
+        vm.expectRevert(bytes("Movement record required."));
+        vm.prank(ALICE);
+        procedure.propose("transfer-without-record", operations);
+
+        require(token.balanceOf(ALICE) == 100, "Transfer without record debited the seller.");
+        require(token.balanceOf(BOB) == 0, "Transfer without record credited the buyer.");
+    }
+
+    function testTransferOperationMayTargetTheProcedureAddress() public {
+        (EquityToken token, Organ registry, NominationProcedure procedure) = _deploySystem(true);
+        ProcedureLibrary.Operation[] memory operations = _transferOperations(
+            procedure, token, registry, BOB, 5, "encrypted-cid"
+        );
+        operations[0].target = payable(address(procedure));
+
+        vm.prank(ALICE);
+        uint256 proposalKey = procedure.propose("transfer-proposal", operations);
+        vm.prank(CAROL);
+        procedure.nominate(proposalKey);
+
+        require(token.balanceOf(ALICE) == 95, "Seller was not debited.");
+        require(token.balanceOf(BOB) == 5, "Buyer was not credited.");
     }
 
     function testOnlyTheHolderCanCreateAnExecutableTransferProposal() public {
@@ -90,7 +174,7 @@ contract GovernedEquityTransferTest {
         );
 
         vm.prank(CAROL);
-        vm.expectRevert(bytes("Failed to apply proposal: the underlying transaction reverted."));
+        vm.expectRevert(bytes("Not authorized."));
         procedure.nominate(proposalKey);
 
         require(token.balanceOf(ALICE) == 100, "Failed registry write moved units.");
@@ -112,7 +196,7 @@ contract GovernedEquityTransferTest {
         uint256 proposalKey = procedure.propose("direct-settlement", operations);
 
         vm.prank(CAROL);
-        vm.expectRevert(bytes("Failed to apply proposal: the underlying transaction reverted."));
+        vm.expectRevert(bytes("Transfer must include a movement record."));
         procedure.nominate(proposalKey);
 
         require(token.balanceOf(ALICE) == 100, "Direct settlement moved units.");
@@ -169,18 +253,26 @@ contract GovernedEquityTransferTest {
         uint256 amount,
         string memory movementCid
     ) private pure returns (ProcedureLibrary.Operation[] memory operations) {
-        operations = new ProcedureLibrary.Operation[](1);
+        operations = new ProcedureLibrary.Operation[](2);
         operations[0] = ProcedureLibrary.Operation({
             index: 0,
             target: payable(address(0)),
             data: abi.encodeWithSelector(
-                procedure.settleEquityTransfer.selector,
+                procedure.transferEquity.selector,
                 address(token),
-                payable(address(registry)),
                 recipient,
                 amount,
                 movementCid
             ),
+            value: 0,
+            processed: false
+        });
+        CoreLibrary.Entry[] memory entries = new CoreLibrary.Entry[](1);
+        entries[0] = CoreLibrary.Entry(address(0), movementCid);
+        operations[1] = ProcedureLibrary.Operation({
+            index: 1,
+            target: payable(address(registry)),
+            data: abi.encodeWithSelector(registry.addEntries.selector, entries),
             value: 0,
             processed: false
         });

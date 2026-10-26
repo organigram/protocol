@@ -6,8 +6,6 @@ import {ProcedureLibrary} from './libraries/ProcedureLibrary.sol';
 import {ERC2771Recipient} from './MetaGasStation.sol';
 import {IProposalOperationValidator} from './IProposalOperationValidator.sol';
 import {IEquityToken} from './IEquityToken.sol';
-import {IOrgan} from './IOrgan.sol';
-import {CoreLibrary} from './libraries/CoreLibrary.sol';
 import {ERC165} from '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 import {ECDSA} from '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
 import {EIP712} from '@openzeppelin/contracts/utils/cryptography/EIP712.sol';
@@ -325,11 +323,9 @@ contract Procedure is
         return equitySettlementInProgress;
     }
 
-    /// @notice Settles an equity transfer and records it in an organ register.
-    /// @dev This may only be reached through a self-targeted proposal operation.
-    function settleEquityTransfer(
+    /// @notice Transfers equity through this procedure.
+    function transferEquity(
         address asset,
-        address payable equityTransferRegister,
         address recipient,
         uint256 amount,
         string calldata movementCid
@@ -340,17 +336,13 @@ contract Procedure is
             'Transfer must be applied by a proposal.'
         );
         require(
-            equityTransferRegister.code.length > 0,
-            'Equity transfer register required.'
+            bytes(movementCid).length > 0,
+            'Transfer must include a movement record.'
         );
 
         equitySettlementInProgress = true;
         IEquityToken(asset).settleTransfer(recipient, amount);
         equitySettlementInProgress = false;
-
-        CoreLibrary.Entry[] memory entries = new CoreLibrary.Entry[](1);
-        entries[0] = CoreLibrary.Entry(address(0), movementCid);
-        IOrgan(equityTransferRegister).addEntries(entries);
     }
 
     /// @inheritdoc IProposalOperationValidator
@@ -359,7 +351,7 @@ contract Procedure is
     ) external pure override returns (bool) {
         return
             operationData.length >= 4 &&
-            bytes4(operationData[:4]) == this.settleEquityTransfer.selector;
+            bytes4(operationData[:4]) == this.transferEquity.selector;
     }
 
     /// @inheritdoc IProposalOperationValidator
@@ -367,25 +359,18 @@ contract Procedure is
         address creator,
         bytes calldata operationData
     ) external view override {
+        require(operationData.length >= 4, 'Unsupported owner-bound operation.');
+        bytes4 selector = bytes4(operationData[:4]);
         require(
-            operationData.length >= 4 &&
-                bytes4(operationData[:4]) == this.settleEquityTransfer.selector,
+            selector == this.transferEquity.selector,
             'Unsupported owner-bound operation.'
         );
         (
             address asset,
-            address payable equityTransferRegister,
             address recipient,
             uint256 amount,
             string memory movementCid
-        ) = abi.decode(
-                operationData[4:],
-                (address, address, address, uint256, string)
-            );
-        require(
-            equityTransferRegister.code.length > 0,
-            'Equity transfer register required.'
-        );
+        ) = abi.decode(operationData[4:], (address, address, uint256, string));
         require(
             IEquityToken(asset).isTransferProcedure(address(this)),
             'Not transfer procedure.'

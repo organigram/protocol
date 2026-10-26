@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import {VoteProcedure} from './Vote.sol';
+import {VoteProcedure, Election, Vote} from './Vote.sol';
 import {IERC20} from '@openzeppelin/contracts/interfaces/IERC20.sol';
 import {IERC5805} from '@openzeppelin/contracts/interfaces/IERC5805.sol';
 
@@ -260,25 +260,16 @@ contract ERC20VoteProcedure is VoteProcedure {
             block.timestamp >= (elections[proposalKey].start + voteDuration),
             'Election not ended'
         );
-        uint48 snapshot = elections[proposalKey].snapshot;
-        uint256 approvals = 0;
-        uint256 objections = 0;
-        for (uint256 i = 0; i < elections[proposalKey].voters.length; i++) {
-            address voter = elections[proposalKey].voters[i];
-            if (elections[proposalKey].votes[voter].voted) {
-                uint256 weight = tokenContract.getPastVotes(voter, snapshot);
-                if (elections[proposalKey].votes[voter].approved) {
-                    approvals += weight;
-                } else {
-                    objections += weight;
-                }
-            }
-        }
+        (
+            uint256 approvals,
+            uint256 objections,
+            uint256 eligibleVotes
+        ) = getElectionResults(proposalKey);
         uint256 votesCast = approvals + objections;
         require(votesCast > 0, 'No vote');
         require(
             votesCast >=
-                ((quorumSize * tokenContract.getPastTotalSupply(snapshot)) /
+                ((quorumSize * eligibleVotes) /
                     100000),
             'Quorum has not been reached'
         );
@@ -295,6 +286,29 @@ contract ERC20VoteProcedure is VoteProcedure {
                 'Member majority has not been reached'
             );
         }
-        return (approvals > ((votesCast * majoritySize) / 100000));
+        return approvals * 100000 >= votesCast * majoritySize;
+    }
+
+    /// @notice Get the token-weighted vote split at the election snapshot.
+    function getElectionResults(
+        uint256 proposalKey
+    ) public view override returns (
+        uint256 approvals,
+        uint256 objections,
+        uint256 eligibleVotes
+    ) {
+        Election storage election = elections[proposalKey];
+        for (uint256 i = 0; i < election.voters.length; i++) {
+            address voter = election.voters[i];
+            Vote storage voterVote = election.votes[voter];
+            if (!voterVote.voted) continue;
+            uint256 weight = tokenContract.getPastVotes(voter, election.snapshot);
+            if (voterVote.approved) {
+                approvals += weight;
+            } else {
+                objections += weight;
+            }
+        }
+        eligibleVotes = tokenContract.getPastTotalSupply(election.snapshot);
     }
 }

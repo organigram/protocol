@@ -9,6 +9,7 @@ import "../contracts/libraries/CoreLibrary.sol";
 import "../contracts/libraries/ProcedureLibrary.sol";
 import "../contracts/procedures/ERC20Vote.sol";
 import "../contracts/procedures/Nomination.sol";
+import "../contracts/procedures/Vote.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
 interface Vm {
@@ -219,6 +220,132 @@ contract ProtocolSecurityTest {
 
         ProcedureLibrary.Proposal memory proposal = procedure.getProposal(proposalKey);
         require(proposal.adopted && proposal.applied, "Approved vote was not applied.");
+    }
+
+    function testERC20VoteCanRequireUnanimousApproval() public {
+        Asset token = _deployAsset(100 ether);
+        vm.roll(10);
+        token.delegate(address(this));
+        vm.roll(11);
+
+        uint8[3] memory roleModes = [uint8(1), uint8(2), uint8(1)];
+        ERC20VoteProcedure implementation = new ERC20VoteProcedure();
+        ERC20VoteProcedure procedure = ERC20VoteProcedure(payable(Clones.clone(address(implementation))));
+        procedure.initialize(
+            "unanimous-token-vote",
+            payable(address(0)),
+            payable(address(0)),
+            payable(address(0)),
+            false,
+            address(0),
+            0,
+            10,
+            100000,
+            address(token),
+            roleModes
+        );
+
+        ProcedureLibrary.Operation[] memory operations = new ProcedureLibrary.Operation[](0);
+        vm.warp(1000);
+        uint256 proposalKey = procedure.propose("unanimous-token-proposal", operations);
+        vm.warp(1001);
+        procedure.vote(proposalKey, true);
+        vm.warp(1011);
+
+        require(procedure.count(proposalKey), "Unanimous token vote was not approved.");
+    }
+
+    function testVoteCanRequireUnanimousApproval() public {
+        CoreLibrary.Entry[] memory entries = new CoreLibrary.Entry[](1);
+        entries[0] = CoreLibrary.Entry(address(this), "voter");
+        Organ sourceOrgan = _deployOrganWithEntries(entries);
+        VoteProcedure implementation = new VoteProcedure();
+        VoteProcedure procedure = VoteProcedure(payable(Clones.clone(address(implementation))));
+        procedure.initialize(
+            "unanimous-vote",
+            payable(address(sourceOrgan)),
+            payable(address(0)),
+            payable(address(sourceOrgan)),
+            false,
+            address(0),
+            0,
+            10,
+            100000
+        );
+
+        ProcedureLibrary.Operation[] memory operations = new ProcedureLibrary.Operation[](0);
+        vm.warp(1000);
+        uint256 proposalKey = procedure.propose("unanimous-proposal", operations);
+        vm.warp(1001);
+        procedure.vote(proposalKey, true);
+        vm.warp(1011);
+
+        require(procedure.count(proposalKey), "Unanimous member vote was not approved.");
+    }
+
+    function testVoteElectionResultsExposeTheVoteSplit() public {
+        CoreLibrary.Entry[] memory entries = new CoreLibrary.Entry[](2);
+        entries[0] = CoreLibrary.Entry(address(this), "voter");
+        entries[1] = CoreLibrary.Entry(BOB, "voter");
+        Organ sourceOrgan = _deployOrganWithEntries(entries);
+        VoteProcedure implementation = new VoteProcedure();
+        VoteProcedure procedure = VoteProcedure(payable(Clones.clone(address(implementation))));
+        procedure.initialize(
+            "vote-results",
+            payable(address(sourceOrgan)),
+            payable(address(0)),
+            payable(address(sourceOrgan)),
+            false,
+            address(0),
+            0,
+            10,
+            50000
+        );
+
+        ProcedureLibrary.Operation[] memory operations = new ProcedureLibrary.Operation[](0);
+        vm.warp(1000);
+        uint256 proposalKey = procedure.propose("vote-results-proposal", operations);
+        vm.warp(1001);
+        procedure.vote(proposalKey, true);
+        vm.prank(BOB);
+        procedure.vote(proposalKey, false);
+
+        (
+            uint256 approvals,
+            uint256 objections,
+            uint256 eligibleVotes
+        ) = procedure.getElectionResults(proposalKey);
+        require(approvals == 1, "Approving vote was not exposed.");
+        require(objections == 1, "Rejecting vote was not exposed.");
+        require(eligibleVotes == 2, "Eligible voter count was not exposed.");
+    }
+
+    function testERC20VoteElectionResultsUseSnapshotVotingPower() public {
+        Asset token = _deployAsset(100 ether);
+        require(token.transfer(BOB, 40 ether), "Bob funding failed.");
+        vm.roll(10);
+        token.delegate(address(this));
+        vm.prank(BOB);
+        token.delegate(BOB);
+        vm.roll(11);
+
+        ERC20VoteProcedure procedure = _deployERC20VoteProcedure(token);
+        ProcedureLibrary.Operation[] memory operations = new ProcedureLibrary.Operation[](0);
+        vm.warp(1000);
+        uint256 proposalKey = procedure.propose("token-vote-results", operations);
+        vm.warp(1001);
+        procedure.vote(proposalKey, true);
+        vm.prank(BOB);
+        procedure.vote(proposalKey, false);
+
+        (
+            uint256 approvals,
+            uint256 objections,
+            uint256 eligibleVotes
+        ) = procedure.getElectionResults(proposalKey);
+        require(approvals == 60 ether, "Approving voting power was not exposed.");
+        require(objections == 40 ether, "Rejecting voting power was not exposed.");
+        require(eligibleVotes == 100 ether, "Snapshot supply was not exposed.");
     }
 
     function testAssetSelfDelegatesVotingRightsToNewHolders() public {

@@ -173,30 +173,47 @@ contract VoteProcedure is Procedure {
             block.timestamp >= (elections[proposalKey].start + voteDuration),
             'Election not ended.'
         );
-        uint256 decidersCount = _getOrganEntriesCount(procedureData.deciders);
+        (
+            uint256 approvals,
+            uint256 objections,
+            uint256 eligibleVotes
+        ) = getElectionResults(proposalKey);
+        uint256 votesCast = approvals + objections;
         if (
-            elections[proposalKey].votesCount <
-            ((quorumSize * decidersCount) / 100000)
+            votesCast <
+            ((quorumSize * eligibleVotes) / 100000)
         ) {
             return false;
         }
-        uint256 approvals = 0;
-        for (uint256 i = 0; i < elections[proposalKey].voters.length; i++) {
-            if (
-                elections[proposalKey]
-                    .votes[elections[proposalKey].voters[i]]
-                    .voted &&
-                elections[proposalKey]
-                    .votes[elections[proposalKey].voters[i]]
-                    .approved
-            ) {
+        require(votesCast > 0, 'No vote');
+        return
+            approvals * 100000 >=
+            votesCast * majoritySize;
+    }
+
+    /// @notice Get the current vote split and the eligible voting base.
+    /// @dev ERC20VoteProcedure overrides this to use snapshot voting power.
+    /// @return approvals The number of approving votes.
+    /// @return objections The number of rejecting votes.
+    /// @return eligibleVotes The number of votes eligible to participate.
+    function getElectionResults(
+        uint256 proposalKey
+    ) public view virtual returns (
+        uint256 approvals,
+        uint256 objections,
+        uint256 eligibleVotes
+    ) {
+        Election storage election = elections[proposalKey];
+        for (uint256 i = 0; i < election.voters.length; i++) {
+            Vote storage voterVote = election.votes[election.voters[i]];
+            if (!voterVote.voted) continue;
+            if (voterVote.approved) {
                 approvals++;
+            } else {
+                objections++;
             }
         }
-
-        require(elections[proposalKey].votesCount > 0, 'No vote');
-        return (approvals >
-            ((elections[proposalKey].votesCount * majoritySize) / 100000));
+        eligibleVotes = _getOrganEntriesCount(procedureData.deciders);
     }
 
     function _getOrganEntriesCount(

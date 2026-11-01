@@ -121,15 +121,16 @@
     "CloneableAsset": "0xD1E578827559478F6bEe954adE4c638D26B8E19f"
   },
   "11155111": {
-    "MetaGasStation": "0x1534fe91833e7e176dc78a69924d70ce92a80a18",
-    "Asset": "0x0ece582a46c2c9f8434e2c78a26671a330008e73",
-    "Organ": "0xd504dc1551636ffec79c4781f1c49a2af96400a1",
-    "NominationProcedure": "0xec127c2c3dec2d16af32e801ca23e1852b8147c8",
-    "VoteProcedure": "0x439470f78a388a25752f3d8c17b9d3cc4ff46dcd",
-    "ERC20VoteProcedure": "0x375e37e86f07e56640f88d13c83a58a8ff046cb4",
-    "OrganigramClient": "0x7fd8fe451e2f5b3135067caa073749bdeb278d9b",
-    "CloneableOrgan": "0x0b64B1D161feDcbA0Ef5B8aAcB8b07B47AA73768",
-    "CloneableAsset": "0x7bA2C906A1678FF2452eEd6C65C162728C5230B7"
+    "MetaGasStation": "0x9fadd2187f791b1af66061a053264c4828975cd3",
+    "Asset": "0xc5d01ebcf75d0fe467f04d1d022a006594320c09",
+    "Organ": "0x23f816f49caac05c618f94a8cc8c313d3e3f8571",
+    "NominationProcedure": "0x860280fcb3a4e59bb39f68ce1ca9963891a9a605",
+    "VoteProcedure": "0xc18752c03154c6df2e699bfb821d4bdf874d50b2",
+    "ERC20VoteProcedure": "0x5bf1f141a250a24a9fcbcff252e8a7f50b4245d5",
+    "OrganigramClient": "0x761da9a21ebd0147967ed712e0298c1501e15d9a",
+    "CloneableOrgan": "0x341a6A77064F1368d661AbfE91a9Bb43933A7aB9",
+    "CloneableAsset": "0x53A5ABD01297fF2177488C792AC227c1A9C43f7A",
+    "EquityToken": "0x7e42Ed59E9eC2fA23ee8f38C69E2AE1E45c71aD8"
   },
   "11155420": {
     "MetaGasStation": "0x2b850becf0d9f3344f191130afe659c34b9abd60",

@@ -10,9 +10,11 @@ export type DeploymentTarget = {
   name: string
   chainId: string
   rpcUrl: string
+  hardfork?: string
 }
 
 const THIRDWEB_CLIENT_ID_ENV = 'NEXT_PUBLIC_THIRDWEB_CLIENT_ID'
+const THIRDWEB_API_SECRET_ENV = 'THIRDWEB_API_SECRET'
 const ANVIL_TARGET_NAME = 'anvil'
 const ANVIL_CHAIN_ID = '31337'
 const ANVIL_RPC_URL = 'http://127.0.0.1:8545'
@@ -56,6 +58,18 @@ const getThirdwebRpcUrl = (
   env: NodeJS.ProcessEnv = process.env
 ): string =>
   `https://${chainId}.rpc.thirdweb.com/${getRequiredThirdwebClientId(env)}`
+
+// The public client ID only works from allowed browser origins: scripts
+// authenticate to thirdweb RPC with the secret key header instead.
+export const getRpcHeaders = (
+  rpcUrl: string,
+  env: NodeJS.ProcessEnv = process.env
+): Record<string, string> => {
+  const secretKey = env[THIRDWEB_API_SECRET_ENV]?.trim()
+  if (secretKey == null || secretKey === '') return {}
+  if (!new URL(rpcUrl).hostname.endsWith('.rpc.thirdweb.com')) return {}
+  return { 'x-secret-key': secretKey }
+}
 
 const isAnvilTarget = (targetName: string): boolean =>
   normalizeLookupKey(targetName) === ANVIL_TARGET_NAME

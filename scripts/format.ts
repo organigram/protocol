@@ -278,7 +278,7 @@ export const formatFoundryDeployments = async (
     })
     fs.writeFileSync(
       LOCAL_OUT_FILE,
-      JSON.stringify(localDeploymentsJson, null, 2),
+      JSON.stringify(localDeploymentsJson, null, 2) + '\n',
       'utf-8'
     )
     console.info(`Saved local deployment file: ${LOCAL_OUT_FILE}`)
@@ -290,7 +290,11 @@ export const formatFoundryDeployments = async (
     ...publicDeployments
   })
 
-  fs.writeFileSync(OUT_FILE, JSON.stringify(deploymentsJson, null, 2), 'utf-8')
+  fs.writeFileSync(
+    OUT_FILE,
+    JSON.stringify(deploymentsJson, null, 2) + '\n',
+    'utf-8'
+  )
   console.info(`Saved deployment file: ${OUT_FILE}`)
 }
 

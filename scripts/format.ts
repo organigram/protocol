@@ -247,11 +247,17 @@ export const formatFoundryDeployments = async (
       `OrganigramClient.asset() on chain ${chainId}`,
       async () => (await organigramClient.read.asset()) as `0x${string}`
     )
+    const cloneableEquityToken = await readWithRpcPropagationRetry(
+      `OrganigramClient.equityToken() on chain ${chainId}`,
+      async () =>
+        (await organigramClient.read.equityToken()) as `0x${string}`
+    )
 
     currentDeployments[chainId] = {
       ...deployedContracts,
       CloneableOrgan: cloneableOrgan,
-      CloneableAsset: cloneableAsset
+      CloneableAsset: cloneableAsset,
+      EquityToken: cloneableEquityToken
     }
   }
 
@@ -272,7 +278,7 @@ export const formatFoundryDeployments = async (
     })
     fs.writeFileSync(
       LOCAL_OUT_FILE,
-      JSON.stringify(localDeploymentsJson, null, 2),
+      JSON.stringify(localDeploymentsJson, null, 2) + '\n',
       'utf-8'
     )
     console.info(`Saved local deployment file: ${LOCAL_OUT_FILE}`)
@@ -284,7 +290,11 @@ export const formatFoundryDeployments = async (
     ...publicDeployments
   })
 
-  fs.writeFileSync(OUT_FILE, JSON.stringify(deploymentsJson, null, 2), 'utf-8')
+  fs.writeFileSync(
+    OUT_FILE,
+    JSON.stringify(deploymentsJson, null, 2) + '\n',
+    'utf-8'
+  )
   console.info(`Saved deployment file: ${OUT_FILE}`)
 }
 

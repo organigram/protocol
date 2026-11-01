@@ -17,7 +17,7 @@ interface Vm {
 }
 
 contract DeployProtocolScript {
-    Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
+    Vm private constant VM = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     struct Deployment {
         Asset asset;
@@ -31,9 +31,9 @@ contract DeployProtocolScript {
     }
 
     function run() external returns (Deployment memory deployment) {
-        bytes32 proceduresRegistrySalt = vm.envOr("PROCEDURES_REGISTRY_SALT", bytes32(0));
+        bytes32 proceduresRegistrySalt = VM.envOr("PROCEDURES_REGISTRY_SALT", bytes32(0));
 
-        vm.startBroadcast();
+        VM.startBroadcast();
 
         deployment.metaGasStation = new MetaGasStation("Organigram MetaGasStation");
         deployment.asset = new Asset();
@@ -51,6 +51,6 @@ contract DeployProtocolScript {
         entries[2] = CoreLibrary.Entry(address(deployment.erc20VoteProcedure), "erc20Vote");
         deployment.proceduresRegistry.addEntries(entries);
 
-        vm.stopBroadcast();
+        VM.stopBroadcast();
     }
 }

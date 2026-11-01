@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import '../IOrgan.sol';
+import {IOrgan} from '../IOrgan.sol';
 
 /*
     Organigram Protocol - Procedure library.
@@ -28,6 +28,9 @@ library ProcedureLibrary {
         bool withModeration;
         address forwarder;
         address caller;
+        bool isApplyingProposal;
+        uint256 applyingProposalKey;
+        address applyingProposalCreator;
     }
 
     struct Proposal {
@@ -53,18 +56,12 @@ library ProcedureLibrary {
         Modifiers.
     */
     modifier onlyInOrgan(address payable organAddress, address sender) {
-        require(isInOrgan(organAddress, sender), 'Not authorized.');
+        _requireInOrgan(organAddress, sender);
         _;
     }
 
     modifier onlyNewProposal(ProcedureData storage self, uint256 proposalKey) {
-        require(
-            !self.proposals[proposalKey].presented &&
-                !self.proposals[proposalKey].adopted &&
-                !self.proposals[proposalKey].applied &&
-                !self.proposals[proposalKey].blocked,
-            'Not authorized'
-        );
+        _requireNewProposal(self, proposalKey);
         _;
     }
 
@@ -72,12 +69,7 @@ library ProcedureLibrary {
         ProcedureData storage self,
         uint256 proposalKey
     ) {
-        require(
-            self.proposals[proposalKey].adopted &&
-                !self.proposals[proposalKey].applied &&
-                !self.proposals[proposalKey].blocked,
-            'Not authorized'
-        );
+        _requireAdoptedProposal(self, proposalKey);
         _;
     }
 
@@ -85,6 +77,46 @@ library ProcedureLibrary {
         ProcedureData storage self,
         uint256 proposalKey
     ) {
+        _requirePresentedProposal(self, proposalKey);
+        _;
+    }
+
+    function _requireInOrgan(
+        address payable organAddress,
+        address sender
+    ) private view {
+        require(isInOrgan(organAddress, sender), 'Not authorized.');
+    }
+
+    function _requireNewProposal(
+        ProcedureData storage self,
+        uint256 proposalKey
+    ) private view {
+        require(
+            !self.proposals[proposalKey].presented &&
+                !self.proposals[proposalKey].adopted &&
+                !self.proposals[proposalKey].applied &&
+                !self.proposals[proposalKey].blocked,
+            'Not authorized'
+        );
+    }
+
+    function _requireAdoptedProposal(
+        ProcedureData storage self,
+        uint256 proposalKey
+    ) private view {
+        require(
+            self.proposals[proposalKey].adopted &&
+                !self.proposals[proposalKey].applied &&
+                !self.proposals[proposalKey].blocked,
+            'Not authorized'
+        );
+    }
+
+    function _requirePresentedProposal(
+        ProcedureData storage self,
+        uint256 proposalKey
+    ) private view {
         require(
             self.proposals[proposalKey].presented &&
                 !self.proposals[proposalKey].adopted &&
@@ -92,7 +124,6 @@ library ProcedureLibrary {
                 !self.proposals[proposalKey].blocked,
             'Not authorized'
         );
-        _;
     }
 
     /**
@@ -186,6 +217,15 @@ library ProcedureLibrary {
         Operation[] memory operations,
         address caller
     ) public onlyInOrgan(self.proposers, caller) returns (uint256 proposalKey) {
+        return proposeUnchecked(self, cid, operations, caller);
+    }
+
+    function proposeUnchecked(
+        ProcedureData storage self,
+        string memory cid,
+        Operation[] memory operations,
+        address caller
+    ) internal returns (uint256 proposalKey) {
         proposalKey = self.proposalsLength++;
         self.proposals[proposalKey].creator = payable(caller);
         self.proposals[proposalKey].cid = cid;
@@ -217,6 +257,15 @@ library ProcedureLibrary {
         string memory reason,
         address caller
     ) public onlyInOrgan(self.moderators, caller) {
+        blockProposalUnchecked(self, proposalKey, reason, caller);
+    }
+
+    function blockProposalUnchecked(
+        ProcedureData storage self,
+        uint256 proposalKey,
+        string memory reason,
+        address caller
+    ) internal {
         require(self.withModeration, 'Moderation not enabled.');
         require(!self.proposals[proposalKey].blocked, 'Already blocked.');
         require(!self.proposals[proposalKey].applied, 'Already applied.');
@@ -236,9 +285,17 @@ library ProcedureLibrary {
         onlyInOrgan(self.moderators, caller)
         onlyNewProposal(self, proposalKey)
     {
+        presentProposalUnchecked(self, proposalKey, caller);
+    }
+
+    function presentProposalUnchecked(
+        ProcedureData storage self,
+        uint256 proposalKey,
+        address caller
+    ) internal onlyNewProposal(self, proposalKey) {
         require(self.withModeration, 'Moderation not enabled.');
         self.proposals[proposalKey].presented = true;
-        emit ProposalPresented(msg.sender, proposalKey);
+        emit ProposalPresented(caller, proposalKey);
     }
 
     /// @notice Adopt proposal and attempt to apply it.
@@ -269,6 +326,10 @@ library ProcedureLibrary {
         ProcedureData storage self,
         uint256 proposalKey
     ) public onlyAdoptedProposal(self, proposalKey) {
+        self.isApplyingProposal = true;
+        self.applyingProposalKey = proposalKey;
+        self.applyingProposalCreator = self.proposals[proposalKey].creator;
+
         // Process operations.
         for (
             uint256 i = 0;
@@ -283,30 +344,37 @@ library ProcedureLibrary {
                 ) {
                     // solhint-disable-next-line avoid-low-level-calls
                     // slither-disable-next-line arbitrary-send-eth
-                    (bool success, ) = self
+                    (bool success, bytes memory revertData) = self
                         .proposals[proposalKey]
                         .operations[i]
                         .target
                         .call{
                         value: self.proposals[proposalKey].operations[i].value
                     }(self.proposals[proposalKey].operations[i].data);
-                    require(
-                        success,
-                        'Failed to apply proposal: the underlying transaction reverted.'
-                    );
+                    if (!success) _revertOperationFailure(revertData);
                 } else {
                     // solhint-disable-next-line avoid-low-level-calls
-                    (bool success, ) = address(this).call{
+                    (bool success, bytes memory revertData) = address(this).call{
                         value: self.proposals[proposalKey].operations[i].value
                     }(self.proposals[proposalKey].operations[i].data);
-                    require(
-                        success,
-                        'Failed to apply proposal: the underlying transaction reverted.'
-                    );
+                    if (!success) _revertOperationFailure(revertData);
                 }
             }
         }
         self.proposals[proposalKey].applied = true;
+        self.isApplyingProposal = false;
+        self.applyingProposalKey = 0;
+        self.applyingProposalCreator = address(0);
         emit ProposalApplied(proposalKey);
+    }
+
+    /// @dev Preserve the error reported by the failed proposal operation.
+    function _revertOperationFailure(bytes memory revertData) private pure {
+        if (revertData.length == 0) {
+            revert('Failed to apply proposal: the underlying transaction reverted.');
+        }
+        assembly {
+            revert(add(revertData, 0x20), mload(revertData))
+        }
     }
 }

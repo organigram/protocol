@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import './libraries/CoreLibrary.sol';
+import {CoreLibrary} from './libraries/CoreLibrary.sol';
 
 interface IOrgan {
     enum ParamConstraintType {

@@ -2,13 +2,15 @@
 pragma solidity ^0.8.24;
 pragma experimental ABIEncoderV2;
 
-import './libraries/ProcedureLibrary.sol';
-import './MetaGasStation.sol';
-import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
-import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
-import '@openzeppelin/contracts/utils/cryptography/EIP712.sol';
+import {ProcedureLibrary} from './libraries/ProcedureLibrary.sol';
+import {ERC2771Recipient} from './MetaGasStation.sol';
+import {IProposalOperationValidator} from './IProposalOperationValidator.sol';
+import {IEquityToken} from './IEquityToken.sol';
+import {ERC165} from '@openzeppelin/contracts/utils/introspection/ERC165.sol';
+import {ECDSA} from '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
+import {EIP712} from '@openzeppelin/contracts/utils/cryptography/EIP712.sol';
 import {Initializable as InitializableStatic} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
-import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 
 /*
     A procedure defines a set of operations compiled in a proposal.
@@ -19,7 +21,8 @@ contract Procedure is
     InitializableStatic,
     ReentrancyGuard,
     ERC2771Recipient,
-    EIP712
+    EIP712,
+    IProposalOperationValidator
 {
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Operation;
@@ -50,19 +53,24 @@ contract Procedure is
         Modifiers.
     */
     modifier onlyInOrgan(address payable organAddress) {
-        require(
-            ProcedureLibrary.isInOrgan(organAddress, _msgSender()),
-            'Not authorized'
-        );
+        _requireInOrgan(organAddress);
         _;
     }
 
     modifier onlyDeciders() {
+        _requireDecider();
+        _;
+    }
+
+    function _requireInOrgan(address payable organAddress) private view {
         require(
-            ProcedureLibrary.isInOrgan(procedureData.deciders, _msgSender()),
+            ProcedureLibrary.isInOrgan(organAddress, _msgSender()),
             'Not authorized'
         );
-        _;
+    }
+
+    function _requireDecider() private view {
+        _requireInOrgan(procedureData.deciders);
     }
 
     /**
@@ -119,6 +127,7 @@ contract Procedure is
         string memory cid,
         ProcedureLibrary.Operation[] memory operations
     ) public virtual returns (uint256 proposalKey) {
+        _validateOwnerBoundOperations(operations, _msgSender());
         return procedureData.propose(cid, operations, _msgSender());
     }
 
@@ -144,6 +153,7 @@ contract Procedure is
             deadline,
             signature
         );
+        _validateOwnerBoundOperations(operations, signer);
         return procedureData.propose(cid, operations, signer);
     }
 
@@ -211,8 +221,21 @@ contract Procedure is
         procedureData._adoptProposal(proposalKey);
     }
 
+    /// @dev Settlement helper for derived procedures that already hold the
+    /// reentrancy lock in their public entry point.
+    function _applyAdoptedProposal(uint256 proposalKey) internal {
+        procedureData._adoptProposal(proposalKey);
+    }
+
     /// @notice The procedure calls this method directly to reject a proposal.
-    function _rejectProposal(uint256 proposalKey) internal virtual nonReentrant {
+    function _rejectProposal(
+        uint256 proposalKey
+    ) internal virtual nonReentrant {
+        procedureData._rejectProposal(proposalKey);
+    }
+
+    /// @dev Rejection counterpart for a derived procedure holding the lock.
+    function _applyRejectedProposal(uint256 proposalKey) internal {
         procedureData._rejectProposal(proposalKey);
     }
 
@@ -280,6 +303,110 @@ contract Procedure is
         return procedureData.nonces[account];
     }
 
+    /// @notice Lets an operation target safely identify the proposal currently being applied.
+    function getExecutionContext()
+        external
+        view
+        returns (bool isApplying, uint256 proposalKey, address proposalCreator)
+    {
+        return (
+            procedureData.isApplyingProposal,
+            procedureData.applyingProposalKey,
+            procedureData.applyingProposalCreator
+        );
+    }
+
+    /// @notice Transfers the proposal creator's equity; the token emits the movement record.
+    function transferEquity(
+        address asset,
+        address recipient,
+        uint256 amount,
+        string calldata movementCid
+    ) external {
+        require(msg.sender == address(this), 'Only executable proposal.');
+        IEquityToken(asset).settleTransfer(recipient, amount, movementCid);
+    }
+
+    /// @inheritdoc IProposalOperationValidator
+    function isOwnerBoundProposalOperation(
+        bytes calldata operationData
+    ) external pure override returns (bool) {
+        return
+            operationData.length >= 4 &&
+            bytes4(operationData[:4]) == this.transferEquity.selector;
+    }
+
+    /// @inheritdoc IProposalOperationValidator
+    function validateProposalCreator(
+        address creator,
+        bytes calldata operationData
+    ) external view override {
+        require(operationData.length >= 4, 'Unsupported owner-bound operation.');
+        bytes4 selector = bytes4(operationData[:4]);
+        require(
+            selector == this.transferEquity.selector,
+            'Unsupported owner-bound operation.'
+        );
+        (
+            address asset,
+            address recipient,
+            uint256 amount,
+            string memory movementCid
+        ) = abi.decode(operationData[4:], (address, address, uint256, string));
+        require(
+            IEquityToken(asset).isTransferProcedure(address(this)),
+            'Not transfer procedure.'
+        );
+        IEquityToken(asset).validateTransfer(
+            creator,
+            recipient,
+            amount,
+            movementCid
+        );
+    }
+
+    function _validateOwnerBoundOperations(
+        ProcedureLibrary.Operation[] memory operations,
+        address creator
+    ) internal view {
+        for (uint256 i = 0; i < operations.length; ++i) {
+            address target = operations[i].target == address(0)
+                ? address(this)
+                : operations[i].target;
+            if (target.code.length == 0) continue;
+
+            (bool supportsValidation, bytes memory supportResult) = target
+                .staticcall(
+                    abi.encodeWithSelector(
+                        IProposalOperationValidator
+                            .isOwnerBoundProposalOperation
+                            .selector,
+                        operations[i].data
+                    )
+                );
+            if (
+                !supportsValidation ||
+                supportResult.length != 32 ||
+                !abi.decode(supportResult, (bool))
+            ) continue;
+
+            (bool isValid, bytes memory validationResult) = target.staticcall(
+                abi.encodeWithSelector(
+                    IProposalOperationValidator
+                        .validateProposalCreator
+                        .selector,
+                    creator,
+                    operations[i].data
+                )
+            );
+            if (!isValid) {
+                assembly {
+                    revert(add(validationResult, 0x20), mload(validationResult))
+                }
+            }
+        }
+    }
+
     function _recoverTypedSigner(
         bytes32 structHash,
         uint256 nonce,
@@ -295,16 +422,23 @@ contract Procedure is
     function _hashOperation(
         ProcedureLibrary.Operation memory operation
     ) internal pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    OPERATION_TYPEHASH,
-                    operation.index,
-                    operation.target,
-                    keccak256(operation.data),
-                    operation.value
-                )
-            );
+        bytes32 operationTypeHash = OPERATION_TYPEHASH;
+        bytes memory operationData = operation.data;
+        bytes32 operationDataHash;
+        bytes32 operationHash;
+        assembly ('memory-safe') {
+            operationDataHash := keccak256(
+                add(operationData, 0x20),
+                mload(operationData)
+            )
+            mstore(0x00, operationTypeHash)
+            mstore(0x20, mload(operation))
+            mstore(0x40, mload(add(operation, 0x20)))
+            mstore(0x60, operationDataHash)
+            mstore(0x80, mload(add(operation, 0x60)))
+            operationHash := keccak256(0x00, 0xa0)
+        }
+        return operationHash;
     }
 
     function _hashOperations(
@@ -314,6 +448,13 @@ contract Procedure is
         for (uint256 i = 0; i < operations.length; i++) {
             operationHashes[i] = _hashOperation(operations[i]);
         }
-        return keccak256(abi.encodePacked(operationHashes));
+        bytes32 operationsHash;
+        assembly ('memory-safe') {
+            operationsHash := keccak256(
+                add(operationHashes, 0x20),
+                mul(mload(operationHashes), 0x20)
+            )
+        }
+        return operationsHash;
     }
 }

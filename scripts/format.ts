@@ -3,6 +3,7 @@ import path from 'path'
 import { createPublicClient, getContract, http, type PublicClient } from 'viem'
 import {
   getDeploymentTargets,
+  getRpcHeaders,
   type DeploymentTarget
 } from './deploymentTargets'
 
@@ -227,7 +228,11 @@ export const formatFoundryDeployments = async (
     }
 
     const rpcUrl = resolveRpcUrlForChain(chainId, rpcUrlsByChainId)
-    const client = createPublicClient({ transport: http(rpcUrl) })
+    const client = createPublicClient({
+      transport: http(rpcUrl, {
+        fetchOptions: { headers: getRpcHeaders(rpcUrl) }
+      })
+    })
     await waitForDeployedBytecode(
       client,
       deployedContracts.OrganigramClient,

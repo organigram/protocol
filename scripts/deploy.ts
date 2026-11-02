@@ -1,14 +1,18 @@
 import { formatFoundryDeployments } from './format'
 import {
   getDeploymentTargets,
+  getRpcHeaders,
   type DeploymentTarget
 } from './deploymentTargets'
+import { startRpcProxy } from './rpcProxy'
 
-import { spawnSync } from 'child_process'
+import { spawn } from 'child_process'
 import path from 'path'
-import { createPublicClient, http } from 'viem'
+import { createPublicClient, createTestClient, http, parseEther } from 'viem'
+import { mnemonicToAccount } from 'viem/accounts'
 
 const PROTOCOL_DIR = path.resolve(__dirname, '..')
+const ANVIL_CHAIN_ID = '31337'
 
 type DeployProtocolResult = {
   deploymentTargets: DeploymentTarget[]
@@ -56,6 +60,10 @@ const getForgeArgs = (
     ...signerArgs
   ]
 
+  if (target.hardfork != null) {
+    args.push('--hardfork', target.hardfork)
+  }
+
   if (resume) {
     args.push('--resume')
   }
@@ -63,10 +71,28 @@ const getForgeArgs = (
   return args
 }
 
-const readChainId = async (target: DeploymentTarget): Promise<string> => {
+// forge simulates with foundry.toml's evm_version unless told otherwise, but
+// Amsterdam (EIP-8037) reprices state creation several times higher: its
+// estimates would run deployments out of gas. Its blocks carry an access list.
+const readChainInfo = async (
+  target: DeploymentTarget
+): Promise<{ chainId: string; hardfork?: string }> => {
   try {
-    const client = createPublicClient({ transport: http(target.rpcUrl) })
-    return (await client.getChainId()).toString()
+    const client = createPublicClient({
+      transport: http(target.rpcUrl, {
+        fetchOptions: { headers: getRpcHeaders(target.rpcUrl) }
+      })
+    })
+    const latestBlock = await client.request<{
+      Method: 'eth_getBlockByNumber'
+      Parameters: ['latest', false]
+      ReturnType: { blockAccessListHash?: string }
+    }>({ method: 'eth_getBlockByNumber', params: ['latest', false] })
+    return {
+      chainId: (await client.getChainId()).toString(),
+      hardfork:
+        latestBlock.blockAccessListHash != null ? 'amsterdam' : undefined
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     throw new Error(
@@ -82,7 +108,8 @@ const getDeploymentPlan = async (
   const seenChainIds = new Map<string, string>()
 
   for (const target of targets) {
-    const actualChainId = await readChainId(target)
+    const { chainId: actualChainId, hardfork } = await readChainInfo(target)
+    target.hardfork = hardfork
     if (target.chainId !== actualChainId) {
       throw new Error(
         `Deployment target "${target.name}" was configured as chain ${target.chainId}, but its RPC URL points to chain ${actualChainId}.`
@@ -101,12 +128,21 @@ const getDeploymentPlan = async (
   return targets
 }
 
-const deployTarget = (
+const deployTarget = async (
   target: DeploymentTarget,
   signerArgs: string[],
   resume: boolean
-): void => {
-  const args = getForgeArgs(target, signerArgs, resume)
+): Promise<void> => {
+  const rpcHeaders = getRpcHeaders(target.rpcUrl)
+  const rpcProxy =
+    Object.keys(rpcHeaders).length > 0
+      ? await startRpcProxy(target.rpcUrl, rpcHeaders)
+      : undefined
+  const args = getForgeArgs(
+    { ...target, rpcUrl: rpcProxy?.url ?? target.rpcUrl },
+    signerArgs,
+    resume
+  )
   const label = `${target.name} (chain ${target.chainId})`
   const action = resume
     ? 'Resuming Organigram Protocol deployment'
@@ -114,18 +150,23 @@ const deployTarget = (
 
   console.info(`${action} to ${label}.`)
 
-  const result = spawnSync('forge', args, {
-    cwd: PROTOCOL_DIR,
-    stdio: 'inherit',
-    env: process.env
-  })
+  try {
+    // Asynchronous, so that the RPC proxy keeps serving forge meanwhile.
+    const status = await new Promise<number | null>((resolve, reject) => {
+      const child = spawn('forge', args, {
+        cwd: PROTOCOL_DIR,
+        stdio: 'inherit',
+        env: process.env
+      })
+      child.on('error', reject)
+      child.on('close', resolve)
+    })
 
-  if (result.error) {
-    throw result.error
-  }
-
-  if (result.status !== 0) {
-    throw new Error(`forge script failed with exit code ${result.status}`)
+    if (status !== 0) {
+      throw new Error(`forge script failed with exit code ${status}`)
+    }
+  } finally {
+    rpcProxy?.close()
   }
 }
 
@@ -137,7 +178,14 @@ export const deployProtocol = async (
   const rpcUrlsByChainId: Record<string, string> = {}
 
   for (const target of deploymentTargets) {
-    deployTarget(target, signerArgs, options.resume)
+    if (target.chainId === ANVIL_CHAIN_ID) {
+      await createTestClient({ mode: 'anvil', transport: http(target.rpcUrl) })
+        .setBalance({
+          address: mnemonicToAccount(signerArgs[1]).address,
+          value: parseEther('1000')
+        })
+    }
+    await deployTarget(target, signerArgs, options.resume)
     rpcUrlsByChainId[target.chainId] = target.rpcUrl
   }
 

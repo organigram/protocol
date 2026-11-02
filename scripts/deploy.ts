@@ -8,9 +8,11 @@ import { startRpcProxy } from './rpcProxy'
 
 import { spawn } from 'child_process'
 import path from 'path'
-import { createPublicClient, http } from 'viem'
+import { createPublicClient, createTestClient, http, parseEther } from 'viem'
+import { mnemonicToAccount } from 'viem/accounts'
 
 const PROTOCOL_DIR = path.resolve(__dirname, '..')
+const ANVIL_CHAIN_ID = '31337'
 
 type DeployProtocolResult = {
   deploymentTargets: DeploymentTarget[]
@@ -176,6 +178,13 @@ export const deployProtocol = async (
   const rpcUrlsByChainId: Record<string, string> = {}
 
   for (const target of deploymentTargets) {
+    if (target.chainId === ANVIL_CHAIN_ID) {
+      await createTestClient({ mode: 'anvil', transport: http(target.rpcUrl) })
+        .setBalance({
+          address: mnemonicToAccount(signerArgs[1]).address,
+          value: parseEther('1000')
+        })
+    }
     await deployTarget(target, signerArgs, options.resume)
     rpcUrlsByChainId[target.chainId] = target.rpcUrl
   }

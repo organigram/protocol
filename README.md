@@ -88,7 +88,7 @@ foundryup
 ```
 
 ### Start local node
-Start a Sepolia fork for local development with Anvil:
+Start a local node for development with Anvil:
 
 ```bash
 pnpm anvil
@@ -118,7 +118,7 @@ For example:
 pnpm deploy:protocol mainnet,base,11155111
 ```
 
-To deploy to the local Anvil fork:
+To deploy to the local Anvil node:
 
 ```bash
 pnpm deploy:protocol anvil

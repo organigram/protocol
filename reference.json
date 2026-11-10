@@ -1,0 +1,33 @@
+[
+  {
+    "title": "Client",
+    "names": ["OrganigramClient"],
+    "intro": "The `OrganigramClient` contract is the entry point of the protocol on each chain. It keeps the registry of procedure types and deploys organs, assets and procedures as clones of their implementations, one by one or as a whole organigram in a single transaction. A clone address depends on its salt and on the account deploying it, so that nobody can take an address someone else predicted."
+  },
+  {
+    "title": "Organs",
+    "names": ["Organ", "IOrgan", "OrganLibrary"],
+    "intro": "An organ is a group: a registry of entries, each an address, a document reference or both, a list of permissions, and a balance of ether and tokens. Every change requires a permission held by the caller. Organs can also call outside contracts, but only the calls listed in their execution whitelist."
+  },
+  {
+    "title": "Procedures",
+    "names": [
+      "Procedure",
+      "NominationProcedure",
+      "VoteProcedure",
+      "ERC20VoteProcedure",
+      "ProcedureLibrary"
+    ],
+    "intro": "A procedure lets the members of some organs change other organs through proposals. Proposers submit a list of operations; with moderation, moderators present or block it; deciders adopt or reject it, and adoption runs the operations. Every action has a `…BySig` variant that verifies an EIP-712 signature, so that a relayer can submit it on behalf of the signer."
+  },
+  {
+    "title": "Assets",
+    "names": ["Asset", "EquityToken"],
+    "intro": "Assets are ERC-20 tokens with voting checkpoints, so that a vote can weigh balances at a past moment. An `EquityToken` represents company shares: its transfers must be approved by a procedure."
+  },
+  {
+    "title": "Gasless transactions",
+    "names": ["MetaGasStation"],
+    "intro": "The `MetaGasStation` is the trusted forwarder of the protocol contracts: it relays transactions signed by users who hold no ether, and the contracts read the original signer instead of the relayer."
+  }
+]

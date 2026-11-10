@@ -508,8 +508,7 @@ contract ProtocolSecurityTest {
         procedure.vote(proposalKey, true);
 
         vm.warp(1011);
-        vm.expectRevert(bytes("Member majority has not been reached"));
-        procedure.count(proposalKey);
+        require(!procedure.count(proposalKey), "Member majority should not be reached.");
 
         vm.warp(1012);
         vm.prank(ALICE);

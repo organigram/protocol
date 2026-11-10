@@ -15,13 +15,14 @@ import {IOrgan} from '../IOrgan.sol';
     The procedure can process a batch of operations in a proposal.
 */
 
+/// @title Procedure library
+/// @notice Storage layout and rules of proposals, linked into procedure contracts.
 library ProcedureLibrary {
     struct ProcedureData {
         string cid;
         address payable proposers;
         address payable moderators;
         address payable deciders;
-        address payable admin;
         mapping(address => uint256) nonces;
         mapping(uint256 => Proposal) proposals;
         uint256 proposalsLength;
@@ -130,18 +131,20 @@ library ProcedureLibrary {
         Events.
     */
 
-    event CidUpdated(address from, string cid);
-    event AdminUpdated(address from, address admin);
+    /// @notice A proposal was submitted.
     event ProposalCreated(address indexed creator, uint256 indexed proposalKey);
+    /// @notice A moderator blocked a proposal.
     event ProposalBlocked(
         address indexed moderator,
         uint256 indexed proposalKey,
         string reason
     );
+    /// @notice A moderator presented a proposal to the deciders.
     event ProposalPresented(
         address indexed presenter,
         uint256 indexed proposalKey
     );
+    /// @notice A proposal was settled.
     event ProposalApplied(uint256 indexed proposalKey);
 
     /*
@@ -155,8 +158,7 @@ library ProcedureLibrary {
         address payable moderators,
         address payable deciders,
         bool withModeration, // Adds an extra step where moderators can block a proposal before deciders.
-        address forwarder,
-        address caller
+        address forwarder
     ) public {
         self.cid = cid;
         self.proposers = proposers;
@@ -164,29 +166,6 @@ library ProcedureLibrary {
         self.deciders = deciders;
         self.withModeration = withModeration;
         self.forwarder = forwarder;
-        self.admin = payable(caller);
-    }
-
-    /**
-        Admin API.
-    */
-
-    function updateAdmin(
-        ProcedureData storage self,
-        address payable admin,
-        address caller
-    ) public onlyInOrgan(self.admin, caller) {
-        self.admin = admin;
-        emit AdminUpdated(msg.sender, admin);
-    }
-
-    function updateCid(
-        ProcedureData storage self,
-        string memory cid,
-        address caller
-    ) public onlyInOrgan(self.admin, caller) {
-        self.cid = cid;
-        emit CidUpdated(msg.sender, cid);
     }
 
     /**
@@ -244,6 +223,8 @@ library ProcedureLibrary {
         if (!self.withModeration) {
             self.proposals[proposalKey].presented = true;
         }
+        // Only view membership and validation calls precede the event.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit ProposalCreated(caller, proposalKey);
         return proposalKey;
     }
@@ -365,6 +346,8 @@ library ProcedureLibrary {
         self.isApplyingProposal = false;
         self.applyingProposalKey = 0;
         self.applyingProposalCreator = address(0);
+        // Logged once every operation ran; procedures apply proposals nonReentrant.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit ProposalApplied(proposalKey);
     }
 

@@ -13,23 +13,32 @@ import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import {IERC721} from '@openzeppelin/contracts/interfaces/IERC721.sol';
 
+/// @title Organ library
+/// @notice Storage layout and rules of organs, linked into the `Organ` contract.
 library OrganLibrary {
     using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
     using CoreLibrary for CoreLibrary.Entry;
+    /// @notice Permission to grant permissions.
     bytes2 public constant PERMISSION_ADD_PERMISSIONS = 0x0001;
+    /// @notice Permission to revoke permissions.
     bytes2 public constant PERMISSION_REMOVE_PERMISSIONS = 0x0002;
+    /// @notice Permission to add entries.
     bytes2 public constant PERMISSION_ADD_ENTRIES = 0x0004;
+    /// @notice Permission to remove entries.
     bytes2 public constant PERMISSION_REMOVE_ENTRIES = 0x0008;
+    /// @notice Permission to replace the metadata reference.
     bytes2 public constant PERMISSION_UPDATE_METADATA = 0x0010;
-    bytes2 public constant PERMISSION_DEPOSIT_ETHER = 0x0020;
+    /// @notice Permission to send ether held by the organ.
     bytes2 public constant PERMISSION_WITHDRAW_ETHER = 0x0040;
-    bytes2 public constant PERMISSION_DEPOSIT_COINS = 0x0080;
+    /// @notice Permission to send tokens held by the organ.
     bytes2 public constant PERMISSION_WITHDRAW_COINS = 0x0100;
-    bytes2 public constant PERMISSION_DEPOSIT_COLLECTIBLES = 0x0200;
+    /// @notice Permission to send ERC-721 tokens held by the organ.
     bytes2 public constant PERMISSION_WITHDRAW_COLLECTIBLES = 0x0400;
+    /// @notice Permission to make the organ call a whitelisted outside contract.
     bytes2 public constant PERMISSION_EXECUTE_WHITELISTED = 0x0800;
+    /// @notice Permission to change the calls the organ may make to outside contracts.
     bytes2 public constant PERMISSION_MANAGE_EXECUTION_WHITELIST = 0x1000;
 
     /*
@@ -73,50 +82,65 @@ library OrganLibrary {
     /*
         Events.
     */
+    /// @notice The metadata reference of the organ changed.
     event cidUpdated(address from, string cid);
-    event adminUpdated(address from, address admin);
+    /// @notice An address received permissions on the organ.
     event permissionAdded(
         address from,
         address permissionAddress,
         bytes2 permissionValue
     );
+    /// @notice An address lost its permissions on the organ.
     event permissionRemoved(address from, address permissionAddress);
+    /// @notice The organ sent an ERC-721 token.
     event collectibleTransferred(address operator, address to, uint256 tokenId);
+    /// @notice The organ received an ERC-721 token.
     event collectibleReceived(address operator, address from, uint256 tokenId);
+    /// @notice The organ sent tokens.
     event coinsTransferred(
         address operator,
         address from,
         address to,
         uint256 amount
     );
+    /// @notice The organ received tokens.
     event coinsReceived(
         address operator,
         address from,
         address to,
         uint256 amount
     );
+    /// @notice The organ sent ether.
     event etherTransferred(address from, address to, uint256 amount);
+    /// @notice The organ received ether.
     event etherReceived(address from, uint256 amount);
+    /// @notice An entry was added to the organ.
     event entryAdded(address from, uint256 index, address addr, string cid);
+    /// @notice An entry was removed from the organ.
     event entryRemoved(address from, uint256 index);
+    /// @notice The organ may now call a function of an outside contract.
     event callPolicySet(
         address indexed caller,
         address indexed target,
         bytes4 indexed selector
     );
+    /// @notice The organ may no longer call a function of an outside contract.
     event callPolicyRemoved(
         address indexed caller,
         address indexed target,
         bytes4 indexed selector
     );
+    /// @notice An address was allowed as an argument of a whitelisted call.
     event callPolicyWhitelistedAddressAdded(
         bytes32 indexed policyKey,
         address indexed candidate
     );
+    /// @notice An address is no longer allowed as an argument of a whitelisted call.
     event callPolicyWhitelistedAddressRemoved(
         bytes32 indexed policyKey,
         address indexed candidate
     );
+    /// @notice The organ made a whitelisted call to an outside contract.
     event whitelistedExecution(
         address indexed caller,
         address indexed target,
@@ -154,8 +178,7 @@ library OrganLibrary {
         address caller
     ) private view {
         require(
-            self.permissions[caller] & permission == permission ||
-                self.permissions[address(0)] & permission == permission,
+            self.permissions[caller] & permission == permission,
             'Not authorized.'
         );
     }
@@ -237,6 +260,8 @@ library OrganLibrary {
                 .callPolicyWhitelistedAddresses[policyKey]
                 .remove(candidate);
             assert(removed);
+            // No external call precedes: set operations are internal.
+            // forge-lint: disable-next-line(reentrancy-events)
             emit callPolicyWhitelistedAddressRemoved(policyKey, candidate);
         }
     }
@@ -260,9 +285,7 @@ library OrganLibrary {
         bytes calldata data
     ) internal pure returns (bytes4 selector) {
         if (data.length < 4) revert UnsupportedCallDataLength();
-        assembly {
-            selector := shr(224, calldataload(data.offset))
-        }
+        selector = bytes4(data[:4]);
     }
 
     function _entryExists(
@@ -378,12 +401,16 @@ library OrganLibrary {
                     whitelistedAddresses[i]
                 )
             ) {
+                // No external call precedes: set operations are internal.
+                // forge-lint: disable-next-item(reentrancy-events)
                 emit callPolicyWhitelistedAddressAdded(
                     policyKey,
                     whitelistedAddresses[i]
                 );
             }
         }
+        // No external call precedes: set operations are internal.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit callPolicySet(caller, target, selector);
     }
 
@@ -400,6 +427,8 @@ library OrganLibrary {
         delete self.callPolicies[policyKey];
         bool removed = self.callPolicyKeys.remove(policyKey);
         assert(removed);
+        // No external call precedes: set operations are internal.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit callPolicyRemoved(caller, target, selector);
     }
 
@@ -414,6 +443,9 @@ library OrganLibrary {
         onlyPerm(self, PERMISSION_EXECUTE_WHITELISTED, caller)
         returns (bytes memory result)
     {
+        // A call policy does not bound the ether sent along with the call.
+        if (value != 0)
+            _requirePermission(self, PERMISSION_WITHDRAW_ETHER, caller);
         bytes4 selector = _selector(data);
         bytes32 policyKey = _callPolicyKey(target, selector);
         CallPolicy storage policy = self.callPolicies[policyKey];
@@ -422,6 +454,8 @@ library OrganLibrary {
             _validateConstraint(self, policyKey, policy.constraints[i], data);
         }
         result = _performCall(target, value, data);
+        // Logged once the call succeeded; the organ entry point is nonReentrant.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit whitelistedExecution(caller, target, selector, value);
     }
 
@@ -436,8 +470,8 @@ library OrganLibrary {
         uint256 tokenId
     ) public onlyPerm(self, PERMISSION_WITHDRAW_COLLECTIBLES, caller) {
         // @note Organ must be the owner, approved, or operator of ERC-721.
-        IERC721(token).safeTransferFrom(address(this), to, tokenId);
         emit collectibleTransferred(caller, to, tokenId);
+        IERC721(token).safeTransferFrom(address(this), to, tokenId);
     }
 
     function receiveCollectible(
@@ -445,7 +479,7 @@ library OrganLibrary {
         address operator,
         address from,
         uint256 tokenId
-    ) public onlyPerm(self, PERMISSION_DEPOSIT_COLLECTIBLES, from) {
+    ) public {
         emit collectibleReceived(operator, from, tokenId);
     }
 
@@ -466,7 +500,7 @@ library OrganLibrary {
         address from,
         address to,
         uint256 amount
-    ) public onlyPerm(self, PERMISSION_DEPOSIT_COINS, from) {
+    ) public {
         emit coinsReceived(operator, from, to, amount);
     }
 
@@ -476,16 +510,16 @@ library OrganLibrary {
         uint256 amount,
         address from
     ) internal onlyPerm(self, PERMISSION_WITHDRAW_ETHER, from) {
+        emit etherTransferred(from, to, amount);
         (bool success, ) = to.call{value: amount}('');
         require(success, 'Transfer failed.');
-        emit etherTransferred(from, to, amount);
     }
 
     function receiveEther(
         OrganData storage self,
         uint256 value,
         address from
-    ) public onlyPerm(self, PERMISSION_DEPOSIT_ETHER, from) {
+    ) public {
         emit etherReceived(from, value);
     }
 

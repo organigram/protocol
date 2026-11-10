@@ -12,10 +12,11 @@ import {EIP712} from '@openzeppelin/contracts/utils/cryptography/EIP712.sol';
 import {Initializable as InitializableStatic} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 
-/*
-    A procedure defines a set of operations compiled in a proposal.
-    The procedure dictates the way the proposal can be applied.
-*/
+/// @title Procedure
+/// @notice Lets the members of some organs change other organs through proposals: lists of operations that
+/// proposers submit, moderators may present or block, and deciders adopt or reject.
+/// @dev Adoption runs the operations. Every action has a `…BySig` variant verifying an EIP-712 signature,
+/// so that a relayer can submit it on behalf of the signer.
 contract Procedure is
     ERC165,
     InitializableStatic,
@@ -27,6 +28,7 @@ contract Procedure is
     using ProcedureLibrary for ProcedureLibrary.ProcedureData;
     using ProcedureLibrary for ProcedureLibrary.Operation;
     ProcedureLibrary.ProcedureData internal procedureData;
+    /// @notice ERC-165 interface identifier of procedures.
     bytes4 public constant INTERFACE_ID = 0x71dbd330;
     bytes32 internal constant OPERATION_TYPEHASH =
         keccak256(
@@ -89,6 +91,13 @@ contract Procedure is
             interfaceId == INTERFACE_ID || super.supportsInterface(interfaceId);
     }
 
+    /// @notice Initialize a procedure clone with its roles.
+    /// @param _cid Reference to the procedure metadata.
+    /// @param _proposers Organ whose members may submit proposals, or a single address.
+    /// @param _moderators Organ whose members may present or block proposals.
+    /// @param _deciders Organ whose members adopt or reject proposals, or a single address.
+    /// @param _withModeration Whether proposals must be presented by a moderator before the decision.
+    /// @param _trustedForwarder Forwarder relaying gasless transactions.
     function initialize(
         string memory _cid,
         address payable _proposers,
@@ -103,21 +112,9 @@ contract Procedure is
             _moderators,
             _deciders,
             _withModeration,
-            _trustedForwarder,
-            _msgSender()
+            _trustedForwarder
         );
         _setTrustedForwarder(_trustedForwarder);
-    }
-
-    /**
-        Public API : Procedure Cid and Admin.
-    */
-    function updateCid(string memory cid) public {
-        procedureData.updateCid(cid, _msgSender());
-    }
-
-    function updateAdmin(address payable admin) public {
-        procedureData.updateAdmin(admin, _msgSender());
     }
 
     /**
@@ -126,18 +123,18 @@ contract Procedure is
     function propose(
         string memory cid,
         ProcedureLibrary.Operation[] memory operations
-    ) public virtual returns (uint256 proposalKey) {
-        _validateOwnerBoundOperations(operations, _msgSender());
-        return procedureData.propose(cid, operations, _msgSender());
+    ) public returns (uint256 proposalKey) {
+        return _propose(cid, operations, _msgSender());
     }
 
+    /// @notice Submit a proposal signed by a proposer, relayed by any account.
     function proposeBySig(
         string calldata cid,
         ProcedureLibrary.Operation[] calldata operations,
         uint256 nonce,
         uint256 deadline,
         bytes calldata signature
-    ) public virtual returns (uint256 proposalKey) {
+    ) public returns (uint256 proposalKey) {
         bytes32 operationsHash = _hashOperations(operations);
         address signer = _recoverTypedSigner(
             keccak256(
@@ -153,25 +150,25 @@ contract Procedure is
             deadline,
             signature
         );
-        _validateOwnerBoundOperations(operations, signer);
-        return procedureData.propose(cid, operations, signer);
+        return _propose(cid, operations, signer);
     }
 
-    /// @notice The procedure can override this method.
+    /// @notice Block a proposal as a moderator, with a reason.
     function blockProposal(
         uint256 proposalKey,
         string calldata reason
-    ) public virtual {
-        procedureData.blockProposal(proposalKey, reason, _msgSender());
+    ) public {
+        _blockProposal(proposalKey, reason, _msgSender());
     }
 
+    /// @notice Block a proposal with a block signed by a moderator, relayed by any account.
     function blockProposalBySig(
         uint256 proposalKey,
         string calldata reason,
         uint256 nonce,
         uint256 deadline,
         bytes calldata signature
-    ) public virtual {
+    ) public {
         address signer = _recoverTypedSigner(
             keccak256(
                 abi.encode(
@@ -186,20 +183,21 @@ contract Procedure is
             deadline,
             signature
         );
-        procedureData.blockProposal(proposalKey, reason, signer);
+        _blockProposal(proposalKey, reason, signer);
     }
 
     /// @notice When moderation is enabled, moderators must accept the proposal.
-    function presentProposal(uint256 proposalKey) public virtual {
-        procedureData.presentProposal(proposalKey, _msgSender());
+    function presentProposal(uint256 proposalKey) public {
+        _presentProposal(proposalKey, _msgSender());
     }
 
+    /// @notice Present a proposal with a presentation signed by a moderator, relayed by any account.
     function presentProposalBySig(
         uint256 proposalKey,
         uint256 nonce,
         uint256 deadline,
         bytes calldata signature
-    ) public virtual {
+    ) public {
         address signer = _recoverTypedSigner(
             keccak256(
                 abi.encode(
@@ -213,7 +211,33 @@ contract Procedure is
             deadline,
             signature
         );
-        procedureData.presentProposal(proposalKey, signer);
+        _presentProposal(proposalKey, signer);
+    }
+
+    /// @dev Direct and signed calls share these hooks, so that a procedure
+    /// overriding them applies its rules to both.
+    function _propose(
+        string memory cid,
+        ProcedureLibrary.Operation[] memory operations,
+        address creator
+    ) internal virtual returns (uint256 proposalKey) {
+        _validateOwnerBoundOperations(operations, creator);
+        return procedureData.propose(cid, operations, creator);
+    }
+
+    function _blockProposal(
+        uint256 proposalKey,
+        string memory reason,
+        address moderator
+    ) internal virtual {
+        procedureData.blockProposal(proposalKey, reason, moderator);
+    }
+
+    function _presentProposal(
+        uint256 proposalKey,
+        address moderator
+    ) internal virtual {
+        procedureData.presentProposal(proposalKey, moderator);
     }
 
     /// @notice The procedure calls this method directly to adopt and apply a proposal.
@@ -240,16 +264,17 @@ contract Procedure is
     }
 
     /// @notice Apply proposal.
-    function applyProposal(uint256 proposalKey) public virtual nonReentrant {
-        procedureData.applyProposal(proposalKey);
+    function applyProposal(uint256 proposalKey) public nonReentrant {
+        _applyProposal(proposalKey);
     }
 
+    /// @notice Settle a proposal with an application signed by any account, relayed by another.
     function applyProposalBySig(
         uint256 proposalKey,
         uint256 nonce,
         uint256 deadline,
         bytes calldata signature
-    ) public virtual nonReentrant {
+    ) public nonReentrant {
         _recoverTypedSigner(
             keccak256(
                 abi.encode(
@@ -263,12 +288,20 @@ contract Procedure is
             deadline,
             signature
         );
+        _applyProposal(proposalKey);
+    }
+
+    /// @dev Direct and signed applications share this hook, so that a
+    /// procedure settling its own decisions applies them to both. Callers
+    /// hold the reentrancy lock.
+    function _applyProposal(uint256 proposalKey) internal virtual {
         procedureData.applyProposal(proposalKey);
     }
 
     /*
         Accessors.
     */
+    /// @notice Read the metadata reference, the roles and the proposal count of the procedure.
     function getProcedure()
         public
         view
@@ -293,12 +326,14 @@ contract Procedure is
         );
     }
 
+    /// @notice Read one proposal.
     function getProposal(
         uint256 proposalKey
     ) public view returns (ProcedureLibrary.Proposal memory) {
         return procedureData.proposals[proposalKey];
     }
 
+    /// @notice Read the next signature nonce of an account.
     function getNonce(address account) public view returns (uint256) {
         return procedureData.nonces[account];
     }
@@ -422,23 +457,16 @@ contract Procedure is
     function _hashOperation(
         ProcedureLibrary.Operation memory operation
     ) internal pure returns (bytes32) {
-        bytes32 operationTypeHash = OPERATION_TYPEHASH;
-        bytes memory operationData = operation.data;
-        bytes32 operationDataHash;
-        bytes32 operationHash;
-        assembly ('memory-safe') {
-            operationDataHash := keccak256(
-                add(operationData, 0x20),
-                mload(operationData)
-            )
-            mstore(0x00, operationTypeHash)
-            mstore(0x20, mload(operation))
-            mstore(0x40, mload(add(operation, 0x20)))
-            mstore(0x60, operationDataHash)
-            mstore(0x80, mload(add(operation, 0x60)))
-            operationHash := keccak256(0x00, 0xa0)
-        }
-        return operationHash;
+        return
+            keccak256(
+                abi.encode(
+                    OPERATION_TYPEHASH,
+                    operation.index,
+                    operation.target,
+                    keccak256(operation.data),
+                    operation.value
+                )
+            );
     }
 
     function _hashOperations(

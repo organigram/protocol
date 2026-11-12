@@ -6,8 +6,9 @@ import {VoteProcedure, Election, Vote} from './Vote.sol';
 import {IERC20} from '@openzeppelin/contracts/interfaces/IERC20.sol';
 import {IERC5805} from '@openzeppelin/contracts/interfaces/IERC5805.sol';
 
-/// @title ERC20 Vote Procedure.
-/// @notice An ERC20 Vote Procedure will execute operations based on the decision of a vote. The voter's relative weight in the vote depends on the amount of tokens they own of a certain asset.
+/// @title ERC-20 vote procedure
+/// @notice A vote procedure in which each ballot weighs the token balance of the voter.
+/// @dev Ballots weigh balances held just before the vote opened, so tokens moved during the vote do not count twice.
 contract ERC20VoteProcedure is VoteProcedure {
     enum RoleMode {
         ORGAN,
@@ -17,8 +18,11 @@ contract ERC20VoteProcedure is VoteProcedure {
 
     /// @notice tokenContract is an ERC20Votes-compatible token representing the rights to vote.
     IERC5805 public tokenContract;
+    /// @notice Whether proposers are organ members, token holders, or nobody.
     RoleMode public proposerMode;
+    /// @notice Whether moderators are organ members, token holders, or nobody.
     RoleMode public moderatorMode;
+    /// @notice Whether voters are organ members or token holders.
     RoleMode public voterMode;
     /// @notice When voters come from an organ, require a majority of its members in addition
     /// to the usual token-weighted quorum and majority.
@@ -78,6 +82,8 @@ contract ERC20VoteProcedure is VoteProcedure {
         );
     }
 
+    /// @notice Initialize an ERC-20 vote whose roles are held by organ members, token holders or nobody.
+    /// @param _roleModes Role modes of the proposers, moderators and voters.
     function initialize(
         string memory _metadata,
         address payable _proposers,
@@ -266,13 +272,9 @@ contract ERC20VoteProcedure is VoteProcedure {
             uint256 eligibleVotes
         ) = getElectionResults(proposalKey);
         uint256 votesCast = approvals + objections;
-        require(votesCast > 0, 'No vote');
-        require(
-            votesCast >=
-                ((quorumSize * eligibleVotes) /
-                    100000),
-            'Quorum has not been reached'
-        );
+        // A failed vote returns false, so that applyProposal can reject it.
+        if (votesCast == 0) return false;
+        if (votesCast < (quorumSize * eligibleVotes) / 100000) return false;
         if (requireMemberMajority) {
             uint256 approvingMembers = 0;
             for (uint256 i = 0; i < elections[proposalKey].voters.length; i++) {
@@ -280,11 +282,10 @@ contract ERC20VoteProcedure is VoteProcedure {
                 if (elections[proposalKey].votes[voter].approved)
                     approvingMembers++;
             }
-            require(
-                approvingMembers * 2 >
-                    _getOrganEntriesCount(procedureData.deciders),
-                'Member majority has not been reached'
-            );
+            if (
+                approvingMembers * 2 <=
+                _getOrganEntriesCount(procedureData.deciders)
+            ) return false;
         }
         return approvals * 100000 >= votesCast * majoritySize;
     }

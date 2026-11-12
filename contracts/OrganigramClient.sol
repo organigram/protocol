@@ -12,6 +12,9 @@ import {ERC165Checker} from '@openzeppelin/contracts/utils/introspection/ERC165C
 import {Clones} from '@openzeppelin/contracts/proxy/Clones.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
+/// @title Organigram client
+/// @notice Entry point of the protocol on a chain: the registry of procedure types, and the factory of organs,
+/// assets and procedures, deployed as clones of their implementations.
 contract OrganigramClient is ERC2771Recipient {
     using CoreLibrary for CoreLibrary.Entry;
     address payable private immutable ORGAN; // Cloneable organ implementation.
@@ -20,29 +23,37 @@ contract OrganigramClient is ERC2771Recipient {
     address payable private immutable PROCEDURES_REGISTRY; // Organ with the addresses of supported procedures implementations.
     address private immutable OWNER;
 
+    /// @notice An organ was deployed.
     event organDeployed(address payable organ);
+    /// @notice An asset was deployed.
     event assetDeployed(address payable asset);
+    /// @notice A procedure was deployed from a registered procedure type.
     event procedureDeployed(
         address payable procedureType,
         address payable procedure
     );
 
+    /// @notice Implementation that organs are cloned from.
     function organ() external view returns (address payable) {
         return ORGAN;
     }
 
+    /// @notice Implementation that assets are cloned from.
     function asset() external view returns (address payable) {
         return ASSET;
     }
 
+    /// @notice Implementation that equity tokens are cloned from.
     function equityToken() external view returns (address payable) {
         return EQUITY_TOKEN;
     }
 
+    /// @notice Organ listing the registered procedure types.
     function proceduresRegistry() external view returns (address payable) {
         return PROCEDURES_REGISTRY;
     }
 
+    /// @notice Account allowed to register procedure types.
     function owner() external view returns (address) {
         return OWNER;
     }
@@ -66,6 +77,12 @@ contract OrganigramClient is ERC2771Recipient {
         bytes32 salt;
         bool isEquity;
         address transferProcedure;
+    }
+
+    /// @dev Clone addresses depend on the caller, so that nobody can deploy
+    /// first at an address another account predicted with the same salt.
+    function _callerSalt(bytes32 salt) internal view returns (bytes32) {
+        return keccak256(abi.encode(_msgSender(), salt));
     }
 
     /// @notice Deploy the client contract together with default organ and asset implementations.
@@ -127,7 +144,7 @@ contract OrganigramClient is ERC2771Recipient {
         }
 
         // Clone organ and initialize it.
-        clone = payable(Clones.cloneDeterministic(ORGAN, salt));
+        clone = payable(Clones.cloneDeterministic(ORGAN, _callerSalt(salt)));
         Organ(clone).initialize(
             _permissionAddresses,
             _permissionValues,
@@ -135,6 +152,8 @@ contract OrganigramClient is ERC2771Recipient {
             entries,
             trustedForwarder()
         );
+        // Emitted after initializing a clone of a trusted implementation.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit organDeployed(clone);
         return clone;
     }
@@ -171,9 +190,13 @@ contract OrganigramClient is ERC2771Recipient {
         uint256 initialSupply,
         bytes32 salt
     ) public returns (address payable clone) {
-        clone = payable(Clones.cloneDeterministic(address(ASSET), salt));
+        clone = payable(
+            Clones.cloneDeterministic(address(ASSET), _callerSalt(salt))
+        );
         IAsset(clone).initialize(name, symbol, _msgSender(), initialSupply);
 
+        // Emitted after initializing a clone of a trusted implementation.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit assetDeployed(clone);
         return clone;
     }
@@ -195,7 +218,7 @@ contract OrganigramClient is ERC2771Recipient {
                 clones[i] = payable(
                     Clones.cloneDeterministic(
                         address(EQUITY_TOKEN),
-                        batch[i].salt
+                        _callerSalt(batch[i].salt)
                     )
                 );
                 EquityToken(clones[i]).initialize(
@@ -205,6 +228,8 @@ contract OrganigramClient is ERC2771Recipient {
                     batch[i].initialSupply,
                     batch[i].transferProcedure
                 );
+                // Emitted after initializing a clone of a trusted implementation.
+                // forge-lint: disable-next-line(reentrancy-events)
                 emit assetDeployed(clones[i]);
             } else {
                 clones[i] = deployAsset(
@@ -238,7 +263,11 @@ contract OrganigramClient is ERC2771Recipient {
                 0,
             'Procedure not found.'
         );
-        procedure = payable(Clones.cloneDeterministic(procedureType, salt));
+        procedure = payable(
+            Clones.cloneDeterministic(procedureType, _callerSalt(salt))
+        );
+        // Only the registry and ERC-165 view calls precede the event.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit procedureDeployed(procedureType, procedure);
         bytes memory initReturnData = Address.functionCall(procedure, data);
         require(

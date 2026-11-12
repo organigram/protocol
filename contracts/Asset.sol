@@ -6,12 +6,19 @@ import {ERC20VotesUpgradeable} from '@openzeppelin/contracts-upgradeable/token/E
 import {Initializable as InitializableUpgradeable} from '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import {IAsset} from './IAsset.sol';
 
+/// @title Asset
+/// @notice An ERC-20 token with voting checkpoints, held by organs.
 contract Asset is
     IAsset,
     InitializableUpgradeable,
     ERC20Upgradeable,
     ERC20VotesUpgradeable
 {
+    /// @notice Initialize an asset clone and mint its supply.
+    /// @param name_ Token name.
+    /// @param symbol_ Token symbol.
+    /// @param initialReceiver_ Account receiving the initial supply.
+    /// @param initialSupply_ Supply minted at initialization.
     function initialize(
         string memory name_,
         string memory symbol_,

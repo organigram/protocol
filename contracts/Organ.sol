@@ -12,20 +12,19 @@ import {ERC165} from '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 import {IERC165} from '@openzeppelin/contracts/utils/introspection/IERC165.sol';
 import {Initializable as InitializableStatic} from '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import {IERC777Recipient} from '@openzeppelin/contracts/interfaces/IERC777Recipient.sol';
-import {IERC777Sender} from '@openzeppelin/contracts/interfaces/IERC777Sender.sol';
 import {IERC721Receiver} from '@openzeppelin/contracts/interfaces/IERC721Receiver.sol';
 import {IERC1155Receiver} from '@openzeppelin/contracts/interfaces/IERC1155Receiver.sol';
 
-/// @title Organ contract
-/// @author Organigram.ai
-/// @notice An organ contains a list of entries, a list of assets (tokens) and a set of procedures. A procedure is a contract that can effect changes on organs. An entry can be a document and/or an address (a wallet or a contract).
-
+/// @title Organ
+/// @notice A group of an organization: a registry of entries, each an address, a document reference or both,
+/// a list of permissions, and a balance of ether and tokens.
+/// @dev Every change requires a permission held by the caller. In a governed organization, procedures hold
+/// those permissions, so that every change goes through a decision.
 contract Organ is
     IOrgan,
     ERC165,
     InitializableStatic,
     IERC777Recipient,
-    IERC777Sender,
     IERC721Receiver,
     IERC1155Receiver,
     ReentrancyGuard,
@@ -48,12 +47,12 @@ contract Organ is
     }
 
     // Register EIP165 interfaces for introspection.
+    /// @notice Tell whether the organ supports an interface: ERC-165, `IOrgan`, and the ERC-777, ERC-721 and ERC-1155 receivers.
     function supportsInterface(
         bytes4 interfaceId
     ) public view virtual override(ERC165, IERC165) returns (bool) {
         return
             interfaceId == type(IERC777Recipient).interfaceId ||
-            interfaceId == type(IERC777Sender).interfaceId ||
             interfaceId == type(IERC721Receiver).interfaceId ||
             interfaceId == type(IERC1155Receiver).interfaceId ||
             interfaceId == INTERFACE_ID ||
@@ -78,6 +77,7 @@ contract Organ is
         organData.receiveEther(msg.value, _msgSender());
     }
 
+    /// @notice Send ether held by the organ. Requires the `WITHDRAW_ETHER` permission.
     function transferEther(
         address payable to,
         uint256 value
@@ -86,6 +86,7 @@ contract Organ is
     }
 
     // Implementing ERC-777 receiver interface.
+    /// @notice ERC-777 hook recording tokens sent to the organ.
     function tokensReceived(
         address operator,
         address from,
@@ -97,17 +98,8 @@ contract Organ is
         organData.receiveCoins(operator, from, to, amount);
     }
 
-    function tokensToSend(
-        address operator,
-        address,
-        address to,
-        uint256 amount,
-        bytes calldata /*userData*/,
-        bytes calldata /*operatorData*/
-    ) external override {
-        organData.transferCoins(_msgSender(), operator, to, amount);
-    }
-
+    /// @notice Send ERC-20 tokens held by the organ. Requires the `WITHDRAW_COINS` permission.
+    /// @dev The second parameter is ignored.
     function transferCoins(
         address token,
         address,
@@ -117,6 +109,8 @@ contract Organ is
         organData.transferCoins(token, _msgSender(), to, amount);
     }
 
+    /// @notice Send an ERC-721 token held by the organ. Requires the `WITHDRAW_COLLECTIBLES` permission.
+    /// @dev The second parameter is ignored.
     function transferCollectible(
         address token,
         address,
@@ -127,6 +121,7 @@ contract Organ is
     }
 
     // ERC-721 receiver hook.
+    /// @notice ERC-721 hook recording a token sent to the organ.
     function onERC721Received(
         address operator,
         address from,
@@ -138,6 +133,7 @@ contract Organ is
     }
 
     // ERC-1155 receiver hooks.
+    /// @notice ERC-1155 hook accepting a token. ERC-1155 tokens are not recorded by the organ.
     function onERC1155Received(
         address,
         address,
@@ -148,6 +144,7 @@ contract Organ is
         return this.onERC1155Received.selector;
     }
 
+    /// @notice ERC-1155 hook accepting tokens. ERC-1155 tokens are not recorded by the organ.
     function onERC1155BatchReceived(
         address,
         address,

@@ -4,6 +4,8 @@ pragma experimental ABIEncoderV2;
 
 import {CoreLibrary} from './libraries/CoreLibrary.sol';
 
+/// @title Organ interface
+/// @notice The functions organs expose to procedures and applications: entries, permissions, metadata and whitelisted calls.
 interface IOrgan {
     enum ParamConstraintType {
         NONE,

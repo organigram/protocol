@@ -20,9 +20,10 @@ struct Election {
     uint256 votesCount;
 }
 
-/// @title Vote Procedure
-/// @notice  A Vote Procedure will execute operation(s) based on the decision of a vote.
-/// @dev Votes can be vetoed, and enacted.
+/// @title Vote procedure
+/// @notice A procedure in which the members of the deciders organ vote on each proposal.
+/// @dev The vote opens when a proposal is presented. Once it is over, anyone calls `applyProposal` to count
+/// the ballots and settle the proposal.
 contract VoteProcedure is Procedure {
     using ProcedureLibrary for ProcedureLibrary.Operation;
     /// @notice vote().
@@ -32,8 +33,11 @@ contract VoteProcedure is Procedure {
             'Vote(uint256 proposalKey,bool approval,uint256 nonce,uint256 deadline)'
         );
     mapping(uint256 => Election) internal elections;
+    /// @notice Share of the voters who must vote, in thousandths of a percent.
     uint32 public quorumSize; // Minimum number of votes.
+    /// @notice Duration of a vote, in seconds.
     uint32 public voteDuration; // Duration of vote in seconds.
+    /// @notice Share of the ballots that must approve, in thousandths of a percent.
     uint32 public majoritySize; // majoritySize.div((2^32)-1) is the minimum ratio for adoption.
 
     /// @dev Register EIP165 interfaces for introspection.
@@ -95,6 +99,7 @@ contract VoteProcedure is Procedure {
         _vote(_msgSender(), proposalKey, approval);
     }
 
+    /// @notice Cast a vote signed by a decider, relayed by any account.
     function voteBySig(
         uint256 proposalKey,
         bool approval,
@@ -185,7 +190,7 @@ contract VoteProcedure is Procedure {
         ) {
             return false;
         }
-        require(votesCast > 0, 'No vote');
+        if (votesCast == 0) return false;
         return
             approvals * 100000 >=
             votesCast * majoritySize;
@@ -237,20 +242,19 @@ contract VoteProcedure is Procedure {
       Procedure methods overrides.
   */
 
-    /// @notice Propose a new proposal.
-    /// @dev Overrides Procedure.propose.
-    /// @return proposalKey The key of the proposal.
-    function propose(
+    /// @dev Applies to `propose` and `proposeBySig`.
+    function _propose(
         string memory _cid,
-        ProcedureLibrary.Operation[] memory _operations
-    ) public override returns (uint256 proposalKey) {
-        require(_canPropose(_msgSender()), 'Not authorized');
-        _validateOwnerBoundOperations(_operations, _msgSender());
+        ProcedureLibrary.Operation[] memory _operations,
+        address creator
+    ) internal override returns (uint256 proposalKey) {
+        require(_canPropose(creator), 'Not authorized');
+        _validateOwnerBoundOperations(_operations, creator);
         proposalKey = ProcedureLibrary.proposeUnchecked(
             procedureData,
             _cid,
             _operations,
-            _msgSender()
+            creator
         );
         if (procedureData.proposals[proposalKey].presented) {
             _startElection(proposalKey);
@@ -258,39 +262,42 @@ contract VoteProcedure is Procedure {
         return proposalKey;
     }
 
-    /// @notice Present a proposal.
-    /// @dev Overrides Procedure.
-    function presentProposal(uint256 proposalKey) public override {
-        require(_canModerate(_msgSender()), 'Not authorized');
+    /// @dev Applies to `presentProposal` and `presentProposalBySig`.
+    function _presentProposal(
+        uint256 proposalKey,
+        address moderator
+    ) internal override {
+        require(_canModerate(moderator), 'Not authorized');
         ProcedureLibrary.presentProposalUnchecked(
             procedureData,
             proposalKey,
-            _msgSender()
+            moderator
         );
         _startElection(proposalKey);
     }
 
     /// @notice A veto accepts arguments which defines a motivation as a IPFS multihash.
-    /// @dev Overrides Procedure.blockProposal.
-    function blockProposal(
+    /// @dev Applies to `blockProposal` and `blockProposalBySig`.
+    function _blockProposal(
         uint256 proposalKey,
-        string calldata reason
-    ) public override {
-        require(_canModerate(_msgSender()), 'Not authorized');
+        string memory reason,
+        address moderator
+    ) internal override {
+        require(_canModerate(moderator), 'Not authorized');
         require(elections[proposalKey].start == 0, 'Election already started.');
         ProcedureLibrary.blockProposalUnchecked(
             procedureData,
             proposalKey,
             reason,
-            _msgSender()
+            moderator
         );
     }
 
     /// @notice Finalize a vote once the election has ended.
     /// @dev Anyone can trigger the settlement transaction once voting is over.
-    function applyProposal(uint256 proposalKey) public override nonReentrant {
+    function _applyProposal(uint256 proposalKey) internal override {
         if (count(proposalKey)) {
-            // This function already holds the reentrancy lock. Calling the
+            // The caller already holds the reentrancy lock. Calling the
             // guarded helper on Procedure would attempt to acquire it a
             // second time and always revert before the proposal operation.
             super._applyAdoptedProposal(proposalKey);

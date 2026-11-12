@@ -11,5 +11,11 @@ evm_version = "cancun"
 optimizer = true
 optimizer_runs = 10
 
+[lint]
+# These rules flag deliberate design rather than defects: batch inputs are
+# validated atomically (require in loops), batch deployments and vote counts
+# call contracts in loops, and votes are timed with block.timestamp.
+exclude_lints = ["require-revert-in-loop", "calls-loop", "block-timestamp"]
+
 [fmt]
 line_length = 100

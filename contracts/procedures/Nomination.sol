@@ -5,8 +5,8 @@ pragma experimental ABIEncoderV2;
 import {Procedure} from '../Procedure.sol';
 import {ProcedureLibrary} from '../libraries/ProcedureLibrary.sol';
 
-/// @title Nomination Procedure
-/// @notice A nomination executes an operation if the nominator is in the nominaters organ.
+/// @title Nomination procedure
+/// @notice A procedure in which any one member of the deciders organ adopts or rejects a proposal alone.
 contract NominationProcedure is Procedure {
     /// @notice function signature for nominate().
     bytes4 private constant _INTERFACE_NOMINATION = 0xc5f28e49;
@@ -42,6 +42,7 @@ contract NominationProcedure is Procedure {
         super._rejectProposal(proposalKey);
     }
 
+    /// @notice Adopt a proposal with an adoption signed by a decider, relayed by any account.
     function nominateBySig(
         uint256 proposalKey,
         uint256 nonce,

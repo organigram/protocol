@@ -6,7 +6,7 @@ By assembling three simple concepts, it allows for the automated execution of an
 
 - [Assets](https://organigram.ai/en/docs/protocol/assets) are what is being governed: they represent value in cryptocurrency - either native assets (such as ETH), stablecoins (such as USDC or EurE), or any other types of ERC-20-compatible tokens.
 - [Organs](https://organigram.ai/en/docs/protocol/organs) are cryptographic vaults: they store the permissions defining who can access what assets. They can only be modified by procedures stored in the organ's internal memory.
-- [Procedures](https://organigram.ai/en/docs/protocol/organs) are automated, pre-approved workflows that allow permitted users to perform actions in a compliant and safe way (for example transfer assets or edit permissions after a vote).
+- [Procedures](https://organigram.ai/en/docs/protocol/procedures) are automated, pre-approved workflows that allow permitted users to perform actions in a compliant and safe way (for example transfer assets or edit permissions after a vote).
 
 For comprehensive documentation, please visit our [official website](https://organigram.ai/en/docs).
 
@@ -46,35 +46,7 @@ With this package, you can directly interact with the Organigram Protocol smart 
   })
   ```
 
-- Use the official [JavaScript/TypeScript client](https://github.com/organigram/js):
-
-  ```bash
-  pnpm add @organigram/js
-  ```
-  ```javascript
-  import { OrganigramClient, Organigram, Organ } from '@organigram/js'
-
-  const organigramClient = await OrganigramClient.load({
-      publicClient: {
-        // ... viem public client configuration
-      }
-      walletClient: {
-        // ... viem wallet client configuration
-      }
-  })
-  ```
-
-- Import as components with the [official React client](https://github.com/organigram/react):
-
-  ```
-  pnpm add @organigram/react
-  ```
-  ```jsx
-  import { Diagram } from '@organigram/react'
-  import { Organigram } from '@organigram/js'
-
-  const OrganigramComponent = () => <Diagram organigram={new Organigram()} />
-  ```
+- Use the official [JavaScript/TypeScript client](https://organigram.ai/en/docs/reference/js), which deploys and operates the contracts, and the [React components](https://organigram.ai/en/docs/reference/react), which draw them.
 
 ## Development
 

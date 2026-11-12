@@ -12,8 +12,10 @@ contract EquityToken is
     ERC20Upgradeable,
     ERC20VotesUpgradeable
 {
+    /// @notice Role of the procedures that settle transfers.
     bytes32 public constant TRANSFER_PROCEDURE_ROLE =
         keccak256('TRANSFER_PROCEDURE_ROLE');
+    /// @notice Role of the procedures that change which procedures hold a role.
     bytes32 public constant ADMIN_PROCEDURE_ROLE =
         keccak256('ADMIN_PROCEDURE_ROLE');
 
@@ -21,6 +23,7 @@ contract EquityToken is
     mapping(bytes32 => uint256) private procedureCounts;
     bool private settlingTransfer;
 
+    /// @notice A procedure received or lost a role.
     event ProcedureAuthorizationUpdated(
         bytes32 indexed role,
         address indexed procedure,
@@ -44,11 +47,19 @@ contract EquityToken is
 
     function _requireAuthorizedProcedure(bytes32 role) private view {
         require(procedures[role][msg.sender], 'Not authorized procedure.');
+        // Only the applying flag is needed for authorization.
+        // forge-lint: disable-next-item(unused-return)
         (bool isApplying, , ) = IProcedureExecutionContext(msg.sender)
             .getExecutionContext();
         require(isApplying, 'Procedure is not applying a proposal.');
     }
 
+    /// @notice Initialize an equity token clone and mint its supply.
+    /// @param name_ Token name.
+    /// @param symbol_ Token symbol.
+    /// @param initialHolder_ Account receiving the initial supply.
+    /// @param initialSupply_ Supply minted at initialization.
+    /// @param transferProcedure_ Procedure settling transfers, which also receives the admin role.
     function initialize(
         string memory name_,
         string memory symbol_,
@@ -89,6 +100,8 @@ contract EquityToken is
         uint256 amount,
         string calldata movementCid
     ) external onlyAuthorizedProcedure(TRANSFER_PROCEDURE_ROLE) {
+        // The applying flag was checked by onlyAuthorizedProcedure.
+        // forge-lint: disable-next-item(unused-return)
         (, uint256 proposalKey, address seller) = IProcedureExecutionContext(
             msg.sender
         ).getExecutionContext();
@@ -97,6 +110,8 @@ contract EquityToken is
         settlingTransfer = true;
         _transfer(seller, recipient, amount);
         settlingTransfer = false;
+        // Only a view call to the applying procedure precedes the record.
+        // forge-lint: disable-next-item(reentrancy-events)
         emit MovementSettled(
             msg.sender,
             proposalKey,
@@ -138,6 +153,7 @@ contract EquityToken is
         _validateTransfer(creator, recipient, amount, movementCid);
     }
 
+    /// @notice Tell whether a procedure holds a role.
     function isProcedureAuthorized(
         bytes32 role,
         address procedure
@@ -145,6 +161,7 @@ contract EquityToken is
         return procedures[role][procedure];
     }
 
+    /// @notice Tell whether a procedure may settle transfers.
     function isTransferProcedure(
         address procedure
     ) external view returns (bool) {
@@ -165,6 +182,8 @@ contract EquityToken is
         } else {
             procedureCounts[role] -= 1;
         }
+        // Only a view call to the applying procedure precedes the update.
+        // forge-lint: disable-next-line(reentrancy-events)
         emit ProcedureAuthorizationUpdated(role, procedure, authorized);
     }
 

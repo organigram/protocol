@@ -5,6 +5,9 @@ pragma experimental ABIEncoderV2;
 import {Context} from '@openzeppelin/contracts/utils/Context.sol';
 import {ERC2771Forwarder} from '@openzeppelin/contracts/metatx/ERC2771Forwarder.sol';
 
+/// @title Meta gas station
+/// @notice Trusted forwarder of the protocol contracts: it relays requests signed by accounts that hold no
+/// ether, and the contracts read the signer instead of the relayer.
 contract MetaGasStation is ERC2771Forwarder {
     constructor(string memory name) ERC2771Forwarder(name) {}
 }
@@ -13,6 +16,8 @@ abstract contract ERC2771Recipient is Context {
     address private _trustedForwarder;
 
     function _setTrustedForwarder(address forwarder) internal virtual {
+        // Set once at initialization and exposed by trustedForwarder().
+        // forge-lint: disable-next-line(missing-events-access-control)
         _trustedForwarder = forwarder;
     }
 

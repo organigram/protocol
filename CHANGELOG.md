@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.0](https://github.com/organigram/organigram/compare/protocol-v0.1.9...protocol-v0.2.0) (2026-11-18)
+
+
+### Bug Fixes
+
+* **protocol:** Pin solc version ([130b061](https://github.com/organigram/organigram/commit/130b061568a8a61dde853af16d52e63a76747003))
+
 ## [0.1.9](https://github.com/organigram/protocol/compare/v0.1.8...v0.1.9) (2026-07-28)
 
 **Note:** Version bump only for package @organigram/protocol

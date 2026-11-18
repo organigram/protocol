@@ -5,8 +5,8 @@ script = "script"
 test = "test"
 libs = ["node_modules", "lib"]
 cache_path = "cache_forge"
-solc = "scripts/solc.sh"
-auto_detect_solc = false
+# Pinned: the bytecode, deployed on-chain and published in abi/, depends on it.
+solc_version = "0.8.28"
 evm_version = "cancun"
 optimizer = true
 optimizer_runs = 10
